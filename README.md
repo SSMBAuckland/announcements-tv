@@ -1,6 +1,6 @@
 # 🕒 SSMBA Clock Display Guide
 
-This repository hosts the live display code for **[announcements-tv.shree-swaminarayan-temple-auckland-under-shree-narnarayandev-b.workers.dev](https://announcements-tv.shree-swaminarayan-temple-auckland-under-shree-narnarayandev-b.workers.dev)**.
+This repository hosts the live display code for **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)**.
 
 Follow the simple step-by-step instructions below whenever you generate new display code using AI and need to publish the update to the screens.
 
@@ -53,7 +53,7 @@ Use this method if the AI gave you a downloaded file (e.g., `generated_code.html
 
 Once you have saved your changes to GitHub:
 
-1. Check that the updates look correct by visiting **[announcements-tv.shree-swaminarayan-temple-auckland-under-shree-narnarayandev-b.workers.dev](https://announcements-tv.shree-swaminarayan-temple-auckland-under-shree-narnarayandev-b.workers.dev)** on your computer or phone.
+1. Check that the updates look correct by visiting **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)** on your computer or phone.
 2. If the physical display screen does not update automatically within a few minutes, **restart the Yodeck media player** connected to the TV/monitor:
    * **Via Yodeck Dashboard:**
    * <img width="550" height="801" alt="image" src="https://github.com/user-attachments/assets/af2c77b5-49ca-43f2-a546-2135cda1d927" />
