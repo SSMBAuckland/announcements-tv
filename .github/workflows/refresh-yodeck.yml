@@ -1,4 +1,4 @@
-name: Refresh Yodeck Display
+name: Update Yodeck Webpage Media
 
 on:
   push:
@@ -6,11 +6,40 @@ on:
       - main
 
 jobs:
-  refresh:
+  update-media:
     runs-on: ubuntu-latest
     steps:
-      - name: Push update to Yodeck
+      - name: Wait for GitHub Pages deployment propagation
         run: |
-          curl -X POST https://app.yodeck.com/api/v2/screens/640146/push \
-            -H "Authorization: Token ${{ secrets.YODECK_API_KEY }}" \
-            -H "Content-Type: application/json"
+          sleep 8
+
+      - name: Patch Yodeck Media with Cache-Busting URL
+        env:
+          YODECK_AUTH_TOKEN: ${{ secrets.YODECK_AUTH_TOKEN }}
+          MEDIA_ID: "35372205"
+        run: |
+          # Generate cache-busted URL using the commit SHA and epoch time
+          CACHE_BUSTER="${{ github.sha }}-$(date +%s)"
+          NEW_URL="https://ssmbauckland.github.io/announcements-tv/?cb=${CACHE_BUSTER}"
+
+          echo "Updating media to: $NEW_URL"
+
+          RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH "https://app.yodeck.com/api/v2/media/${MEDIA_ID}" \
+            -H "Authorization: Token ${YODECK_AUTH_TOKEN}" \
+            -H "Content-Type: application/json" \
+            -d "{
+              \"arguments\": {
+                \"url\": \"${NEW_URL}\"
+              }
+            }")
+
+          HTTP_BODY=$(echo "$RESPONSE" | sed '$d')
+          HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
+
+          echo "Response status: $HTTP_STATUS"
+          echo "Response body: $HTTP_BODY"
+
+          if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
+            echo "Failed to patch Yodeck media item."
+            exit 1
+          fi
