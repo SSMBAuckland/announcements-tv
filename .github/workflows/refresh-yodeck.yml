@@ -15,7 +15,7 @@ jobs:
 
       - name: Patch Yodeck Media with Cache-Busting URL
         env:
-          YODECK_AUTH_TOKEN: ${{ secrets.YODECK_AUTH_TOKEN }}
+          YODECK_AUTH_TOKEN: ${{ secrets.YODECK_API_KEY }}
           MEDIA_ID: "35372205"
         run: |
           # Generate cache-busted URL using the commit SHA and epoch time
