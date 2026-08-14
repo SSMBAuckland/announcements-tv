@@ -11,25 +11,30 @@ jobs:
     steps:
       - name: Wait for GitHub Pages deployment propagation
         run: |
-          sleep 8
+          echo "Waiting 7 seconds for GitHub Pages CDN update..."
+          sleep 7
 
       - name: Patch Yodeck Media with Cache-Busting URL
         env:
-          YODECK_AUTH_TOKEN: ${{ secrets.YODECK_API_KEY }}
+          YODECK_API_KEY: ${{ secrets.YODECK_API_KEY }}
           MEDIA_ID: "35372205"
         run: |
-          # Generate cache-busted URL using the commit SHA and epoch time
+          if [ -z "$YODECK_API_KEY" ]; then
+            echo "ERROR: YODECK_API_KEY is empty. Check your GitHub repository secrets."
+            exit 1
+          fi
+
           CACHE_BUSTER="${{ github.sha }}-$(date +%s)"
           NEW_URL="https://ssmbauckland.github.io/announcements-tv/?cb=${CACHE_BUSTER}"
 
           echo "Updating media to: $NEW_URL"
 
           RESPONSE=$(curl -s -w "\n%{http_code}" -X PATCH "https://app.yodeck.com/api/v2/media/${MEDIA_ID}" \
-            -H "Authorization: Token ${YODECK_AUTH_TOKEN}" \
+            -H "Authorization: Token ${YODECK_API_KEY}" \
             -H "Content-Type: application/json" \
             -d "{
               \"arguments\": {
-                \"url\": \"${NEW_URL}\"
+                \"play_from_url\": \"${NEW_URL}\"
               }
             }")
 
