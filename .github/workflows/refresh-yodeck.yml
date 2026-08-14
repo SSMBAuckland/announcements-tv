@@ -1,4 +1,4 @@
-name: Update Yodeck Webpage Media
+name: Update Yodeck Webpage Media & Push
 
 on:
   push:
@@ -11,8 +11,8 @@ jobs:
     steps:
       - name: Wait for GitHub Pages deployment propagation
         run: |
-          echo "Waiting 7 seconds for GitHub Pages CDN update..."
-          sleep 7
+          echo "Waiting 20 seconds for GitHub Pages CDN update..."
+          sleep 20
 
       - name: Patch Yodeck Media with Cache-Busting URL
         env:
@@ -41,10 +41,35 @@ jobs:
           HTTP_BODY=$(echo "$RESPONSE" | sed '$d')
           HTTP_STATUS=$(echo "$RESPONSE" | tail -n1)
 
-          echo "Response status: $HTTP_STATUS"
-          echo "Response body: $HTTP_BODY"
+          echo "Media patch status: $HTTP_STATUS"
+          echo "Media patch body: $HTTP_BODY"
 
           if [ "$HTTP_STATUS" -lt 200 ] || [ "$HTTP_STATUS" -ge 300 ]; then
             echo "Failed to patch Yodeck media item."
+            exit 1
+          fi
+
+      - name: Push Changes to Screens
+        env:
+          YODECK_API_KEY: ${{ secrets.YODECK_API_KEY }}
+        run: |
+          echo "Pushing changes to Yodeck screens..."
+          
+          # Delay a brief moment so the updated media metadata commits
+          sleep 3
+
+          PUSH_RESPONSE=$(curl -s -w "\n%{http_code}" -X POST "https://app.yodeck.com/api/v2/screens/push" \
+            -H "Authorization: Token ${YODECK_API_KEY}" \
+            -H "Content-Type: application/json" \
+            -d "{}")
+
+          PUSH_BODY=$(echo "$PUSH_RESPONSE" | sed '$d')
+          PUSH_STATUS=$(echo "$PUSH_RESPONSE" | tail -n1)
+
+          echo "Push status: $PUSH_STATUS"
+          echo "Push body: $PUSH_BODY"
+
+          if [ "$PUSH_STATUS" -lt 200 ] || [ "$PUSH_STATUS" -ge 300 ]; then
+            echo "Failed to push to screens."
             exit 1
           fi
