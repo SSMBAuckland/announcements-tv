@@ -11,6 +11,6 @@ jobs:
     steps:
       - name: Push update to Yodeck
         run: |
-          curl -X POST https://app.yodeck.com/api/v1/screens/640146/push/ \
+          curl -X POST https://app.yodeck.com/api/v1/screens/29daa684-62ce-497b-9b16-99e51ed30b16/push/ \
             -H "Authorization: Token ${{ secrets.YODECK_API_KEY }}" \
             -H "Content-Type: application/json"
