@@ -1,4 +1,4 @@
-# 🕒 SSMBA Clock Display Guide
+# 🕒 SSMB Auckland Clock + Announcements TV
 
 This repository hosts the live display code for **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)**.
 
@@ -51,7 +51,9 @@ Use this method if the AI gave you a downloaded file (e.g., `generated_code.html
 
 ## 📺 Updating the Physical Screen (Yodeck)
 
-Once you have saved your changes to GitHub:
+Once you have saved your changes to GitHub, an action will push it to Yodeck and push to screen.
+
+If it doesn't automatically do this, you'll have to log in to the dashboard and reload that player:
 
 1. Check that the updates look correct by visiting **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)** on your computer or phone.
 2. If the physical display screen does not update automatically within a few minutes, **restart the Yodeck media player** connected to the TV/monitor:
