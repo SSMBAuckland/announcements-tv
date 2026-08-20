@@ -313,6 +313,49 @@
     .hero { min-height:430px; padding:22px; }
     .upcoming { min-height:430px; padding:22px 18px; }
   }
+
+  /* Requested Today panel layout — normal event days only. */
+  body:not(.india-independence-day) .hero { justify-content:flex-start; }
+  body:not(.india-independence-day) .hero .today-copy {
+    width:100%; max-width:none; height:100%; padding:0;
+    align-items:center; justify-content:flex-start; text-align:center;
+  }
+  body:not(.india-independence-day) .hero .today-title {
+    width:76%; min-height:124px; padding:24px 34px;
+    display:flex; align-items:center; justify-content:center;
+    align-self:center; margin:0;
+    font-size:60px; line-height:1.05; text-align:center;
+  }
+  body:not(.india-independence-day) .hero .today-events {
+    width:100%; flex:1; margin:0; padding:20px 0 34px;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+    font-size:94px; line-height:1.08; text-align:center;
+  }
+
+  @media (max-width:1500px) and (min-width:901px) {
+    body:not(.india-independence-day) .hero .today-title {
+      width:78%; min-height:108px; padding:20px 26px;
+      font-size:clamp(42px,4.2vw,56px);
+    }
+    body:not(.india-independence-day) .hero .today-events {
+      font-size:clamp(62px,6.5vw,88px);
+    }
+  }
+
+  @media (max-width:900px) {
+    body:not(.india-independence-day) .hero .today-copy {
+      width:100%; max-width:none; height:100%; padding:0;
+      align-items:center; justify-content:flex-start;
+    }
+    body:not(.india-independence-day) .hero .today-title {
+      width:100%; min-height:96px; padding:18px 16px;
+      font-size:clamp(30px,8vw,40px); white-space:normal;
+    }
+    body:not(.india-independence-day) .hero .today-events {
+      width:100%; flex:1; padding:18px 0 26px;
+      font-size:clamp(48px,13vw,70px); text-align:center;
+    }
+  }
 </style>
 </head>
 <body>
