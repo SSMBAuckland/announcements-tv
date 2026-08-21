@@ -176,6 +176,36 @@
   .next-label { color:var(--pink2); font-size:20px; letter-spacing:3px; text-transform:uppercase; font-weight:700; }
   .next-event { font-family:Georgia,serif; font-size:56px; line-height:1.08; margin-top:18px; color:white; }
   .next-date { color:#d0d0d0; font-size:26px; line-height:1.35; margin-top:18px; }
+  .today-events .event-line { width:100%; }
+  .scripture-quote {
+    width:min(100%,980px); margin:20px auto 0; color:#dfd7c8;
+    font-family:Georgia,serif; font-size:26px; line-height:1.38; font-weight:400;
+    text-align:center; text-shadow:0 4px 16px rgba(0,0,0,.48);
+    opacity:1; transform:translateY(0); filter:blur(0);
+    transition:opacity .48s ease,transform .58s cubic-bezier(.22,.8,.22,1),filter .48s ease;
+    will-change:opacity,transform,filter;
+  }
+  .scripture-quote.medium { font-size:23px; }
+  .scripture-quote.long { font-size:20px; }
+  .scripture-quote.xlong { font-size:16px; line-height:1.3; }
+  .scripture-quote.is-leaving { opacity:0; transform:translateY(-14px); filter:blur(5px); }
+  .scripture-quote.is-entering { animation:shlokFlowIn .9s cubic-bezier(.18,.82,.2,1) both; }
+  .scripture-quote em { font-style:italic; }
+  .scripture-source {
+    display:block; margin-top:9px; color:var(--gold2);
+    font-family:"Segoe UI",Arial,sans-serif; font-size:13px; line-height:1.3;
+    font-style:normal; font-weight:700; letter-spacing:1.6px; text-transform:uppercase;
+  }
+  @keyframes shlokFlowIn {
+    0% { opacity:0; transform:translateY(18px); filter:blur(7px); clip-path:inset(100% 0 0 0); }
+    58% { opacity:.82; filter:blur(1px); }
+    100% { opacity:1; transform:translateY(0); filter:blur(0); clip-path:inset(0 0 0 0); }
+  }
+  @media (prefers-reduced-motion:reduce) {
+    .scripture-quote { transition:opacity .2s ease; }
+    .scripture-quote.is-leaving { transform:none; filter:none; }
+    .scripture-quote.is-entering { animation:none; }
+  }
   .countdown { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
   .unit { background:#0b0b0b; border:1px solid rgba(246,201,69,.22); border-radius:12px; padding:12px 10px; min-width:0; text-align:center; }
   .num { display:block; font-size:32px; font-weight:800; font-variant-numeric:tabular-nums; }
@@ -287,6 +317,11 @@
     .next-label { font-size:16px; }
     .next-event { margin-top:15px; font-size:clamp(38px,10vw,58px); }
     .next-date { font-size:clamp(19px,5vw,26px); }
+    .scripture-quote { margin-top:16px; font-size:clamp(17px,4.6vw,22px); line-height:1.42; }
+    .scripture-quote.medium { font-size:clamp(16px,4.2vw,20px); }
+    .scripture-quote.long { font-size:clamp(15px,3.9vw,18px); }
+    .scripture-quote.xlong { font-size:clamp(12px,3.2vw,15px); line-height:1.3; }
+    .scripture-source { margin-top:7px; font-size:clamp(9px,2.7vw,12px); letter-spacing:1.1px; }
     .footer { justify-content:center; text-align:center; font-size:10px; line-height:1.5; }
   }
 
@@ -314,48 +349,67 @@
     .upcoming { min-height:430px; padding:22px 18px; }
   }
 
-  /* Requested Today panel layout — normal event days only. */
-  body:not(.india-independence-day) .hero { justify-content:flex-start; }
-  body:not(.india-independence-day) .hero .today-copy {
-    width:100%; max-width:none; height:100%; padding:0;
+  /* Prominent Today panel layout for event and empty days. */
+  .hero.event-day,
+  .hero.empty-day { justify-content:flex-start; }
+
+  .hero.event-day .today-copy,
+  .hero.empty-day .today-copy {
+    position:static; max-width:100%; width:100%; padding:175px 0 0;
     align-items:center; justify-content:flex-start; text-align:center;
   }
-  body:not(.india-independence-day) .hero .today-title {
-    width:76%; min-height:124px; padding:24px 34px;
+
+  .hero.event-day .today-title,
+  .hero.empty-day .today-title {
+    position:absolute; z-index:4; top:18px; left:50%; transform:translateX(-50%);
+    width:76%; min-height:132px; padding:26px 36px;
     display:flex; align-items:center; justify-content:center;
-    align-self:center; margin:0;
-    font-size:60px; line-height:1.05; text-align:center;
+    align-self:auto; text-align:center; font-size:60px;
   }
-  body:not(.india-independence-day) .hero .today-events {
-    width:100%; flex:1; margin:0; padding:20px 0 34px;
-    display:flex; flex-direction:column; align-items:center; justify-content:center;
+
+  .hero.event-day .today-events {
+    width:100%; max-width:1100px; margin:48px auto 0;
     font-size:94px; line-height:1.08; text-align:center;
   }
 
+  .hero.empty-day .today-events {
+    width:100%; max-width:940px; margin:42px auto 0;
+    font-size:48px; line-height:1.2; text-align:center;
+  }
+
   @media (max-width:1500px) and (min-width:901px) {
-    body:not(.india-independence-day) .hero .today-title {
-      width:78%; min-height:108px; padding:20px 26px;
-      font-size:clamp(42px,4.2vw,56px);
+    .hero.event-day .today-copy,
+    .hero.empty-day .today-copy { padding-top:145px; }
+    .hero.event-day .today-title,
+    .hero.empty-day .today-title {
+      top:14px; width:78%; min-height:108px; padding:20px 24px;
+      font-size:clamp(40px,4.2vw,56px);
     }
-    body:not(.india-independence-day) .hero .today-events {
-      font-size:clamp(62px,6.5vw,88px);
+    .hero.event-day .today-events {
+      margin-top:38px; font-size:clamp(60px,6.5vw,88px);
     }
   }
 
   @media (max-width:900px) {
-    body:not(.india-independence-day) .hero .today-copy {
-      width:100%; max-width:none; height:100%; padding:0;
-      align-items:center; justify-content:flex-start;
+    .hero.event-day,
+    .hero.empty-day { justify-content:flex-start; }
+    .hero.event-day .today-copy,
+    .hero.empty-day .today-copy {
+      position:static; width:100%; padding:122px 0 0; align-items:center;
     }
-    body:not(.india-independence-day) .hero .today-title {
-      width:100%; min-height:96px; padding:18px 16px;
+    .hero.event-day .today-title,
+    .hero.empty-day .today-title {
+      top:0; width:calc(100% - 28px); min-height:100px; padding:18px 16px;
       font-size:clamp(30px,8vw,40px); white-space:normal;
     }
-    body:not(.india-independence-day) .hero .today-events {
-      width:100%; flex:1; padding:18px 0 26px;
-      font-size:clamp(48px,13vw,70px); text-align:center;
+    .hero.event-day .today-events {
+      width:100%; margin:30px auto 0; font-size:clamp(48px,13vw,70px);
+    }
+    .hero.empty-day .today-events {
+      width:100%; margin:28px auto 0; font-size:clamp(30px,8vw,44px);
     }
   }
+
 </style>
 </head>
 <body>
@@ -367,17 +421,17 @@
       <div id="clock" class="clock">--:--:--</div>
     </div>
     <div class="date-card">
-      <span id="dayName" class="day-name">Loading…</span>
-      <span id="fullDate" class="full-date">Loading…</span>
+      <span id="dayName" class="day-name">Friday</span>
+      <span id="fullDate" class="full-date">21 August 2026</span>
       <div class="tz">Pacific/Auckland • New Zealand</div>
     </div>
   </header>
 
   <main class="main">
-    <section class="hero">
+    <section class="hero event-day">
       <div class="today-copy">
-        <div id="todayTitle" class="today-title">Checking today's events…</div>
-        <div id="todayEvents" class="today-events"></div>
+        <div id="todayTitle" class="today-title">Today at the Mandir</div>
+        <div id="todayEvents" class="today-events"><div class="event-line"><div class="today-event-name">Shree Hari Jayanti</div></div><div id="todayShlok" class="scripture-quote" aria-live="polite" aria-atomic="true"><em id="todayShlokText"></em><span id="todayShlokSource" class="scripture-source"></span></div></div>
         <div id="indiaFact" class="india-fact-card">
           <div class="fact-head"><div class="quote-label">India's Independence Day Fun Facts!</div><span id="factCount" class="fact-count">1 / 15</span></div>
           <span id="factText"></span>
@@ -390,9 +444,9 @@
 
     <section class="upcoming">
       <div class="next-wrap">
-        <div class="next-label">Next Event</div>
-        <div id="nextEvent" class="next-event">Loading…</div>
-        <div id="nextDate" class="next-date"></div>
+        <div class="next-label">Upcoming Event</div>
+        <div id="nextEvent" class="next-event">Pavitra (Putrada) Ekadashi</div>
+        <div id="nextDate" class="next-date">Monday, 24 August 2026 • In 3 days</div>
       </div>
     </section>
   </main>
@@ -420,6 +474,910 @@ function fmtShort(d) {
 }
 function escapeHtml(s) {
   return s.replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+
+const DAILY_SHLOKS = [
+  {
+    "number": 1,
+    "text": "I meditate, within my heart, upon Lord Shree Krishna, whose left Radha is standing by, on whose right chest resides Lakshmi and who enjoyed his own divine sports at Brindavana (with Radha and Lakshmi) (Vide page 5 SHIKSHAPATRI ARTHA DEEPIKA)."
+  },
+  {
+    "number": 2,
+    "text": "He writes further. I, Sahajananda Swami, staying at Vrittalaya (Vadatal) write this SHIKSHAPATRI to all my followers living in different countries. (Vrittalaya means a place of good conduct)"
+  },
+  {
+    "number": 3,
+    "text": "Ayodhyaprasada, the son of my brother Rampratapa and grand son of Dharmadeo my father and Raghuvira, the son of my brother Ichchharama and grand son of Dharmadeo my father, brahmacharies who are life long celibates and who are headed by Mukundananda, house holders such as Mayarama Bhatta and others who are my followers, married-women with husbands alive, widows, unmarried women who have become my followers, and all Sadhus headed by Muktananda are all my disciples. And in accordance with Shastras, I, remembering Shree Narayana, bestow my best blessings to all the above mentioned disciples so that the blessings may help them in following and keeping their Swadharma (One’s religious duties)."
+  },
+  {
+    "number": 4,
+    "text": "Ayodhyaprasada, the son of my brother Rampratapa and grand son of Dharmadeo my father and Raghuvira, the son of my brother Ichchharama and grand son of Dharmadeo my father, brahmacharies who are life long celibates and who are headed by Mukundananda, house holders such as Mayarama Bhatta and others who are my followers, married-women with husbands alive, widows, unmarried women who have become my followers, and all Sadhus headed by Muktananda are all my disciples. And in accordance with Shastras, I, remembering Shree Narayana, bestow my best blessings to all the above mentioned disciples so that the blessings may help them in following and keeping their Swadharma (One’s religious duties)."
+  },
+  {
+    "number": 5,
+    "text": "Ayodhyaprasada, the son of my brother Rampratapa and grand son of Dharmadeo my father and Raghuvira, the son of my brother Ichchharama and grand son of Dharmadeo my father, brahmacharies who are life long celibates and who are headed by Mukundananda, house holders such as Mayarama Bhatta and others who are my followers, married-women with husbands alive, widows, unmarried women who have become my followers, and all Sadhus headed by Muktananda are all my disciples. And in accordance with Shastras, I, remembering Shree Narayana, bestow my best blessings to all the above mentioned disciples so that the blessings may help them in following and keeping their Swadharma (One’s religious duties)."
+  },
+  {
+    "number": 6,
+    "text": "Ayodhyaprasada, the son of my brother Rampratapa and grand son of Dharmadeo my father and Raghuvira, the son of my brother Ichchharama and grand son of Dharmadeo my father, brahmacharies who are life long celibates and who are headed by Mukundananda, house holders such as Mayarama Bhatta and others who are my followers, married-women with husbands alive, widows, unmarried women who have become my followers, and all Sadhus headed by Muktananda are all my disciples. And in accordance with Shastras, I, remembering Shree Narayana, bestow my best blessings to all the above mentioned disciples so that the blessings may help them in following and keeping their Swadharma (One’s religious duties)."
+  },
+  {
+    "number": 7,
+    "text": "All my disciples shall study with full concentration of mind, this SHIKSHAPATRI which is written with a definite purpose of doing good to all living beings."
+  },
+  {
+    "number": 8,
+    "text": "Those who follow through out their life time the rules of good conduct as enjoined by the Holy Scriptures will lead a blissful life in this world and in the next."
+  },
+  {
+    "number": 9,
+    "text": "And those, the morally depraved persons who cross the precincts of good conduct and behave as free thinkers will suffer great distress in this world and in the next."
+  },
+  {
+    "number": 10,
+    "text": "So, all my disciple, shall lead their life, only by following these precepts with willingness and vigilance through-out their life"
+  },
+  {
+    "number": 11,
+    "text": "My disciples shall never kill or harm deliberately any living being in this world though they are negligible tiny insects such as lice and bugs."
+  },
+  {
+    "number": 12,
+    "text": "None of my follower shall kill or harm goats or other animals even for the sacrificial ceremonies to propitiate a deity of manes (Spirits of fore fathers) because the Shastras assert that non- violence alone is the best form of Dharma"
+  },
+  {
+    "number": 13,
+    "text": "None shall ever use violence against any person as to gain something such as woman, wealth and even an empire."
+  },
+  {
+    "number": 14,
+    "text": "None shall commit suicide even at a place of pilgrimage out of super-stition or out of anger frustration caused by some unworthy behaviour, or by consuming poison or by stran-gulation or by drowning."
+  },
+  {
+    "number": 15,
+    "text": "Flesh in any form shall not be eaten even though it is a remnant of offering in a sacrifice, and liquor or alcohol shall not be taken, though it is offered to a deity."
+  },
+  {
+    "number": 16,
+    "text": "One may commit any misdeed against the other, or may come under the spell of the rage, still no one shall cut or harm, with any instrument any part of his own body or of the others"
+  },
+  {
+    "number": 17,
+    "text": "One shall not steal other’s property even for religious or benevolent purposes; and shall not take even a small stick or flowers etc. (even for offering to deities) without the permission of the owner."
+  },
+  {
+    "number": 18,
+    "text": "My followers, male or female shall not commit adultery. They shall not take to gambling or other games with stakes. Also they shall not consume intoxicants such as hashish."
+  },
+  {
+    "number": 19,
+    "text": "Accepting water or cooked food from the people of some category is forbidden by scriptures. My follower shall not accept it even if it happens to be an offering to Lord Krishna. But the same can be accepted if it is an offering to lord Jagannatha in Jagannathpuri."
+  },
+  {
+    "number": 20,
+    "text": "None shall ever impute false charges to anybody, even for the sake of self interest, and nor at any time shall use abusive and indecent words."
+  },
+  {
+    "number": 21,
+    "text": "No one shall use or beat any abusive or indecent words against Gods, Brahmins, the holy places, chaste women, the holy Vedas or the holy persons and never shall hear those words if uttered by any-one."
+  },
+  {
+    "number": 22,
+    "text": "None shall accept any thing, even vegetarian food offered to deity before whom, offerings of wine, flesh etc. are made and before whom animals like goats are slaughtered as a part of sacrifice"
+  },
+  {
+    "number": 23,
+    "text": "When my followers see temples of Lord Shiva or other deities, on the way, they shall bow down with reverence and have “Darshan” of them."
+  },
+  {
+    "number": 24,
+    "text": "None shall discard his duties which he has to perform as a member of particular caste and none shall indulge in doing the duties assigned to member of an other caste, likewise no member of the order (of life) shall discard his duties which he must perform as a member of a particular order and none shall indulge in doing the duties assigned to the member of the other order. (Ashrama) And none shall follow (the religion propounded by the religious impostors) the religion which is not Vedic."
+  },
+  {
+    "number": 25,
+    "text": "None shall listen to religious discourses or narrations or stories (even the divine stories) of God from a person whose speech may lead to a fall from the path of devotion to God or from one’s religious duties."
+  },
+  {
+    "number": 26,
+    "text": "On shall not utter even a truth if it betrays him or others. And one shall not associate himself with ungrateful per-son and never take bribe from anyone."
+  },
+  {
+    "number": 27,
+    "text": "None shall associate himself with thieves, sinners, religious impostors, hypocrites, libidinous persons or the addicts."
+  },
+  {
+    "number": 28,
+    "text": "None shall associate himself with those persons, who under pretext of preaching religion or devotion to God, seek wealth, women and worldly pleasures and commit sins."
+  },
+  {
+    "number": 29,
+    "text": "Never follow those scriptures which by mere logic, deny God and his incarnations."
+  },
+  {
+    "number": 30,
+    "text": "None shall ever take water or milk unfiltered and use impure or contaminated water for bathing or any other purpose."
+  },
+  {
+    "number": 31,
+    "text": "None shall ever take medicine which contains fat or alcohol, and which is prescribed by a physician whose conduct and character is unknown."
+  },
+  {
+    "number": 32,
+    "text": "None shall ever excrete, urinate, or spit at the places prohibited by the public or by the scriptures."
+  },
+  {
+    "number": 33,
+    "text": "None shall enter or leave a place through a back – door way and shall not live in a place without the permission of its owner."
+  },
+  {
+    "number": 34,
+    "text": "Male shall not listen to female delivering discourse or narrating the divine stories of Gods and none shall enter into discussions with a female or a ruler or with his associates."
+  },
+  {
+    "number": 35,
+    "text": "None shall show disrespect to the preceptors, superiors, the popular persons, scholars and to those armed with weapons."
+  },
+  {
+    "number": 36,
+    "text": "Nothing shall be done in haste (without thinking over it). But (Dharma) virtuous deeds shall be done without hesitation, and one shall impart his knowledge to others. Everyone shall associate himself always with the men of good conduct and characters."
+  },
+  {
+    "number": 37,
+    "text": "None shall go with empty hands to a preceptor, deity or to ruler (Some gift should be taken with, to offer them.) And none shall commit a breach of trust and never indulge in self-praise."
+  },
+  {
+    "number": 38,
+    "text": "My disciples shall not wear such clothes which do not cover but expose the parts of the body."
+  },
+  {
+    "number": 39,
+    "text": "Mere showing devotion to God, in any way shall not be practiced without doing one’s Varna Dharma and ashrama dharma (the duties assigned to on the basis of caste and the order of life.) And worship of God shall not be given up fearing that some foolish persons may rail at it."
+  },
+  {
+    "number": 40,
+    "text": "Males or females, who visit the temple daily or during festivals, shall not mingle with persons of opposite sex and they shall form separate lines."
+  },
+  {
+    "number": 41,
+    "text": "My followers who are the twice born people shall take initiation into the Krishna cult from an Acharya (enthroned by me ) and wear two rosa- ries made from Tulsi wood around their neck, and also Tilak in two verticals lines (in ‘U’ shape) on their forehead, and on the chest and arms."
+  },
+  {
+    "number": 42,
+    "text": "Tilak, The holy marks (mentioned in the previous Sloka) shall be made out of the white clay called as Gopee Chandan or of sandal wood. And the paste shall be mixed with saffron etc. and shall be offered to Krishna Before use."
+  },
+  {
+    "number": 43,
+    "text": "And with the same paste or with the Kumkum powder, a round-shaped mark {‘O’ mark} shall be made in the midst of the ‘U’ mark and this paste also shall be offered to Radha or Lakshmi before use."
+  },
+  {
+    "number": 44,
+    "text": "The Sat-Sudras who are the devotees of Shree Krishna shall follow the twice-born people in wearing rosaries and Tilak. In other respects they shall follow the Rules framed by the Shastras for them. 44*"
+  },
+  {
+    "number": 45,
+    "text": "The other Sudras – devotees shall wear a double – rosary of sandal-wood beads and shall make a round dot {‘O’ mark} with Kumkum {red powder} on their forehead."
+  },
+  {
+    "number": 46,
+    "text": "My disciples, Brahmins or others need not give up their practice of wearing Vibhuti on their forehead and Rudraksha rosary around their neck if its is their traditional custom."
+  },
+  {
+    "number": 47,
+    "text": "Shree Narayana and Lord Shiva shall be looked upon as the same and one identity, as the Vedas proclaim both of them as Brahman."
+  },
+  {
+    "number": 48,
+    "text": "Our ancient scriptures grant exemptions from performing the religious rites and rituals only for the period of abnormal conditions and suggest alternatives also. These are called “Apad Dharma” My disciples shall not take them as granted, also for a period of tolerable difficulties."
+  },
+  {
+    "number": 49,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 50,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 51,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 52,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 53,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 54,
+    "text": "Daily rituals common for all: All my followers shall wake up early in the morning before sunrise; meditate on Lord Krishna for a while; attend to the call of nature and brush their teeth sitting in a clean place; take a bath with clean water; and put on two washed, clean clothes. Then, sitting on a separate mat spread on a cleanly sanctified floor and facing east or north, they shall perform Achaman (sipping a few drops of water thrice, a purifying act performed at the beginning of every religious ceremony). The males shall make a U-shaped mark on the forehead with the round dot in it. Women whose husbands are alive shall make a red dot on the forehead with Kumkum. A widow shall make neither the U mark nor the red dot on her forehead. Then all males and females shall offer mental worship to Shree Krishna. They shall bow down with devotion before the idol or picture of Radha-Krishna and chant the Krishna Mantra as far as their time allows. Then they may attend to their secular duties."
+  },
+  {
+    "number": 55,
+    "text": "My disciples who are Atma Nivedies and devotees like the king Ambarisha shall perform their daily rituals and Poojas in the above mentioned order up to the mental worship. (Refer stanza 49 to 53)"
+  },
+  {
+    "number": 56,
+    "text": "After the mental worship, the Atma Nivedies shall perform Pooja to an idol made of either stone, metal or to a Shalagrama, (a holy black stone) with leaves or flowers etc. that are easily available to them. Then they shall chant the Krishna Mantra of eight syllables."
+  },
+  {
+    "number": 57,
+    "text": "Then, they shall recite hymns of Shree Krishna as much as they know. Those who do not know Sanskrit prayers shall repeatedly chant the divine names of Shree Krishna."
+  },
+  {
+    "number": 58,
+    "text": "After that, they shall offer food to the icon of Shree Krishna (Place the food before the idol) and take only that food that is offered to him. Thus they shall lead a life always with the contentment and with the aim of dedicated service to God"
+  },
+  {
+    "number": 59,
+    "text": "The Atma Nivedics are callad as ‘Nirguna’ devoteese because all their actions become ‘Nirguna.’ (Without mundane qualities) as they are surendered to the God who is ever ‘Nirguna.’ (Without mundane qualities)"
+  },
+  {
+    "number": 60,
+    "text": "These Atma Nivedies devotees shall not consume even leaves, nuts, fruits or water without offering the same to Shree Krishna."
+  },
+  {
+    "number": 61,
+    "text": "All my devotees (initiated into ordinary Deeksha or special Deeksha) who are unable to perform Poojas to the icon of Shree Krishna due to old age, illness or any other discomfiture shall hand over the icon to another able devotee and be quite contented with performing mental Pooja."
+  },
+  {
+    "number": 62,
+    "text": "My devotees shall offer Poojas to only those objects that are in the form of God Shree Krishna which are sanctified and given to them by the Acharyas. (Descendants of Dharmadeo And in the case of other idols or objects, they shall kneel before them with reverence and devotion."
+  },
+  {
+    "number": 63,
+    "text": "All my followers shall go to the temple of Shree Krishna every evening and sing and chant the names of Shree Krishna loudly."
+  },
+  {
+    "number": 64,
+    "text": "They shall narrate or listen to the divine stories of Shree Krishna with great reverence and on festival days, they shall sing songs in praise of him accompanied by musical instruments."
+  },
+  {
+    "number": 65,
+    "text": "All my followers shall follow the course of daily routine as instructed in the previous stanza and also shall study the sacred scriptures written in sanskrit or vernacular as much as they can learn."
+  },
+  {
+    "number": 66,
+    "text": "My disciples shall think over about one’s merits and competence before assigning him any work. A person shall be assigned a job for which he is suited to and never engage a person unsuited for the job."
+  },
+  {
+    "number": 67,
+    "text": "My disciples shall take care of their servants by providing them sufficient food, clothes and other necessities. The wage shall be decided according to the work completed by the employee and the financial position of the employers."
+  },
+  {
+    "number": 68,
+    "text": "While talking to others, my followers shall consider the time, place and the status of the person to whom they talk and shall use such a language proper for the occasion, and never otherwise."
+  },
+  {
+    "number": 69,
+    "text": "My followers shall honour and pay respects with humility by rising from their seat and offering proper seat, water etc. to the visiting elders such as teacher, king, old man, recluse, scholar and hermit."
+  },
+  {
+    "number": 70,
+    "text": "No one shall sit in a posture with one foot placed on the thigh or with both knees bound with a cloth strap, in the presence of teacher, king and an idol of God or in the assembly."
+  },
+  {
+    "number": 71,
+    "text": "My disciples shall never enter into arguments with their Acharyas. But they shall perform Pooja to the Acharya by offering him food, money, clothes etc. according to their means."
+  },
+  {
+    "number": 72,
+    "text": "On hearing the news of Acharya’s visit, my followers shall proceed to welcome him at the entrance of the village and on his departure shall accompany him to the outskirts of the village to bid farewell."
+  },
+  {
+    "number": 73,
+    "text": "My follower shall not indulge in acts which are contrary to the scriptural tenets, however fruitful they may be, for one’s Swadharma alone can yield all the desired results."
+  },
+  {
+    "number": 74,
+    "text": "My devotees shall follow only the virtuous deeds of the great persons of the past, ignoring their unrighteous deeds."
+  },
+  {
+    "number": 75,
+    "text": "My devotees shall never disclose the secrets of others to any one. They shall give due respects to the deserving persons (on the basis of birth, quality, qualification, culture and so on) without equating the low with the high."
+  },
+  {
+    "number": 76,
+    "text": "All my disciples shall take a vow to observe additional austerity during the four month of monsoon (beginning from the eleventh day of bright half of Ashade month and ending on the twelfth day of the bright half of Kartika month) and those who are unable to do so, may observe it at least during the month of Shravana."
+  },
+  {
+    "number": 77,
+    "text": "The following are the best methods of observance to be adopted and followed daily as rules:- (1) Reading or listening to the divine stories of Shree Bhagwan. (2) Singing in praise of his divine qualities. (3) Performing Poojas on grand scale. (4) Repeating his mantra. (5) Reading the books of his Stotra (praise). (6) Going round his icon or image"
+  },
+  {
+    "number": 78,
+    "text": "The following are the best methods of observance to be adopted and followed daily as rules:- (1) Reading or listening to the divine stories of Shree Bhagwan. (2) Singing in praise of his divine qualities. (3) Performing Poojas on grand scale. (4) Repeating his mantra. (5) Reading the books of his Stotra (praise). (6) Going round his icon or image"
+  },
+  {
+    "number": 79,
+    "text": "They shall earnestly observe fast on all the EKADASHI days (the eleventh day of every lunar half month), JANMASHTAMI (birthday of Shree Krishna) and Shivratri. They shall also celebrate these days with great festivity."
+  },
+  {
+    "number": 80,
+    "text": "On the days of fasting, sleeping in day time shall be avoided as that will make the fast purposeless as is the case with the conjugal enjoyment on these days."
+  },
+  {
+    "number": 81,
+    "text": "On the question of deciding the dates (days) of fasting, festivals and on the customs of daily service (in the temple ) to Shree Krishna, my disciples shall follow the decisions already made by Shree Vithalnathji, the son of Vallabhacharya, the Acharya of Vaishnavas. (For details refer to the SATSANGI JEEVANNA chapter 4th canto 55-62."
+  },
+  {
+    "number": 82,
+    "text": "On the question of deciding the dates (days) of fasting, festivals and on the customs of daily service (in the temple ) to Shree Krishna, my disciples shall follow the decisions already made by Shree Vithalnathji, the son of Vallabhacharya, the Acharya of Vaishnavas. (For details refer to the SATSANGI JEEVANNA chapter 4th canto 55-62."
+  },
+  {
+    "number": 83,
+    "text": "They shall go on pilgrimage to holy places like Dwarika, perform there the due religious rites as prescribed by the scriptures and show benevolence towards the poor as far as possible."
+  },
+  {
+    "number": 84,
+    "text": "My disciples shall hold in great reverence all the five Gods namely Vishnu, Siva, Ganapati, Godess Parvati and Surya (sun)."
+  },
+  {
+    "number": 85,
+    "text": "In the event of afflictions caused by any evil spirit, my followers shall chant the Stotra of NARAYANA KAVACHAM or HANUMAN STOTRAM, but shall never chant Mantras of other deities of lower stature."
+  },
+  {
+    "number": 86,
+    "text": "On the occurrence of lunar or solar eclipse, all shall suspend their daily routines immediately, take bath, make them selves pure, and chant the Mantra of Shree Krishna repeatedly."
+  },
+  {
+    "number": 87,
+    "text": "When the eclipse is over, they shall bath with their clothes on. Then, the householders (Grihasthas) shall give alms to the poor according to their means and others (non householders) shall offer Poojas to the deities."
+  },
+  {
+    "number": 88,
+    "text": "All the four castes shall observe the ceremonial defilement (SOOTAK) owing to the birth or death of their relatives, for certain days as prescribed by the scripture."
+  },
+  {
+    "number": 89,
+    "text": "My Brahmin devotees shall cultivate the qualities of tranquillity, self-restraint, forbearance, content-ment and the like. The Kshatriyas shall cultivate the qualities of valour, fortitude, generosity etc."
+  },
+  {
+    "number": 90,
+    "text": "The Vaisya caste shall take to agriculture, trade, banking etc., and the Sudras shall do service to the above three communities."
+  },
+  {
+    "number": 91,
+    "text": "The twice born people (the Brahmins, the Kshatriyas, and the Vaisya) shall perform the sixteen “Samskars,” the daily rites and rituals and the Shraddha (ceremonies for the dead) at the prescribed time following the methods mentioned in their respective Grihya Sutras, spending within the limits of their means."
+  },
+  {
+    "number": 92,
+    "text": "If at all my followers happen to commit any sin, serious or negligible, willingly or unwillingly, they stay shall perform the expiatory rituals for the sins within the limits of their means and ability."
+  },
+  {
+    "number": 93,
+    "text": "I hold the following eight scriptures as superior and true authority on our philosophy and religion, (Sat-Shastras). The Vedas, the Brahmasutra of Vyas, Shree Bhagvata Purana, the Vishnu Sahasranama, Shreemad Bhagavad Gita, the Neeti narrated by Vidura (all the three from Mahabharata) Shree Vasudeva Mahatmiyam from Vaishnava canto of Skanda Purana and Yagnyavalkya Smriti among Dharma Shastras."
+  },
+  {
+    "number": 94,
+    "text": "I hold the following eight scriptures as superior and true authority on our philosophy and religion, (Sat-Shastras). The Vedas, the Brahmasutra of Vyas, Shree Bhagvata Purana, the Vishnu Sahasranama, Shreemad Bhagavad Gita, the Neeti narrated by Vidura (all the three from Mahabharata) Shree Vasudeva Mahatmiyam from Vaishnava canto of Skanda Purana and Yagnyavalkya Smriti among Dharma Shastras."
+  },
+  {
+    "number": 95,
+    "text": "I hold the following eight scriptures as superior and true authority on our philosophy and religion, (Sat-Shastras). The Vedas, the Brahmasutra of Vyas, Shree Bhagvata Purana, the Vishnu Sahasranama, Shreemad Bhagavad Gita, the Neeti narrated by Vidura (all the three from Mahabharata) Shree Vasudeva Mahatmiyam from Vaishnava canto of Skanda Purana and Yagnyavalkya Smriti among Dharma Shastras."
+  },
+  {
+    "number": 96,
+    "text": "The twice born people (who got the sixteen Samskaras done according to their Grihya Sutra) shall study, preach and propagate all the above said Sat – Shastras. And all my disciples wishing their own well being shall listen to these preachings."
+  },
+  {
+    "number": 97,
+    "text": "Amongst the above scriptures, my follower shall hold the Yagnyavalkya Smriti supported by Mitakshara(Commentary)astheguidingauthority in deciding the issues arising over the subjects of the daily routines of rites and rituals, the secular business affairs and the penance or expiation."
+  },
+  {
+    "number": 98,
+    "text": "The fifth and tenth canto of Shree Bhagvata Purana shall be regarded as best among these scriptures for clear understanding of the greatness and glory of Shree Krishna."
+  },
+  {
+    "number": 99,
+    "text": "I hold that the tenth and fifth cantos of Shreemad Bhagavata Purana are Bhakti Shastra and Yoga Shastra respectively, and the Yagnyavalkya Smriti is Dharma Shastra."
+  },
+  {
+    "number": 100,
+    "text": "It should be kept in mind that the commentaries on Vyasa Sutra (Vedanta Sutra) and Bhagavad Gita both by Shree Ramanujacharya are accepted by me as the sole authority on my philosophical and spiritual decisions."
+  },
+  {
+    "number": 101,
+    "text": "In the Scriptures above mentioned, those portions which describe glory of Shree Krishna and greatness of Dharma (religious duty), Bhakti (devotion to God), Vairagya (asceticism), should be regarded more important than the other portions. The essence of those portions is that one shall practice devotion to God and at the same time shall perform one’s religious duties also."
+  },
+  {
+    "number": 102,
+    "text": "In the Scriptures above mentioned, those portions which describe glory of Shree Krishna and greatness of Dharma (religious duty), Bhakti (devotion to God), Vairagya (asceticism), should be regarded more important than the other portions. The essence of those portions is that one shall practice devotion to God and at the same time shall perform one’s religious duties also."
+  },
+  {
+    "number": 103,
+    "text": "“Dharma shall be known as the actions of persons according to their Varna and Ashrama enjoined by the Shruties (Vedas) and Smriti (like Manusmriti, Yagnyavalkya Smriti etc.) Bhakti (devotion) shall be known as the limitless love to “MADHAVA” Shree Krishna combined with the realisation of His glory."
+  },
+  {
+    "number": 104,
+    "text": "“Vairagya” (renunciation) means the detachment from the world except Shree Krishna. And knowledge means the clean understanding of the characteristic features of the JEEVA (self), the MAYA (matter), and the EASWARA (God)."
+  },
+  {
+    "number": 105,
+    "text": "Jeeva is ‘self’ (it is called Jeevatma also.) He is the knower (in function), knowledge (in material), indivisible part of an atom (in size), abstract (in appearance) and non-resistant (in nature). He resides in the main controlling part of the body and pervades it through the force of his knowledge. He is described as formless; shapeless, changeless and eternal one, who can never be destroyed by any means at any time."
+  },
+  {
+    "number": 106,
+    "text": "Maya is the force of God which is a combination of three qualities (Satwa, Rajas and Tamas)) of matter; but generally called as ‘Tamas and which causes the psychological bond between the Jeevatma and his body as well as Jeevatma and the world through the body. And it is he main cause ‘mine’ (this is mine)."
+  },
+  {
+    "number": 107,
+    "text": "Easa or Easwara is the God, who as an immanent and independent controller, is present in the Jeeva, like Jeeva is in the body, and who reward the Jeevas, the fruits of all their activities*. (*Karma, either good or bad.)"
+  },
+  {
+    "number": 108,
+    "text": "And, that God is Shree Krishna. He is called as the Prama-Brahman. He is called as Bhagwan, and Purushottama. He is the cause of all creations and incarnations. He is our beloved God. He is the object of our contemplation or meditation."
+  },
+  {
+    "number": 109,
+    "text": "He shall be known as Radhakrishna when he is accompanied by Radha. He shall be known as ‘Lakshmi-Narayana’, when accom-panied by Rukmani or Lakshmi. He shall be known as Nara Narayana when associated with Arjuna. (And as Rama Krishna, when associated with Balarama.)"
+  },
+  {
+    "number": 110,
+    "text": "He shall be known as Radhakrishna when he is accompanied by Radha. He shall be known as ‘Lakshmi-Narayana’, when accom-panied by Rukmani or Lakshmi. He shall be known as Nara Narayana when associated with Arjuna. (And as Rama Krishna, when associated with Balarama.)"
+  },
+  {
+    "number": 111,
+    "text": "At times Radha and others (mentioned above) may be seen by the side of Shree Krishna, and sometimes they are absorbed in Him due to extreme love. Then He shall be considered one single unit."
+  },
+  {
+    "number": 112,
+    "text": "Therefore, no one shall misunderstand that Shree Krishna is different from Narayana, Rama-Krishna or Radha-Krishna. He, at His will, appears sometimes with two arms and at times with four or with many."
+  },
+  {
+    "number": 113,
+    "text": "All the people on this earth shall pursue the devotion to Shree Krishna and to Shree Krishna alone. It should be kept in mind that there is no other way for ultimate as salvation than the devotion to Him. (Refer the note given to the Sloka No.47.)"
+  },
+  {
+    "number": 114,
+    "text": "The supreme aim of having good virtues is to pursue the divine devotion to Shree Krishna and to have the good company of His devotees. If this goal is not achieved, even scholars will meet their fate."
+  },
+  {
+    "number": 115,
+    "text": "My devotees shall offer worship only to Shree Krishna and His incarna-tions as well as His images. And never shall offer worship to any Jeeva though they may be Devas or great devotee or seer of Brahman."
+  },
+  {
+    "number": 116,
+    "text": "Through meditation or Yoga, my devotees shall distinguish the Jeeva from the three sorts of his external bodies (the Sthula, Sukshma and Karana Sareeras) and enjoy his distinctive qualities. Then they will realise that the Self is the Rupam of Brahman (form or body of Brahman). After this achievement, they shall always concentrate their mind in Bhakti Yoga."
+  },
+  {
+    "number": 117,
+    "text": "All shall listen with reverence to the tenth canto of Shreemad Bhagavata daily or at least once a year. And the scholars shall read and deliver discourse every day or at least once a year."
+  },
+  {
+    "number": 118,
+    "text": "According to their means, my devotees shall arrange for the holy recitation of the tenth canto of Shreemad Bhagavata, Vishnu Sahasranama or the holy scriptures mentioned previously, by holy Brahmins at holy places. This will yield the desired results."
+  },
+  {
+    "number": 119,
+    "text": "(Religious rules as modified for practice in difficult times – Refer Sloka no.48) They shall follow these rules of conduct in such a way as to protect themselves and others from illness or any difficulty that may be faced due to human error or by providence. They shall be never careless."
+  },
+  {
+    "number": 120,
+    "text": "They shall take into consideration the place, time, their cast, age, financial condition and capacity, when they practice their religious duties, the expiation and code of secular conduct."
+  },
+  {
+    "number": 121,
+    "text": "All my disciples shall understand that my school of Vedanta is VISHISHTADWAITA of Shree Ramanuja and my beloved adobe is GOLOKDHAMA and the MUKTI one shall desire is to get the divine body in the Dhama just like that of Brahman and to render service to God Shree Krishna."
+  },
+  {
+    "number": 122,
+    "text": "The code of religious conduct so far described in common for all my disciples both males and females. Now I shall tell some special codes of conduct for distinctive groups."
+  },
+  {
+    "number": 123,
+    "text": "Codes of conduct given to Acharyas of the Sect:- The two sons (Shree Ayodhyaprasadaji Maharaja and Raghuviraji Maharaja) of my elder and younger brother respectively shall not give Mantras or initiation to women who are not closely related to them."
+  },
+  {
+    "number": 124,
+    "text": "They (Acharyas born in my family who are religious and spiritual heads of my Sect) shall neither touch nor converse with such women (as mentioned above). They shall never be cruel to anyone and shall not keep under their custody anything mortgaged or deposited on trust."
+  },
+  {
+    "number": 125,
+    "text": "They shall not stand as surity for any one in social or legal dealings. In the event of financial crises they may live on charity and shall never incur debts."
+  },
+  {
+    "number": 126,
+    "text": "They shall not sell the food grains offered to them by their disciples. But may exchange them for it does not amount to sell."
+  },
+  {
+    "number": 127,
+    "text": "They shall offer worship to Lord Shree Ganesha on the fourth day of the bright half of the month Bhadrapada (bhadarvo) and to Shree Hanumanji on the fourteenth day of the dark half of the month Ashwin (asho) every year."
+  },
+  {
+    "number": 128,
+    "text": "I have enthroned both of them with a view to protect and preserve our religion. They shall initiate those disciples who are desirous of salvation. (Mukti)."
+  },
+  {
+    "number": 129,
+    "text": "They shall maintain discipline among the disciples and see that they follow the precepts accordingly and perform their religious duties within their precincts. They shall honour the saints and shall study the Vedas and Shastras with reverence."
+  },
+  {
+    "number": 130,
+    "text": "They shall render and keep up worship and service as mentioned in the shastras to the deities such as Shree Lakshmi Narayana and others installed by me in the temples big or small. (See BHASYA under the Sloka.)"
+  },
+  {
+    "number": 131,
+    "text": "Any one coming to the temple seeking food shall be treated by them with respect by offering him food to the best of their capacity."
+  },
+  {
+    "number": 132,
+    "text": "Theyshallestablish“PATHASHALAS” (Educational institution) and appoint Brahmin Scholars in them, to propagate Vedas and Shastras which are called here as Sat-Vidhaya. This is the act of greatest piety."
+  },
+  {
+    "number": 133,
+    "text": "Special code of conduct for the wife of Acharya:- And the consort of the Acharya, with the permission of her husband shall give the Mantra of Shree Krishna, to women only. (133)."
+  },
+  {
+    "number": 134,
+    "text": "She shall not touch, speak to, or show her face to any man who has no nearest blood relation."
+  },
+  {
+    "number": 135,
+    "text": "The Grihasthas (House-holders) among my disciples shall not touch any widow who has no thick relationship with them."
+  },
+  {
+    "number": 136,
+    "text": "They shall never stay in a secluded place, even with their mother, sister or daughter, who are of young age except in emergencies and shall never give away their wives in alms to any body."
+  },
+  {
+    "number": 137,
+    "text": "They shall never have any contact with a woman who has connection with a ruler for known or unknown reasons."
+  },
+  {
+    "number": 138,
+    "text": "They shall receive the guests who come to their house and offer them food etc. with hospitality as far as they can. And they shall offer Poojas to gods and shraddha* to the ancestors (parents and grand parents dead) as prescribed in the Shastras."
+  },
+  {
+    "number": 139,
+    "text": "As far as possible, my disciples shall attend to their mother, father, preceptor and a sick person and render service with proper care and nursing as they live."
+  },
+  {
+    "number": 140,
+    "text": "As far as possible they shall engage themselves in such occupation suited to their cast (varna) and mode of life (Ashrama).Those who are farmers shall not engage in castration of a bull."
+  },
+  {
+    "number": 141,
+    "text": "They shall, at proper seasons save and store money and food-grains sufficient to their future requirements, according to their ability. Those who own cattle shall store sufficient stock of fodder also."
+  },
+  {
+    "number": 142,
+    "text": "The householders may keep cows and other cattle only if they can afford to look after them well by feeding them with fodder; water etc. properly, otherwise they shall not keep them."
+  },
+  {
+    "number": 143,
+    "text": "Without a written record, signed by witness, my disciples shall not enter in business transactions such as sale or purchase of property, lending or borrowing money, with any person, even with son or a friend."
+  },
+  {
+    "number": 144,
+    "text": "Whenever they enter into marriage agreements, they shall not depend on mere oral assurances regarding the amount payable to either party, but shall make a written record signed by witness."
+  },
+  {
+    "number": 145,
+    "text": "They shall always spend only within the limit of their income. They shall keep it in mind clearly that non-adherence to this policy will lead to distress."
+  },
+  {
+    "number": 146,
+    "text": "After clearly recollecting the daily income and expenditures they shall record it in a diary and maintain proper accounts."
+  },
+  {
+    "number": 147,
+    "text": "They shall offer to Shree Krishna one tenth of the income received through their occupations. Househol-ders with limited sources of income may offer one twentieth of it."
+  },
+  {
+    "number": 148,
+    "text": "They shall accomplish all the religious ceremonies such as observing fast on Ekadashi and the like ones, as prescribed in the Shastras, to the best of their ability as this will fulfil all their wishes."
+  },
+  {
+    "number": 149,
+    "text": "During the month of Shravana, they shall perform or arrange to perform Pooja with devotion to Lord Mahadeva (Shiva) at any cost by offering Bilva leaves and flowers."
+  },
+  {
+    "number": 150,
+    "text": "They shall not borrow money from their Acharya or from the temple of Lord Shree Krishna nor shall they borrow from them any utensils, ornaments or garments or such other things for their personal use."
+  },
+  {
+    "number": 151,
+    "text": "While going on a pilgrimage to worship Lord Krishna or to a saint or a preceptor, they shall not accept food offered by others either on the way or at those places, because such acts take away the fruits of our good deeds (Punya) i.e. the sacredness of the pilgrimage."
+  },
+  {
+    "number": 152,
+    "text": "One shall pay the labourer, the proper remuneration as promised, (of course after the completion of the given work) and shall not conceal the matters regarding clearing of debt, marriage- connections, or pedigree etc. Also shall not have dealings with the wicked."
+  },
+  {
+    "number": 153,
+    "text": "In the event of famine, harassment by enemies or rulers, which may result in loss of dignity, loss of property or life, my disciples shall be so discreet as to quit even their native place and migrate to other places where they can live comfortably."
+  },
+  {
+    "number": 154,
+    "text": "In the event of famine, harassment by enemies or rulers, which may result in loss of dignity, loss of property or life, my disciples shall be so discreet as to quit even their native place and migrate to other places where they can live comfortably."
+  },
+  {
+    "number": 155,
+    "text": "Those house-holders who are quite well to do shall perform non-violent Vaishnava sacrifices (Yagnas) (where no killing of animal is involved). They shall feed the Brahmins and ascetics in places of pilgrimage and also in auspicious days."
+  },
+  {
+    "number": 156,
+    "text": "They shall also arrange to celebrate festivals on grand scales in the temples and shall offer various things in charity to deserving Brahmins."
+  },
+  {
+    "number": 157,
+    "text": "Those rulers who are my followers shall protect their subjects just as they would do their children in conformity with the tenets of Dharma Shastras (Holy Scriptures) and they shall establish the rule of Dharma on the earth."
+  },
+  {
+    "number": 158,
+    "text": "The rulers shall acquire perfect knowledge of: 1. The seven constituent parts of the state, 2. The four expedient devices, 3. The six aspects of diplomacy. They shall also study and understand (through spies) the nature of bureaucrats appointed in various posts in their kingdom. They shall appoint persons who well-versed in the art of state crafts as ministers and shall be able to identify by their characteristics, the persons who deserve to be punished and those who do not deserve to be punished."
+  },
+  {
+    "number": 159,
+    "text": "Female whose husband is alive shall render service to her husband taking him as her God and shall never use harsh words against him, though he is blind, sick or impotent or poor."
+  },
+  {
+    "number": 160,
+    "text": "She shall never have acquaintance even casually,withanyhandsomeyoungman(otherthan the husband) even though he may be a man of good character."
+  },
+  {
+    "number": 161,
+    "text": "The devout housewife shall never keep her body without an upper garment and shall not dress in such a way that may expose her navel, thighs or breast to the viewers. She shall not look at persons of mimical nature and never make acquaintance with a woman who knows no modesty."
+  },
+  {
+    "number": 162,
+    "text": "Putting on luxurious dress of ornaments, staying in the house of others and merriment even with ladies shall be avoided while her husband is staying away in a far off land."
+  },
+  {
+    "number": 163,
+    "text": "Widows shall render service to God taking him in the place of her husband and live with their father, brothers or sons render their care. They shall never live independent ladies."
+  },
+  {
+    "number": 164,
+    "text": "They shall never touch any male who has no nearest blood relation. Young widows shall never speak to young men without utter necessity. 164"
+  },
+  {
+    "number": 165,
+    "text": "Touching any male child is harmless as touching a cattle and touching or talking to old man is equally harmless, if it is inevitable. 165"
+  },
+  {
+    "number": 166,
+    "text": "Even learning good things from a man who has no nearest blood relation with her, is to be avoided. The widows shall exercise control over their body and senses by frequent observance of fasts and austerities."
+  },
+  {
+    "number": 167,
+    "text": "The wealth kept by the widows for livelihood shall not be spent even for philanthropic use. She shall give only if she possesses more."
+  },
+  {
+    "number": 168,
+    "text": "They shall take food once a day and sleep on the floor. They shall never look at even animals at their sexy cohabitation."
+  },
+  {
+    "number": 169,
+    "text": "They shall never dress as married woman or like a nun or a female, recluse. They shall never put on an immodest dress."
+  },
+  {
+    "number": 170,
+    "text": "They shall neither keep friendship with, nor touch those ladies who incline abortion. And never talk or listen to the amorous talks of males."
+  },
+  {
+    "number": 171,
+    "text": "Except under critical conditions, a widow who is of young age shall not stay with a young man in a solitary place, however near a relative he may be."
+  },
+  {
+    "number": 172,
+    "text": "Widows shall not pay ‘Holy’ and never indulge in wearing ornaments or dressing herself in thin delicate garments interwoven with silver or gold threads."
+  },
+  {
+    "number": 173,
+    "text": "The womenfolk shall not take bath without having clothes on and shall never conceal their period of menstruation."
+  },
+  {
+    "number": 174,
+    "text": "During the menstrual period, they shall not touch human being, clothes or vessels etc. for three days. They are free to do that only on the fourth day after taking the purifying bath."
+  },
+  {
+    "number": 175,
+    "text": "The Brahmacharins who get initiation to take life-long celibacy are called here Varnies. The dedicated Varnies who are my disciples shall not look at or speak to ladies deliberately. They shall not discuss about ladies and shall not perform the daily rites such as bathing, Sandhya Vandanas etc. in places normally visited by women."
+  },
+  {
+    "number": 176,
+    "text": "The Brahmacharins who get initiation to take life-long celibacy are called here Varnies. The dedicated Varnies who are my disciples shall not look at or speak to ladies deliberately. They shall not discuss about ladies and shall not perform the daily rites such as bathing, Sandhya Vandanas etc. in places normally visited by women."
+  },
+  {
+    "number": 177,
+    "text": "They shall not wilfully touch or look at the portraits or images of women though it is made of wood or metal, except the images of Goddesses."
+  },
+  {
+    "number": 178,
+    "text": "They shall never make images or draw pictures of ladies, never touch the clothes of women and shall not look at the animals at sexual mood wilfully."
+  },
+  {
+    "number": 179,
+    "text": "They shall neither look at nor touch even a male who is disguised as female. And shall not sing songs even on the greatness of God before ladies."
+  },
+  {
+    "number": 180,
+    "text": "They shall not obey any command forsaking their vow of celibacy even if it is given by their Guru. They shall live always a self-contented life with a steady mind and humility."
+  },
+  {
+    "number": 181,
+    "text": "If any woman tries to advance nearer to them, they shall instantly stop, by taunting her."
+  },
+  {
+    "number": 182,
+    "text": "But when they find that their own life or the life of a woman is in danger at any time, they shall save her life or their own life by speaking to her or even by touching her."
+  },
+  {
+    "number": 183,
+    "text": "They shall not massage their body with oil and shall not keep arms and shall not put on unseemly clothes. And they shall always keep their sense of taste under control."
+  },
+  {
+    "number": 184,
+    "text": "They shall have to go out for keeping their religious mendicity (for their food) to the house- holds of Brahmins (only) but they shall not go to such houses where females have to serve the food. Instead they shall go to those Brahmin’s house where males can serve."
+  },
+  {
+    "number": 185,
+    "text": "They shall learn Vedas and Shastras and render service to Guru. They shall always avoid contact of those lustful males who often seek contacts of female (womaniser)"
+  },
+  {
+    "number": 186,
+    "text": "No one, a Brahmin by birth, shall drink water taken from a leather bag. And he shall never take things like onions and garlic."
+  },
+  {
+    "number": 187,
+    "text": "Taking bath, performing Sandhya Vandan, repeating Gayatri-Mantra, performing Vishnu-Pooja and Vaishvadeva Yagna are some of the daily religious duties of Brahmins in general. Among these rituals, the Naishtika Brahmacharins shall perform every rite and ritual proper to their Ashrama mode of life. Without doing such religious duties, they shall not take food."
+  },
+  {
+    "number": 188,
+    "text": "Special rules of conduct for Sadhus. The Sadhus shall avoid association with woman, womanisers, in the same way as the Naishtika Brahmacharins, and observe life-long celibacy. They shall also eliminate their inner enemies."
+  },
+  {
+    "number": 189,
+    "text": "They shall keep all their sensory- organs under their control especially the organ of taste. They shall neither earn or accumulate money nor allow others to do that on behalf."
+  },
+  {
+    "number": 190,
+    "text": "They shall not take safe custody of others’ wealth or accept any thing as trust. They shall never lose their forbearance. And shall never permit any woman to enter their residence."
+  },
+  {
+    "number": 191,
+    "text": "They shall never move out at nights without the company of their group even in the day time, they shall not move out alone, except under difficult circumstances."
+  },
+  {
+    "number": 192,
+    "text": "They shall never wear such clothes which are costly or rosy coloured with designs or robes even though some one may offer as a gift."
+  },
+  {
+    "number": 193,
+    "text": "They shall never visit the residence of householders except for religious mendacity or for religious assembly. They (even in their own residence) shall pursue always devotion to God without wasting their time."
+  },
+  {
+    "number": 194,
+    "text": "They shall go to take food only to those houses where only males can serve food and where no female can come in their view. If this is not possible they shall get the provisions from the householders and prepare their food themselves."
+  },
+  {
+    "number": 195,
+    "text": "They shall go to take food only to those houses where only males can serve food and where no female can come in their view. If this is not possible they shall get the provisions from the householders and prepare their food themselves."
+  },
+  {
+    "number": 196,
+    "text": "In their life and mode of living they shall follow the ideal behaviour of Jada Bharata, the Paramhansa, and the son of Rishbhadeva."
+  },
+  {
+    "number": 197,
+    "text": "The Brahmacharins and Sadhus shall refrain, at any cost, from chewing betel leaf of tobacco and taking drugs such as opium."
+  },
+  {
+    "number": 198,
+    "text": "Both of them shall not take food (in any household) on the occasions of Samskaras (the sixteen Samskaras mentioned in the Slokas No. 91) such as nuptials or annuals death ceremonies or the ceremonies on the eleventh and the twelfth day performed for the dead."
+  },
+  {
+    "number": 199,
+    "text": "They shall not sleep during day times unless they fall sick or feel weak. They shall neither speak nor listen to, vulgar words intentionally."
+  },
+  {
+    "number": 200,
+    "text": "They shall not lie on a cot unless they are too sick, to lie down on floor. They shall always behave without hypocrasy or arrogance before saints."
+  },
+  {
+    "number": 201,
+    "text": "And even if they are insulted with harsh words or beaten by wicked persons, they shall not retaliate, but shall forgive those persons and pray for their well-being."
+  },
+  {
+    "number": 202,
+    "text": "They shall not indulge in the act of messenger or spy and shall not slander. They shall not have the illusion that their body is the self. And shall not have attachment towards relatives."
+  },
+  {
+    "number": 203,
+    "text": "Thus, the codes of conduct for all my followers are written by me in short. For details one shall refer to the scriptures, already existing and traditionally accepted."
+  },
+  {
+    "number": 204,
+    "text": "This SHIKSHAPATRI (epistle of precepts) is written by me after extracting from the Holy Scriptures. This will fulfil the wishes of the people."
+  },
+  {
+    "number": 205,
+    "text": "Therefore, my disciples shall strictly follow this SHIKSHAPATRI and live accordingly. And never shall behave free as they like."
+  },
+  {
+    "number": 206,
+    "text": "And it is certain that those males or females who follow this path will achieve the ultimate four objects of the life of mankind namely, Dharma (virtue)Artha(wealth)Kama(pleasure)and Moksha (salvation)"
+  },
+  {
+    "number": 207,
+    "text": "The males and females of our sect shall understand that those who do not follow the SHIKSHAPATRI accordingly shall be treated as excommunicated from our sect."
+  },
+  {
+    "number": 208,
+    "text": "My disciples shall daily accomplish the sacred reading of this book. Those who are illiterate shall listen to it with reverence."
+  },
+  {
+    "number": 209,
+    "text": "When there is no one to read this book and tell them. They shall worship this book with reverence, taking the SHIKSHAPATRI as my own form."
+  },
+  {
+    "number": 210,
+    "text": "This PATRIKA shall be given to only those who have good qualities and never be given to those who possess evil qualities."
+  },
+  {
+    "number": 211,
+    "text": "This blessing SHIKSHAPATRI is written on the first day of Vasanta Utsava celebration (Vasanta panchmi day) in the year 1882 of Vikram era. (AD 1826)."
+  },
+  {
+    "number": 212,
+    "text": "Lord Krishna relieves all difficulties of his devotees. He protects and promotes Dharma and Bhakti. He grants all the pleasures we desire. May he bless all of us with all pleasures and prosperity."
+  }
+];
+
+const SHLOK_ROTATION_MS = 5 * 60 * 1000;
+let activeShlokSlot = null;
+let shlokTransitionToken = 0;
+let lastTodayPanelKey = '';
+
+function rotatingShlok(now) {
+  const slot = Math.floor(now.getTime() / SHLOK_ROTATION_MS);
+  const index = ((slot % DAILY_SHLOKS.length) + DAILY_SHLOKS.length) % DAILY_SHLOKS.length;
+  return {slot, shlok:DAILY_SHLOKS[index]};
+}
+
+function shlokLengthClass(text) {
+  if (text.length > 650) return ' xlong';
+  if (text.length > 260) return ' long';
+  if (text.length > 150) return ' medium';
+  return '';
+}
+
+function shlokShellHtml() {
+  return '<div id="todayShlok" class="scripture-quote" aria-live="polite" aria-atomic="true">' +
+    '<em id="todayShlokText"></em><span id="todayShlokSource" class="scripture-source"></span></div>';
+}
+
+function updateRotatingShlok(now, animate) {
+  const state = rotatingShlok(now);
+  const quote = document.getElementById('todayShlok');
+  if (!quote || (state.slot === activeShlokSlot && document.getElementById('todayShlokText').textContent)) return;
+
+  activeShlokSlot = state.slot;
+  const token = ++shlokTransitionToken;
+  const text = document.getElementById('todayShlokText');
+  const source = document.getElementById('todayShlokSource');
+
+  const reveal = () => {
+    if (token !== shlokTransitionToken || !quote.isConnected) return;
+    quote.className = 'scripture-quote' + shlokLengthClass(state.shlok.text);
+    text.textContent = '“' + state.shlok.text + '”';
+    source.textContent = '— Shikshapatri Shlok ' + state.shlok.number;
+    if (animate) {
+      quote.classList.add('is-entering');
+      quote.addEventListener('animationend', () => quote.classList.remove('is-entering'), {once:true});
+    }
+  };
+
+  if (animate && text.textContent) {
+    quote.classList.remove('is-entering');
+    quote.classList.add('is-leaving');
+    window.setTimeout(reveal, 520);
+  } else {
+    reveal();
+  }
 }
 function aucklandNow() {
   // The browser/Yodeck device should be configured to Auckland time.
@@ -473,14 +1431,32 @@ function render() {
   document.getElementById('fullDate').textContent =
     new Intl.DateTimeFormat('en-NZ', {day:'numeric', month:'long', year:'numeric', timeZone:'Pacific/Auckland'}).format(now);
 
+  const hero = document.querySelector('.hero');
+  hero.classList.remove('event-day','empty-day');
+  const todayPanelKey = today + '|' + todayEvents.map(e => e.event).join('|');
   if (todayEvents.length) {
+    if (today !== '2026-08-15') hero.classList.add('event-day');
     document.getElementById('todayTitle').textContent = 'Today at the Mandir';
-    document.getElementById('todayEvents').innerHTML = todayEvents.map(e =>
-      '<div class="event-line">' + escapeHtml(e.event) + '</div>'
-    ).join('');
+    if (todayPanelKey !== lastTodayPanelKey) {
+      document.getElementById('todayEvents').innerHTML = todayEvents.map(e =>
+        '<div class="event-line"><div class="today-event-name">' + escapeHtml(e.event) + '</div></div>'
+      ).join('') + shlokShellHtml();
+    }
   } else {
+    hero.classList.add('empty-day');
     document.getElementById('todayTitle').textContent = 'No events listed today';
-    document.getElementById('todayEvents').innerHTML = '<div class="event-line">Enjoy a blessed day of satsang and seva.</div>';
+    if (todayPanelKey !== lastTodayPanelKey) {
+      document.getElementById('todayEvents').innerHTML = '<div class="event-line">Enjoy a blessed day of satsang and seva.</div>' + shlokShellHtml();
+    }
+  }
+
+  if (todayPanelKey !== lastTodayPanelKey) {
+    lastTodayPanelKey = todayPanelKey;
+    activeShlokSlot = null;
+    ++shlokTransitionToken;
+    updateRotatingShlok(now, false);
+  } else {
+    updateRotatingShlok(now, true);
   }
 
   if (today === '2026-08-15') {
