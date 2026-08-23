@@ -81,7 +81,7 @@
   .clock-label { color:var(--gold); font-size:11px; font-weight:700; letter-spacing:4px; text-transform:uppercase; margin-bottom:4px; }
   .clock {
     font-family:'Cinzel', Georgia, serif;
-    font-size:102px; font-weight:700; line-height:.98;
+    font-size:120px; font-weight:700; line-height:.94;
     font-variant-numeric:tabular-nums;
     letter-spacing:5px; margin-right:-5px; white-space:nowrap;
     color:#ffffff;
@@ -94,8 +94,8 @@
     box-shadow:inset 4px 0 0 var(--pink2),0 16px 36px rgba(0,0,0,.28);
     text-align:right;
   }
-  .day-name { display:block; color:var(--gold2); font-size:30px; font-weight:800; letter-spacing:2.8px; line-height:1.05; text-transform:uppercase; }
-  .full-date { display:block; margin-top:10px; color:#f4f4f4; font-family:Georgia,serif; font-size:28px; line-height:1.16; letter-spacing:.4px; }
+  .day-name { display:block; color:var(--gold2); font-size:38px; font-weight:800; letter-spacing:2.8px; line-height:1.05; text-transform:uppercase; }
+  .full-date { display:block; margin-top:10px; color:#f4f4f4; font-family:Georgia,serif; font-size:34px; line-height:1.16; letter-spacing:.4px; }
   .tz { margin-top:12px; font-size:11px; color:var(--pink2); letter-spacing:2.5px; text-transform:uppercase; }
   body.india-independence-day .time-card::after { background:linear-gradient(90deg,#ff9933 0 33%,#fff 33% 66%,#138808 66% 100%); }
   body.india-independence-day .date-card { border-color:rgba(19,136,8,.46); box-shadow:inset 4px 0 0 #138808,0 16px 36px rgba(0,0,0,.28); }
@@ -253,10 +253,10 @@
     color:#999; font-size:24px;
   }
   .footer {
-    display:flex; justify-content:flex-start; align-items:center;
-    color:#6f6f6f; font-size:13px; letter-spacing:1.3px; text-transform:uppercase;
+    display:flex; justify-content:center; align-items:center; text-align:center;
+    color:#d9d1c2; font-size:18px; font-weight:700; letter-spacing:1.6px; text-transform:uppercase;
   }
-  .footer span:last-child { color:#8c8c8c; }
+  .footer span:last-child { color:#d9d1c2; font-weight:700; }
   .special { color:var(--pink2); }
   /* Responsive presentation: 1920×1080 remains the primary canvas. */
   @media (max-width:1500px) and (min-width:901px) {
@@ -269,10 +269,10 @@
     .header { grid-template-columns:minmax(300px,1fr) minmax(390px,1.15fr) minmax(285px,.8fr); gap:20px; }
     .brand { width:100%; height:145px; }
     .time-card { min-height:150px; padding:16px 18px; }
-    .clock { font-size:clamp(62px,6.5vw,90px); }
+    .clock { font-size:clamp(72px,6.8vw,96px); letter-spacing:2px; margin-right:-2px; }
     .date-card { padding:18px 20px; }
-    .day-name { font-size:clamp(21px,2.3vw,29px); }
-    .full-date { font-size:clamp(20px,2vw,27px); }
+    .day-name { font-size:clamp(27px,2.8vw,36px); }
+    .full-date { font-size:clamp(24px,2.5vw,32px); }
     .main { gap:20px; }
     .hero { padding:30px 32px; }
     .today-title { font-size:clamp(30px,3.2vw,42px); }
@@ -290,15 +290,15 @@
       display:flex; flex-direction:column; gap:16px;
     }
     .screen::before { display:none; }
-    .header { display:grid; grid-template-columns:1fr 1fr; gap:14px; align-items:stretch; }
+    .header { display:grid; grid-template-columns:1fr; gap:14px; align-items:stretch; }
     .brand { grid-column:1 / -1; width:100%; height:auto; max-height:135px; object-position:center; }
     .time-card { min-height:122px; padding:14px 12px; }
     .time-card::before { border-radius:20px; }
     .clock-label { font-size:9px; letter-spacing:2.5px; }
-    .clock { font-size:clamp(40px,10.8vw,70px); letter-spacing:1px; margin-right:-1px; }
+    .clock { font-size:clamp(46px,11.5vw,76px); letter-spacing:1px; margin-right:-1px; }
     .date-card { align-self:stretch; margin:0; padding:15px 14px; border-radius:20px; text-align:center; display:flex; flex-direction:column; justify-content:center; }
-    .day-name { font-size:clamp(18px,5vw,26px); letter-spacing:1.5px; }
-    .full-date { margin-top:7px; font-size:clamp(17px,4.4vw,23px); }
+    .day-name { font-size:clamp(23px,6vw,32px); letter-spacing:1.5px; }
+    .full-date { margin-top:7px; font-size:clamp(21px,5.2vw,28px); }
     .tz { margin-top:8px; font-size:9px; letter-spacing:1.8px; }
     .main { display:flex; flex-direction:column; gap:16px; min-height:0; }
     .hero { min-height:430px; padding:26px 22px; border-radius:22px; justify-content:center; }
@@ -322,14 +322,14 @@
     .scripture-quote.long { font-size:clamp(18px,4.6vw,22px); }
     .scripture-quote.xlong { font-size:clamp(14px,3.7vw,18px); line-height:1.28; }
     .scripture-source { margin-top:8px; font-size:clamp(12px,3.2vw,15px); letter-spacing:1.1px; }
-    .footer { justify-content:center; text-align:center; font-size:10px; line-height:1.5; }
+    .footer { justify-content:center; text-align:center; font-size:13px; font-weight:700; line-height:1.5; }
   }
 
   @media (max-width:520px) {
     .header { grid-template-columns:1fr; }
     .brand { max-height:104px; }
     .time-card { min-height:112px; }
-    .clock { font-size:clamp(48px,15vw,68px); }
+    .clock { font-size:clamp(54px,16vw,76px); }
     .date-card { min-height:116px; }
     .hero { min-height:390px; }
     body.india-independence-day .hero { padding-top:218px; }
@@ -342,7 +342,7 @@
     .header { grid-template-columns:280px minmax(330px,1fr) 270px; gap:12px; }
     .brand { grid-column:auto; height:96px; }
     .time-card { min-height:96px; }
-    .clock { font-size:52px; }
+    .clock { font-size:62px; }
     .date-card { min-height:96px; padding:10px 14px; }
     .main { display:grid; grid-template-columns:minmax(0,7fr) minmax(0,3fr); gap:12px; }
     .hero { min-height:430px; padding:22px; }
@@ -472,7 +472,7 @@
   </main>
 
   <footer class="footer">
-    <span>Shree Swaminarayan Mandir Bhuj • Auckland, New Zealand</span>
+    <span>Shree Swaminarayan Mandir Bhuj Auckland, New Zealand</span>
   </footer>
 </div>
 
@@ -1498,7 +1498,7 @@ function render() {
     }
   } else {
     hero.classList.add('empty-day');
-    document.getElementById('todayTitle').textContent = 'No events listed today';
+    document.getElementById('todayTitle').textContent = 'NO EVENTS LISTED TODAY';
     if (todayPanelKey !== lastTodayPanelKey) {
       document.getElementById('todayEvents').innerHTML = '<div class="event-line">Enjoy a blessed day of satsang and seva.</div>' + shlokShellHtml();
     }
