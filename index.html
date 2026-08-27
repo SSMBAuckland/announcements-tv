@@ -105,7 +105,7 @@
   .today-title {
     align-self:flex-start; font-family:'Cinzel',Georgia,serif; font-size:42px; font-weight:700; line-height:1.05;
     margin:0; padding:18px 28px; color:#fff;
-    white-space:nowrap; letter-spacing:-1px;
+    white-space:nowrap; letter-spacing:-1px; text-transform:uppercase;
     border:1px solid color-mix(in srgb,var(--gold) 56%,transparent); border-radius:18px;
     background:linear-gradient(135deg,color-mix(in srgb,var(--gold) 18%,transparent),rgba(255,255,255,.025));
     box-shadow:inset 5px 0 0 var(--gold),0 12px 30px rgba(0,0,0,.28);
@@ -542,7 +542,7 @@
   <main class="main">
     <section class="hero event-day">
       <div class="today-copy">
-        <div id="todayTitle" class="today-title">Today at the Mandir</div>
+        <div id="todayTitle" class="today-title">TODAY AT THE MANDIR</div>
         <div id="todayEvents" class="today-events quote-positioned"><div class="event-line raksha-event"><div class="today-event-name">Raksha Bandhan</div></div><div class="event-line"><div class="today-event-name">Santo Swagat Sabha</div></div><div id="rakshaQuote" class="raksha-quote-card" aria-live="polite" aria-atomic="true"><span class="raksha-quote-label">Rakshabandhan Blessing</span><em id="rakshaQuoteText" class="raksha-quote-text">“May the sacred thread of Rakhi remind every brother and sister to protect one another through love, respect and prayer.”</em><span id="rakshaQuoteCount" class="raksha-quote-count">1 / 18</span></div></div>
       </div>
     </section>
@@ -1639,7 +1639,7 @@ function render() {
   const todayPanelKey = today + '|' + todayEvents.map(e => e.event).join('|');
   if (todayEvents.length) {
     hero.classList.add('event-day');
-    document.getElementById('todayTitle').textContent = 'Today at the Mandir';
+    document.getElementById('todayTitle').textContent = 'TODAY AT THE MANDIR';
     if (todayPanelKey !== lastTodayPanelKey) {
       const displayEvents = isRakshaBandhan
         ? [...todayEvents].sort((a,b) => Number(b.event === 'Raksha Bandhan') - Number(a.event === 'Raksha Bandhan'))
