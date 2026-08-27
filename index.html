@@ -142,14 +142,14 @@
     display:flex; flex-direction:column; align-items:center; justify-content:center;
     font-family:'Philosopher',Georgia,serif; font-size:34px; line-height:1.34; font-weight:400;
     text-align:center; text-shadow:0 4px 16px rgba(0,0,0,.48);
-    opacity:1; transform:translateY(0); filter:blur(0);
-    transition:opacity .48s ease,transform .58s cubic-bezier(.22,.8,.22,1),filter .48s ease;
-    will-change:opacity,transform,filter;
+    background:transparent !important; box-shadow:none;
+    opacity:1; transform:translateY(0);
+    transition:opacity .48s ease,transform .58s cubic-bezier(.22,.8,.22,1);
   }
   .scripture-quote.medium { font-size:31px; }
   .scripture-quote.long { font-size:22px; }
   .scripture-quote.xlong { font-size:18px; line-height:1.28; }
-  .scripture-quote.is-leaving { opacity:0; transform:translateY(-14px); filter:blur(5px); }
+  .scripture-quote.is-leaving { opacity:0; transform:translateY(-14px); }
   .scripture-quote.is-entering { animation:shlokFlowIn .9s cubic-bezier(.18,.82,.2,1) both; }
   .scripture-quote em { font-style:italic; }
   .scripture-source {
@@ -158,13 +158,13 @@
     font-style:normal; font-weight:700; letter-spacing:1.6px; text-transform:uppercase;
   }
   @keyframes shlokFlowIn {
-    0% { opacity:0; transform:translateY(18px); filter:blur(7px); clip-path:inset(100% 0 0 0); }
-    58% { opacity:.82; filter:blur(1px); }
-    100% { opacity:1; transform:translateY(0); filter:blur(0); clip-path:inset(0 0 0 0); }
+    0% { opacity:0; transform:translateY(18px); }
+    58% { opacity:.82; }
+    100% { opacity:1; transform:translateY(0); }
   }
   @media (prefers-reduced-motion:reduce) {
     .scripture-quote { transition:opacity .2s ease; }
-    .scripture-quote.is-leaving { transform:none; filter:none; }
+    .scripture-quote.is-leaving { transform:none; }
     .scripture-quote.is-entering { animation:none; }
   }
   .countdown { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:22px; }
@@ -473,19 +473,18 @@
     background:linear-gradient(135deg,rgba(255,255,255,.88),rgba(255,226,198,.76));
     box-shadow:inset 0 1px 0 #fff,0 12px 26px rgba(128,76,36,.10);
     color:#5e3342; font-size:30px; line-height:1.32; font-weight:400; text-align:center;
-    opacity:1; transform:translateY(0); filter:blur(0);
-    transition:opacity .48s ease,transform .58s cubic-bezier(.22,.8,.22,1),filter .48s ease;
-    will-change:opacity,transform,filter;
+    opacity:1; transform:translateY(0);
+    transition:opacity .48s ease,transform .58s cubic-bezier(.22,.8,.22,1);
   }
-  .raksha-quote-card.is-leaving { opacity:0; transform:translateY(-12px); filter:blur(5px); }
+  .raksha-quote-card.is-leaving { opacity:0; transform:translateY(-12px); }
   .raksha-quote-card.is-entering { animation:rakshaQuoteIn .9s cubic-bezier(.18,.82,.2,1) both; }
   .raksha-quote-label { color:#9e2d59; font-size:14px; font-weight:700; letter-spacing:2.2px; text-transform:uppercase; }
   .raksha-quote-text { display:block; margin-top:7px; font-style:italic; }
   .raksha-quote-count { display:block; margin-top:6px; color:#9d5b15; font-size:13px; font-weight:700; letter-spacing:1px; }
   @keyframes rakshaQuoteIn {
-    0% { opacity:0; transform:translateY(16px); filter:blur(7px); }
-    60% { opacity:.86; filter:blur(1px); }
-    100% { opacity:1; transform:translateY(0); filter:blur(0); }
+    0% { opacity:0; transform:translateY(16px); }
+    60% { opacity:.86; }
+    100% { opacity:1; transform:translateY(0); }
   }
   @media (max-width:1500px) and (min-width:901px) {
     body.raksha-bandhan-day .hero.event-day .today-copy { padding-top:122px; }
@@ -506,7 +505,7 @@
   }
   @media (prefers-reduced-motion:reduce) {
     .raksha-quote-card { transition:opacity .2s ease; }
-    .raksha-quote-card.is-leaving { transform:none; filter:none; }
+    .raksha-quote-card.is-leaving { transform:none; }
     .raksha-quote-card.is-entering { animation:none; }
   }
 
