@@ -132,7 +132,7 @@
     border-bottom:1px solid rgba(255,255,255,.14);
   }
   .today-events.quote-positioned .event-line:nth-last-child(2) { border-bottom:0; }
-  .next-wrap { display:flex; flex:1; flex-direction:column; justify-content:center; }
+  .next-wrap { display:flex; flex:1; min-height:0; flex-direction:column; justify-content:flex-start; }
   .next-label {
     width:fit-content; padding-bottom:13px;
     color:var(--pink2); font-size:48px; line-height:1.08; letter-spacing:3px;
@@ -143,14 +143,18 @@
     width:100%; margin-top:24px;
     font-family:'Philosopher',Georgia,serif; font-size:84px; line-height:1.06; font-weight:700; color:white;
   }
-  .next-event.multiple-events { margin-top:18px; font-size:66px; line-height:1.08; }
-  .next-event.many-events { font-size:50px; line-height:1.1; }
+  .next-event.multiple-events { margin-top:14px; font-size:56px; line-height:1.04; }
+  .next-event.many-events { font-size:42px; line-height:1.06; }
   .next-event-item { padding:16px 0 19px; border-bottom:1px solid rgba(255,255,255,.14); }
   .next-event-item:first-child { padding-top:0; }
   .next-event-item .santo-schedule-label { margin:0 0 10px; font-size:21px; }
   .next-event-time { display:block; margin-top:10px; color:var(--gold2); font-size:34px; line-height:1.2; font-weight:700; }
   .next-event-note { display:block; margin-top:8px; color:#bfb8ad; font-size:28px; line-height:1.25; font-weight:700; }
-  .next-date { color:#d0d0d0; font-size:34px; line-height:1.3; margin-top:22px; font-weight:700; }
+  .next-date { color:#d0d0d0; font-size:28px; line-height:1.24; margin-top:14px; font-weight:700; }
+  .next-event.multiple-events .next-event-item { padding:9px 0 11px; }
+  .next-event.multiple-events .santo-schedule-label { margin-bottom:6px; padding:4px 10px; font-size:18px; }
+  .next-event.multiple-events .next-event-time { margin-top:6px; font-size:28px; }
+  .next-event.multiple-events .next-event-note { margin-top:5px; font-size:23px; }
   .today-events .event-line { width:100%; }
   .scripture-quote {
     width:min(100%,980px); margin:20px auto 0; color:#dfd7c8;
@@ -190,7 +194,7 @@
   .upcoming {
     min-height:0; border:1px solid rgba(255,255,255,.09); border-radius:24px;
     background:rgba(15,15,15,.9); padding:26px 30px;
-    display:flex; flex-direction:column;
+    display:flex; flex-direction:column; overflow:hidden;
   }
   .section-head { display:flex; justify-content:space-between; align-items:end; margin-bottom:20px; }
   .section-title { font-family:Georgia,serif; font-size:29px; color:var(--cream); }
@@ -231,36 +235,17 @@
   }
   .footer span:last-child { color:#d9d1c2; font-weight:700; }
   .special { color:var(--pink2); }
-  /* Responsive presentation: 1920×1080 remains the primary canvas. */
-  @media (max-width:1500px) and (min-width:901px) {
-    html,body { overflow:auto; }
-    .screen {
-      width:100%; height:auto; min-height:100dvh; max-height:none;
-      padding:24px 30px 26px; grid-template-rows:auto minmax(590px,1fr) auto; gap:18px;
-    }
-    .screen::before { left:30px; right:30px; top:206px; }
-    .header { grid-template-columns:minmax(300px,1fr) minmax(390px,1.25fr) minmax(300px,1fr); gap:20px; }
-    .brand { width:100%; height:145px; }
-    .time-card { min-height:150px; padding:16px 18px; }
-    .clock { font-size:clamp(80px,7.4vw,108px); letter-spacing:2px; margin-right:-2px; }
-    .date-card { min-height:150px; padding:18px 20px; }
-    .day-name { font-size:clamp(31px,3vw,40px); }
-    .full-date { font-size:clamp(27px,2.7vw,35px); }
-    .main { gap:20px; }
-    .hero { padding:30px 32px; }
-    .today-title { font-size:clamp(30px,3.2vw,42px); }
-    .today-events { font-size:clamp(42px,4.7vw,62px); }
-    .upcoming { padding:24px; }
-    .next-label { font-size:clamp(36px,3.8vw,44px); }
-    .next-event { font-size:clamp(56px,5.4vw,76px); }
-    .next-event.multiple-events { font-size:clamp(50px,4.7vw,64px); }
-    .next-event.many-events { font-size:clamp(40px,3.7vw,48px); }
-    .next-event-time { font-size:clamp(28px,2.6vw,33px); }
-    .next-event-note { font-size:clamp(23px,2.2vw,27px); }
-    .next-date { font-size:clamp(27px,2.5vw,33px); }
+  /* TV mode keeps the approved 1920×1080 composition and scales it as one canvas. */
+  body.tv-canvas {
+    display:flex; align-items:center; justify-content:center;
+    width:100%; height:100%; min-height:0; overflow:hidden;
+  }
+  body.tv-canvas .screen {
+    flex:0 0 auto; width:1920px; height:1080px; min-height:0;
+    max-width:none; max-height:none; margin:0; transform-origin:center center;
   }
 
-  @media (max-width:900px) {
+  @media (max-width:1200px) and (orientation:portrait) {
     html,body { width:100%; height:auto; min-height:100%; overflow:auto; }
     body { min-height:100dvh; }
     .screen {
@@ -308,7 +293,7 @@
     .footer { justify-content:center; text-align:center; font-size:13px; font-weight:700; line-height:1.5; }
   }
 
-  @media (max-width:520px) {
+  @media (max-width:520px) and (orientation:portrait) {
     .header { grid-template-columns:1fr; }
     .brand { max-height:104px; }
     .time-card { min-height:112px; }
@@ -318,25 +303,13 @@
     .today-title { font-size:clamp(24px,7.8vw,33px); }
   }
 
-  @media (max-height:700px) and (orientation:landscape) and (max-width:1200px) {
-    .screen { padding:14px 18px; gap:12px; }
-    .header { grid-template-columns:270px minmax(330px,1fr) 270px; gap:12px; }
-    .brand { grid-column:auto; height:96px; }
-    .time-card { min-height:96px; }
-    .clock { font-size:68px; }
-    .date-card { min-height:96px; padding:10px 14px; }
-    .main { display:grid; grid-template-columns:minmax(0,7fr) minmax(0,3fr); gap:12px; }
-    .hero { min-height:430px; padding:22px; }
-    .upcoming { min-height:430px; padding:22px 18px; }
-  }
-
   /* Prominent Today panel layout for event and empty days. */
   .hero.event-day,
   .hero.empty-day { justify-content:flex-start; }
 
   .hero.event-day .today-copy,
   .hero.empty-day .today-copy {
-    position:static; max-width:100%; width:100%; padding:175px 0 0;
+    position:static; max-width:100%; width:100%; padding:145px 0 0;
     align-items:center; justify-content:flex-start; text-align:center;
   }
 
@@ -349,14 +322,14 @@
   }
 
   .hero.event-day .today-events {
-    width:100%; max-width:1100px; margin:48px auto 0;
+    width:100%; max-width:1100px; margin:18px auto 0;
     font-size:112px; line-height:1.06; text-align:center;
   }
 
   .hero.event-day .today-events.quote-medium,
   .hero.event-day .today-events.quote-long,
   .hero.event-day .today-events.quote-xlong {
-    margin-top:30px; font-size:104px;
+    margin-top:14px; font-size:100px;
   }
   .hero.event-day .today-events.quote-medium .event-line,
   .hero.event-day .today-events.quote-long .event-line,
@@ -365,25 +338,54 @@
   .hero.event-day .today-events.quote-long .scripture-quote,
   .hero.event-day .today-events.quote-xlong .scripture-quote { margin-top:12px; }
 
+  /* Multi-event days reserve a stable, readable area for the complete shlok. */
+  .hero.event-day .today-events.multiple-events {
+    margin-top:8px; font-size:78px; line-height:1.02;
+  }
+  .hero.event-day .today-events.multiple-events .event-line { padding:4px 0 8px; }
+  .hero.event-day .today-events.multiple-events .santo-schedule-label {
+    margin-bottom:5px; padding:4px 11px; font-size:20px;
+  }
+  .hero.event-day .today-events.multiple-events .today-event-time { margin-top:4px; font-size:26px; }
+  .hero.event-day .today-events.multiple-events .today-event-note { margin-top:3px; font-size:20px; }
+  .hero.event-day .today-events.multiple-events .scripture-quote {
+    min-height:150px; margin-top:8px; padding:7px 14px;
+  }
+
+  /* Automatic safety tiers used only when unusually long content still exceeds a panel. */
+  .hero.event-day .today-events.fit-tight { margin-top:4px; font-size:68px; }
+  .hero.event-day .today-events.fit-tight .event-line { padding:3px 0 6px; }
+  .hero.event-day .today-events.fit-tight .scripture-quote { min-height:138px; margin-top:5px; }
+  .hero.event-day .today-events.fit-tight .scripture-quote.medium { font-size:27px; }
+  .hero.event-day .today-events.fit-tight .scripture-quote.long { font-size:20px; }
+  .hero.event-day .today-events.fit-tight .scripture-quote.xlong { font-size:16px; }
+  .hero.event-day .today-events.fit-ultra { font-size:60px; }
+  .hero.event-day .today-events.fit-ultra .santo-schedule-label { font-size:17px; }
+  .hero.event-day .today-events.fit-ultra .today-event-time { font-size:23px; }
+  .hero.event-day .today-events.fit-ultra .today-event-note { font-size:18px; }
+  .hero.event-day .today-events.fit-ultra .scripture-quote { min-height:126px; }
+  .hero.event-day .today-events.fit-ultra .scripture-quote.medium { font-size:24px; }
+  .hero.event-day .today-events.fit-ultra .scripture-quote.long { font-size:18px; }
+  .hero.event-day .today-events.fit-ultra .scripture-quote.xlong { font-size:15px; }
+
+  .upcoming.fit-tight .next-label { font-size:42px; padding-bottom:9px; }
+  .upcoming.fit-tight .next-event { margin-top:9px; }
+  .upcoming.fit-tight .next-event.multiple-events { font-size:49px; }
+  .upcoming.fit-tight .next-event-item { padding:6px 0 8px; }
+  .upcoming.fit-tight .next-date { margin-top:9px; font-size:25px; }
+  .upcoming.fit-ultra { padding-top:20px; padding-bottom:20px; }
+  .upcoming.fit-ultra .next-label { font-size:38px; }
+  .upcoming.fit-ultra .next-event.multiple-events { font-size:44px; }
+  .upcoming.fit-ultra .next-event-time { font-size:24px; }
+  .upcoming.fit-ultra .next-event-note { font-size:20px; }
+  .upcoming.fit-ultra .next-date { font-size:22px; }
+
   .hero.empty-day .today-events {
     width:100%; max-width:940px; margin:42px auto 0;
     font-size:48px; line-height:1.2; text-align:center;
   }
 
-  @media (max-width:1500px) and (min-width:901px) {
-    .hero.event-day .today-copy,
-    .hero.empty-day .today-copy { padding-top:145px; }
-    .hero.event-day .today-title,
-    .hero.empty-day .today-title {
-      top:14px; width:78%; min-height:108px; padding:20px 24px;
-      font-size:clamp(40px,4.2vw,56px);
-    }
-    .hero.event-day .today-events {
-      margin-top:38px; font-size:clamp(70px,7.5vw,102px);
-    }
-  }
-
-  @media (max-width:900px) {
+  @media (max-width:1200px) and (orientation:portrait) {
     .hero.event-day,
     .hero.empty-day { justify-content:flex-start; }
     .hero.event-day .today-copy,
@@ -521,13 +523,7 @@
     60% { opacity:.86; }
     100% { opacity:1; transform:translateY(0); }
   }
-  @media (max-width:1500px) and (min-width:901px) {
-    body.raksha-bandhan-day .hero.event-day .today-copy { padding-top:122px; }
-    body.raksha-bandhan-day .hero.event-day .today-title { min-height:96px; }
-    body.raksha-bandhan-day .hero.event-day .today-events { margin-top:16px; font-size:clamp(62px,6.5vw,84px); }
-    .raksha-quote-card { padding:16px 22px 18px; font-size:clamp(24px,2.4vw,29px); }
-  }
-  @media (max-width:900px) {
+  @media (max-width:1200px) and (orientation:portrait) {
     body.raksha-bandhan-day .hero { min-height:590px; }
     body.raksha-bandhan-day .hero.event-day .today-copy { padding-top:112px; }
     body.raksha-bandhan-day .hero.event-day .today-title { min-height:92px; }
@@ -569,7 +565,7 @@
     <section class="hero event-day">
       <div class="today-copy">
         <div id="todayTitle" class="today-title">TODAY AT THE MANDIR</div>
-        <div id="todayEvents" class="today-events quote-positioned"><div class="event-line"><span class="santo-schedule-label">Santo Schedule</span><div class="today-event-name">Hindola Raas</div><div class="today-event-time">6:30pm onwards</div><div class="today-event-note">Followed by Mahaprashad</div></div><div class="event-line"><div class="today-event-name">Hindola Ends</div></div></div>
+        <div id="todayEvents" class="today-events quote-positioned multiple-events"><div class="event-line"><span class="santo-schedule-label">Santo Schedule</span><div class="today-event-name">Hindola Raas</div><div class="today-event-time">6:30pm onwards</div><div class="today-event-note">Followed by Mahaprashad</div></div><div class="event-line"><div class="today-event-name">Hindola Ends</div></div></div>
       </div>
     </section>
 
@@ -1549,6 +1545,7 @@ function updateRotatingShlok(now, animate) {
     }
     text.textContent = '“' + state.shlok.text + '”';
     source.textContent = '— Shikshapatri Shlok ' + state.shlok.number;
+    scheduleDashboardPanelFit();
     if (animate) {
       quote.classList.add('is-entering');
       quote.addEventListener('animationend', () => quote.classList.remove('is-entering'), {once:true});
@@ -1610,6 +1607,7 @@ function updateRakshaQuote(now, animate) {
     quote.className = 'raksha-quote-card';
     text.textContent = '“' + RAKSHA_QUOTES[index] + '”';
     count.textContent = (index + 1) + ' / ' + RAKSHA_QUOTES.length;
+    scheduleDashboardPanelFit();
     if (animate) {
       quote.classList.add('is-entering');
       quote.addEventListener('animationend', () => quote.classList.remove('is-entering'), {once:true});
@@ -1693,7 +1691,10 @@ function render() {
       const displayEvents = isRakshaBandhan
         ? [...todayEvents].sort((a,b) => Number(b.event === 'Raksha Bandhan') - Number(a.event === 'Raksha Bandhan'))
         : todayEvents;
-      document.getElementById('todayEvents').innerHTML = displayEvents.map(e =>
+      const todayEventPanel = document.getElementById('todayEvents');
+      todayEventPanel.className = 'today-events quote-positioned' +
+        (displayEvents.length > 1 ? ' multiple-events' : '');
+      todayEventPanel.innerHTML = displayEvents.map(e =>
         '<div class="event-line' + (e.event === 'Raksha Bandhan' ? ' raksha-event' : '') + '">' +
         (e.source ? '<span class="santo-schedule-label">' + escapeHtml(e.source) + '</span>' : '') +
         '<div class="today-event-name">' + escapeHtml(e.event) + '</div>' +
@@ -1706,7 +1707,9 @@ function render() {
     hero.classList.add('empty-day');
     document.getElementById('todayTitle').textContent = 'NO EVENTS LISTED TODAY';
     if (todayPanelKey !== lastTodayPanelKey) {
-      document.getElementById('todayEvents').innerHTML = '<div class="event-line">Enjoy a blessed day of satsang and seva.</div>' + shlokShellHtml();
+      const todayEventPanel = document.getElementById('todayEvents');
+      todayEventPanel.className = 'today-events quote-positioned';
+      todayEventPanel.innerHTML = '<div class="event-line">Enjoy a blessed day of satsang and seva.</div>' + shlokShellHtml();
     }
   }
 
@@ -1741,9 +1744,74 @@ function render() {
     document.getElementById('nextDate').textContent = fmtDate(next.dt) +
       (d === 1 ? ' • Tomorrow' : ' • In ' + d + ' days');
   }
+  scheduleDashboardPanelFit();
 }
 
+let dashboardFitFrame = 0;
+
+function innerContentHeight(element) {
+  const style = window.getComputedStyle(element);
+  return element.clientHeight - parseFloat(style.paddingTop) - parseFloat(style.paddingBottom);
+}
+
+function fitDashboardPanels() {
+  dashboardFitFrame = 0;
+  const todayPanel = document.getElementById('todayEvents');
+  const upcomingPanel = document.querySelector('.upcoming');
+
+  if (todayPanel) todayPanel.classList.remove('fit-tight','fit-ultra');
+  if (upcomingPanel) upcomingPanel.classList.remove('fit-tight','fit-ultra');
+  if (!document.body.classList.contains('tv-canvas')) return;
+
+  const hero = document.querySelector('.hero');
+  const todayCopy = document.querySelector('.today-copy');
+  if (hero && todayCopy && todayPanel) {
+    const available = innerContentHeight(hero);
+    if (todayCopy.scrollHeight > available + 1) todayPanel.classList.add('fit-tight');
+    if (todayCopy.scrollHeight > available + 1) todayPanel.classList.add('fit-ultra');
+  }
+
+  const nextWrap = document.querySelector('.next-wrap');
+  if (upcomingPanel && nextWrap) {
+    const available = innerContentHeight(upcomingPanel);
+    if (nextWrap.scrollHeight > available + 1) upcomingPanel.classList.add('fit-tight');
+    if (nextWrap.scrollHeight > available + 1) upcomingPanel.classList.add('fit-ultra');
+  }
+}
+
+function scheduleDashboardPanelFit() {
+  if (dashboardFitFrame) window.cancelAnimationFrame(dashboardFitFrame);
+  dashboardFitFrame = window.requestAnimationFrame(fitDashboardPanels);
+}
+
+const DASHBOARD_DESIGN_WIDTH = 1920;
+const DASHBOARD_DESIGN_HEIGHT = 1080;
+
+function fitDashboardToViewport() {
+  const screen = document.querySelector('.screen');
+  if (!screen) return;
+
+  const useTvCanvas = window.innerWidth > window.innerHeight || window.innerWidth > 1200;
+  document.body.classList.toggle('tv-canvas', useTvCanvas);
+
+  if (useTvCanvas) {
+    const scale = Math.min(
+      window.innerWidth / DASHBOARD_DESIGN_WIDTH,
+      window.innerHeight / DASHBOARD_DESIGN_HEIGHT
+    );
+    screen.style.transform = 'scale(' + Math.max(scale, 0.1) + ')';
+  } else {
+    screen.style.removeProperty('transform');
+  }
+  scheduleDashboardPanelFit();
+}
+
+window.addEventListener('resize', fitDashboardToViewport, {passive:true});
+window.addEventListener('orientationchange', fitDashboardToViewport, {passive:true});
+fitDashboardToViewport();
 render();
+scheduleDashboardPanelFit();
+if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDashboardPanelFit);
 setInterval(render, 1000);
 </script>
 </body>
