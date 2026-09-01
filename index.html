@@ -155,8 +155,8 @@
   .next-event-time { display:block; margin-top:10px; color:var(--gold2); font-size:34px; line-height:1.2; font-weight:700; }
   .next-event-note { display:block; margin-top:8px; color:#bfb8ad; font-size:28px; line-height:1.25; font-weight:700; }
   .next-date {
-    flex:0 0 auto; color:#d0d0d0; font-size:28px; line-height:1.24;
-    margin-top:18px; padding:0 0 16px; font-weight:700;
+    flex:0 0 auto; color:#eeeeee; font-size:38px; line-height:1.18;
+    margin-top:18px; padding:0 0 18px; font-weight:700; letter-spacing:.2px;
     border-bottom:1px solid rgba(255,255,255,.14);
   }
   .next-event.multiple-events .next-event-item {
@@ -285,7 +285,7 @@
     .next-event-item .santo-schedule-label { margin:0 auto 8px; font-size:clamp(14px,3.7vw,18px); }
     .next-event-time { margin-top:6px; font-size:clamp(18px,4.7vw,24px); }
     .next-event-note { margin-top:5px; font-size:clamp(16px,4.1vw,21px); }
-    .next-date { font-size:clamp(19px,5vw,26px); }
+    .next-date { font-size:clamp(24px,6vw,32px); line-height:1.2; padding-bottom:14px; }
     .scripture-quote { margin-top:16px; font-size:clamp(22px,5.8vw,30px); line-height:1.38; }
     .today-events.quote-positioned { padding-bottom:14px; }
     .today-events.quote-positioned .scripture-quote { min-height:170px; }
@@ -330,6 +330,21 @@
     font-size:112px; line-height:1.06; text-align:center;
   }
 
+  /* Fill the Today panel so event rows use the space above the fixed quote area. */
+  .hero.event-day .today-copy {
+    flex:1 1 auto; min-height:0; height:100%;
+  }
+  .hero.event-day .today-events {
+    flex:1 1 auto; min-height:0;
+    display:flex; flex-direction:column; justify-content:space-evenly;
+  }
+  .hero.event-day .today-events .event-line {
+    flex:1 1 auto;
+    display:flex; flex-direction:column; align-items:center; justify-content:center;
+  }
+  .hero.event-day .today-events .scripture-quote,
+  .hero.event-day .today-events .raksha-quote-card { flex:0 0 auto; }
+
   .hero.event-day .today-events.quote-medium,
   .hero.event-day .today-events.quote-long,
   .hero.event-day .today-events.quote-xlong {
@@ -344,14 +359,14 @@
 
   /* Multi-event days reserve a stable, readable area for the complete shlok. */
   .hero.event-day .today-events.multiple-events {
-    margin-top:8px; font-size:78px; line-height:1.02;
+    margin-top:8px; font-size:84px; line-height:1.03;
   }
   .hero.event-day .today-events.multiple-events .event-line { padding:4px 0 8px; }
   .hero.event-day .today-events.multiple-events .santo-schedule-label {
     margin-bottom:5px; padding:4px 11px; font-size:20px;
   }
-  .hero.event-day .today-events.multiple-events .today-event-time { margin-top:4px; font-size:26px; }
-  .hero.event-day .today-events.multiple-events .today-event-note { margin-top:3px; font-size:20px; }
+  .hero.event-day .today-events.multiple-events .today-event-time { margin-top:5px; font-size:28px; }
+  .hero.event-day .today-events.multiple-events .today-event-note { margin-top:4px; font-size:22px; }
   .hero.event-day .today-events.multiple-events .scripture-quote {
     min-height:150px; margin-top:8px; padding:7px 14px;
   }
@@ -376,13 +391,13 @@
   .upcoming.fit-tight .next-event { margin-top:9px; }
   .upcoming.fit-tight .next-event.multiple-events { font-size:49px; }
   .upcoming.fit-tight .next-event-item { flex:0 0 auto; padding:6px 0 8px; }
-  .upcoming.fit-tight .next-date { margin-top:9px; font-size:25px; }
+  .upcoming.fit-tight .next-date { margin-top:9px; padding-bottom:12px; font-size:32px; }
   .upcoming.fit-ultra { padding-top:20px; padding-bottom:20px; }
   .upcoming.fit-ultra .next-label { font-size:38px; }
   .upcoming.fit-ultra .next-event.multiple-events { font-size:44px; }
   .upcoming.fit-ultra .next-event-time { font-size:24px; }
   .upcoming.fit-ultra .next-event-note { font-size:20px; }
-  .upcoming.fit-ultra .next-date { font-size:22px; }
+  .upcoming.fit-ultra .next-date { font-size:28px; }
 
   .hero.empty-day .today-events {
     width:100%; max-width:940px; margin:42px auto 0;
