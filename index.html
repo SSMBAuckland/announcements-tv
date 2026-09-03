@@ -757,9 +757,13 @@
     margin:0 auto 3px; color:#9af3e7; border-color:rgba(103,230,213,.58); background:rgba(11,71,88,.72);
   }
   .janmashtami-event-name {
+    display:flex; flex-wrap:wrap; align-items:center; justify-content:center;
+    column-gap:.24em; row-gap:.02em;
     color:#ffe18a; font-size:64px; line-height:1.02; font-weight:700; letter-spacing:.3px;
     text-align:center; text-shadow:0 0 24px rgba(255,214,111,.22),0 5px 18px rgba(0,0,0,.62);
   }
+  .janmashtami-title-word,
+  .janmashtami-title-word > span { display:inline-block; }
   .janmashtami-schedule-title {
     color:#a8f4e9; font-size:21px; line-height:1.15; font-weight:700; letter-spacing:2.2px; text-transform:uppercase;
   }
@@ -819,25 +823,48 @@
     animation:janmashtamiLightDrift 18s linear infinite;
   }
   body.janmashtami-day .today-title {
-    animation:janmashtamiPanelGlow 5.2s ease-in-out infinite;
+    animation:
+      janmashtamiPanelGlow 5.2s ease-in-out infinite,
+      janmashtamiHeaderText 6.4s ease-in-out infinite;
   }
-  body.janmashtami-day .janmashtami-event-name {
-    animation:janmashtamiTitleGlow 4.4s ease-in-out infinite;
+  body.janmashtami-day .janmashtami-title-word {
+    opacity:0;
+    animation:janmashtamiWordReveal .9s cubic-bezier(.16,.82,.22,1) forwards;
   }
+  body.janmashtami-day .janmashtami-title-word:nth-child(1) { animation-delay:.10s; }
+  body.janmashtami-day .janmashtami-title-word:nth-child(2) { animation-delay:.28s; }
+  body.janmashtami-day .janmashtami-title-word:nth-child(3) { animation-delay:.46s; }
+  body.janmashtami-day .janmashtami-title-word > span { animation:janmashtamiWordShimmer 6.6s ease-in-out infinite; }
+  body.janmashtami-day .janmashtami-title-word:nth-child(1) > span { animation-delay:.80s; }
+  body.janmashtami-day .janmashtami-title-word:nth-child(2) > span { animation-delay:1.52s; }
+  body.janmashtami-day .janmashtami-title-word:nth-child(3) > span { animation-delay:2.24s; }
   body.janmashtami-day .next-label {
     animation:janmashtamiLabelGlow 5.2s ease-in-out infinite;
   }
   body.janmashtami-day .janmashtami-row {
     opacity:0;
     animation:
-      janmashtamiRowReveal .72s cubic-bezier(.20,.76,.22,1) forwards,
+      janmashtamiRowRevealLeft .78s cubic-bezier(.20,.76,.22,1) forwards,
       janmashtamiRowGlow 12s ease-in-out infinite;
   }
-  body.janmashtami-day .janmashtami-row:nth-child(1) { animation-delay:.08s,0s; }
-  body.janmashtami-day .janmashtami-row:nth-child(2) { animation-delay:.18s,2.2s; }
-  body.janmashtami-day .janmashtami-row:nth-child(3) { animation-delay:.28s,4.4s; }
-  body.janmashtami-day .janmashtami-row:nth-child(4) { animation-delay:.38s,6.6s; }
-  body.janmashtami-day .janmashtami-row:nth-child(5) { animation-delay:.48s,8.8s; }
+  body.janmashtami-day .janmashtami-row:nth-child(even) {
+    animation-name:janmashtamiRowRevealRight,janmashtamiRowGlow;
+  }
+  body.janmashtami-day .janmashtami-row:nth-child(1) { --spotlight-delay:0s; animation-delay:.08s,0s; }
+  body.janmashtami-day .janmashtami-row:nth-child(2) { --spotlight-delay:2.2s; animation-delay:.18s,2.2s; }
+  body.janmashtami-day .janmashtami-row:nth-child(3) { --spotlight-delay:4.4s; animation-delay:.28s,4.4s; }
+  body.janmashtami-day .janmashtami-row:nth-child(4) { --spotlight-delay:6.6s; animation-delay:.38s,6.6s; }
+  body.janmashtami-day .janmashtami-row:nth-child(5) { --spotlight-delay:8.8s; animation-delay:.48s,8.8s; }
+  body.janmashtami-day .janmashtami-time {
+    transform-origin:left center;
+    animation:janmashtamiTimeSpotlight 12s ease-in-out var(--spotlight-delay,0s) infinite;
+  }
+  body.janmashtami-day .janmashtami-detail {
+    animation:janmashtamiDetailSpotlight 12s ease-in-out var(--spotlight-delay,0s) infinite;
+  }
+  body.janmashtami-day .janmashtami-note {
+    animation:janmashtamiNoteSpotlight 12s ease-in-out var(--spotlight-delay,0s) infinite;
+  }
   body.janmashtami-day .janmashtami-icon {
     animation:janmashtamiIconFloat 3.6s ease-in-out infinite;
   }
@@ -865,25 +892,53 @@
     0%,100% { border-color:rgba(255,214,111,.54); box-shadow:inset 5px 0 0 #ffd66f,0 12px 32px rgba(0,0,0,.36); }
     50% { border-color:rgba(103,230,213,.78); box-shadow:inset 5px 0 0 #67e6d5,0 12px 38px rgba(32,184,170,.20); }
   }
-  @keyframes janmashtamiTitleGlow {
-    0%,100% { transform:translateY(0); color:#ffe18a; text-shadow:0 0 24px rgba(255,214,111,.22),0 5px 18px rgba(0,0,0,.62); }
-    50% { transform:translateY(-3px); color:#fff2b7; text-shadow:0 0 32px rgba(255,214,111,.46),0 5px 18px rgba(0,0,0,.62); }
+  @keyframes janmashtamiHeaderText {
+    0%,100% { color:#fff4b8; letter-spacing:-1px; text-shadow:0 4px 20px rgba(0,0,0,.54),0 0 8px rgba(255,214,111,.10); }
+    48% { color:#ffffff; letter-spacing:.2px; text-shadow:0 4px 20px rgba(0,0,0,.54),0 0 22px rgba(103,230,213,.32); }
+    68% { color:#ffe18a; letter-spacing:.2px; text-shadow:0 4px 20px rgba(0,0,0,.54),0 0 25px rgba(255,214,111,.40); }
+  }
+  @keyframes janmashtamiWordReveal {
+    0% { opacity:0; transform:translateX(-24px) scale(.90); }
+    62% { opacity:1; transform:translateX(4px) scale(1.035); }
+    100% { opacity:1; transform:translateX(0) scale(1); }
+  }
+  @keyframes janmashtamiWordShimmer {
+    0%,58%,100% { color:#ffe18a; transform:scale(1); text-shadow:0 0 24px rgba(255,214,111,.22),0 5px 18px rgba(0,0,0,.62); }
+    68% { color:#9af3e7; transform:scale(1.035); text-shadow:0 0 30px rgba(103,230,213,.52),0 5px 18px rgba(0,0,0,.62); }
+    80% { color:#fff4b8; transform:scale(1.015); text-shadow:0 0 34px rgba(255,214,111,.52),0 5px 18px rgba(0,0,0,.62); }
   }
   @keyframes janmashtamiLabelGlow {
     0%,100% { text-shadow:0 0 8px rgba(255,214,111,.10); }
     50% { text-shadow:0 0 22px rgba(255,214,111,.42); }
   }
-  @keyframes janmashtamiRowReveal {
-    0% { opacity:0; transform:translateY(12px); }
-    100% { opacity:1; transform:translateY(0); }
+  @keyframes janmashtamiRowRevealLeft {
+    0% { opacity:0; transform:translateX(-22px) scale(.985); }
+    100% { opacity:1; transform:translateX(0) scale(1); }
+  }
+  @keyframes janmashtamiRowRevealRight {
+    0% { opacity:0; transform:translateX(22px) scale(.985); }
+    100% { opacity:1; transform:translateX(0) scale(1); }
   }
   @keyframes janmashtamiRowGlow {
     0%,16% { border-color:rgba(255,214,111,.48); box-shadow:inset 5px 0 0 rgba(255,214,111,.96),0 0 18px rgba(103,230,213,.12); }
     24%,100% { border-color:rgba(103,230,213,.16); box-shadow:inset 3px 0 0 rgba(255,214,111,.72); }
   }
   @keyframes janmashtamiIconFloat {
-    0%,100% { transform:translateY(0); }
-    50% { transform:translateY(-4px); }
+    0%,100% { transform:rotate(-5deg) scale(.96); }
+    45% { transform:rotate(7deg) scale(1.10); }
+    68% { transform:rotate(1deg) scale(1.04); }
+  }
+  @keyframes janmashtamiTimeSpotlight {
+    0%,16% { color:#fff1b5; transform:scale(1.035); text-shadow:0 0 18px rgba(255,214,111,.42); }
+    24%,100% { color:#ffe69a; transform:scale(1); text-shadow:none; }
+  }
+  @keyframes janmashtamiDetailSpotlight {
+    0%,16% { color:#ffffff; letter-spacing:.22px; text-shadow:0 0 20px rgba(103,230,213,.42),0 4px 15px rgba(0,0,0,.50); }
+    24%,100% { color:#ffffff; letter-spacing:0; text-shadow:none; }
+  }
+  @keyframes janmashtamiNoteSpotlight {
+    0%,16% { color:#fff0b1; text-shadow:0 0 14px rgba(255,214,111,.30); }
+    24%,100% { color:#cce9e6; text-shadow:none; }
   }
   @keyframes janmashtamiObservanceGlow {
     0%,100% { color:#e1edf3; text-shadow:0 0 7px rgba(103,230,213,.08); }
@@ -944,6 +999,7 @@
     .janmashtami-timeline { gap:8px; }
     .janmashtami-row { grid-template-columns:1fr; gap:3px; padding:11px 13px; }
     .janmashtami-time { font-size:clamp(18px,4.8vw,24px); text-align:center; white-space:normal; }
+    body.janmashtami-day .janmashtami-time { transform-origin:center; }
     .janmashtami-detail { font-size:clamp(20px,5.3vw,27px); text-align:center; }
     .janmashtami-note { grid-column:1; font-size:clamp(15px,3.9vw,19px); text-align:center; }
     .janmashtami-observances { font-size:clamp(20px,5vw,24px); }
@@ -962,14 +1018,19 @@
     body.janmashtami-day .screen::before,
     body.janmashtami-day .screen::after,
     body.janmashtami-day .today-title,
-    body.janmashtami-day .janmashtami-event-name,
+    body.janmashtami-day .janmashtami-title-word,
+    body.janmashtami-day .janmashtami-title-word > span,
     body.janmashtami-day .next-label,
     body.janmashtami-day .janmashtami-row,
+    body.janmashtami-day .janmashtami-time,
+    body.janmashtami-day .janmashtami-detail,
+    body.janmashtami-day .janmashtami-note,
     body.janmashtami-day .janmashtami-icon,
     body.janmashtami-day .janmashtami-observances {
       animation:none !important;
     }
-    body.janmashtami-day .janmashtami-row { opacity:1; transform:none; }
+    body.janmashtami-day .janmashtami-row,
+    body.janmashtami-day .janmashtami-title-word { opacity:1; transform:none; }
   }
 
   /* SSMB brand typography: Philosopher is used for every visible text element. */
@@ -1075,7 +1136,11 @@ function janmashtamiObservances(events) {
 function janmashtamiTodayMarkup(events) {
   const observances = janmashtamiObservances(events);
   return '<div class="janmashtami-heading">' +
-    '<div class="janmashtami-event-name">Shree Krishna Janmashtami</div></div>' +
+    '<div class="janmashtami-event-name" aria-label="Shree Krishna Janmashtami">' +
+    '<span class="janmashtami-title-word"><span>Shree</span></span>' +
+    '<span class="janmashtami-title-word"><span>Krishna</span></span>' +
+    '<span class="janmashtami-title-word"><span>Janmashtami</span></span>' +
+    '</div></div>' +
     '<div class="janmashtami-timeline">' + JANMASHTAMI_SCHEDULE.map(item =>
       '<div class="janmashtami-row">' +
       '<div class="janmashtami-time"><span class="janmashtami-icon" aria-hidden="true">' + escapeHtml(item.icon) + '</span>' + escapeHtml(item.time) + '</div>' +
