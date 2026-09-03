@@ -757,7 +757,7 @@
     margin:0 auto 3px; color:#9af3e7; border-color:rgba(103,230,213,.58); background:rgba(11,71,88,.72);
   }
   .janmashtami-event-name {
-    color:#ffe18a; font-size:50px; line-height:1.02; font-weight:700; letter-spacing:.3px;
+    color:#ffe18a; font-size:64px; line-height:1.02; font-weight:700; letter-spacing:.3px;
     text-align:center; text-shadow:0 0 24px rgba(255,214,111,.22),0 5px 18px rgba(0,0,0,.62);
   }
   .janmashtami-schedule-title {
@@ -784,7 +784,7 @@
     font-style:italic; font-weight:400; text-align:left;
   }
   .janmashtami-observances {
-    flex:0 0 auto; color:#cbdce8; font-size:18px; line-height:1.2; font-weight:700; text-align:center;
+    flex:0 0 auto; color:#e1edf3; font-size:24px; line-height:1.2; font-weight:700; text-align:center;
   }
   body.janmashtami-day .upcoming {
     border-color:rgba(255,214,111,.35);
@@ -798,6 +798,98 @@
   body.janmashtami-day .next-event-time { color:#ffe18a; }
   body.janmashtami-day .next-event-note { color:#c8e5e1; }
 
+  /* Janmashtami-only motion: lightweight effects chosen for TV browser stability. */
+  body.janmashtami-day .screen {
+    animation:janmashtamiBackgroundDrift 28s ease-in-out infinite;
+  }
+  body.janmashtami-day .screen::before {
+    z-index:2; pointer-events:none;
+    animation:janmashtamiDividerGlow 4.8s ease-in-out infinite;
+  }
+  body.janmashtami-day .screen::after {
+    inset:0;
+    background-image:
+      radial-gradient(circle,rgba(255,222,128,.54) 0 2px,transparent 3px),
+      radial-gradient(circle,rgba(103,230,213,.40) 0 2px,transparent 3px),
+      radial-gradient(circle,rgba(255,222,128,.30) 0 1.5px,transparent 2.5px),
+      linear-gradient(180deg,rgba(0,8,27,.04),rgba(0,8,27,.14));
+    background-size:430px 430px,590px 590px,330px 330px,100% 100%;
+    background-position:12px 24px,170px 92px,86px 210px,0 0;
+    background-repeat:repeat,repeat,repeat,no-repeat;
+    animation:janmashtamiLightDrift 18s linear infinite;
+  }
+  body.janmashtami-day .today-title {
+    animation:janmashtamiPanelGlow 5.2s ease-in-out infinite;
+  }
+  body.janmashtami-day .janmashtami-event-name {
+    animation:janmashtamiTitleGlow 4.4s ease-in-out infinite;
+  }
+  body.janmashtami-day .next-label {
+    animation:janmashtamiLabelGlow 5.2s ease-in-out infinite;
+  }
+  body.janmashtami-day .janmashtami-row {
+    opacity:0;
+    animation:
+      janmashtamiRowReveal .72s cubic-bezier(.20,.76,.22,1) forwards,
+      janmashtamiRowGlow 12s ease-in-out infinite;
+  }
+  body.janmashtami-day .janmashtami-row:nth-child(1) { animation-delay:.08s,0s; }
+  body.janmashtami-day .janmashtami-row:nth-child(2) { animation-delay:.18s,2.2s; }
+  body.janmashtami-day .janmashtami-row:nth-child(3) { animation-delay:.28s,4.4s; }
+  body.janmashtami-day .janmashtami-row:nth-child(4) { animation-delay:.38s,6.6s; }
+  body.janmashtami-day .janmashtami-row:nth-child(5) { animation-delay:.48s,8.8s; }
+  body.janmashtami-day .janmashtami-icon {
+    animation:janmashtamiIconFloat 3.6s ease-in-out infinite;
+  }
+  body.janmashtami-day .janmashtami-row:nth-child(even) .janmashtami-icon {
+    animation-delay:-1.8s;
+  }
+  body.janmashtami-day .janmashtami-observances {
+    animation:janmashtamiObservanceGlow 6s ease-in-out infinite;
+  }
+
+  @keyframes janmashtamiBackgroundDrift {
+    0%,100% { background-position:50% 50%; }
+    50% { background-position:51% 49%; }
+  }
+  @keyframes janmashtamiLightDrift {
+    0% { background-position:12px 24px,170px 92px,86px 210px,0 0; }
+    50% { background-position:44px -34px,138px 38px,110px 152px,0 0; }
+    100% { background-position:76px -92px,106px -16px,134px 94px,0 0; }
+  }
+  @keyframes janmashtamiDividerGlow {
+    0%,100% { opacity:.68; box-shadow:0 0 8px rgba(103,230,213,.12); }
+    50% { opacity:1; box-shadow:0 0 18px rgba(255,214,111,.30); }
+  }
+  @keyframes janmashtamiPanelGlow {
+    0%,100% { border-color:rgba(255,214,111,.54); box-shadow:inset 5px 0 0 #ffd66f,0 12px 32px rgba(0,0,0,.36); }
+    50% { border-color:rgba(103,230,213,.78); box-shadow:inset 5px 0 0 #67e6d5,0 12px 38px rgba(32,184,170,.20); }
+  }
+  @keyframes janmashtamiTitleGlow {
+    0%,100% { transform:translateY(0); color:#ffe18a; text-shadow:0 0 24px rgba(255,214,111,.22),0 5px 18px rgba(0,0,0,.62); }
+    50% { transform:translateY(-3px); color:#fff2b7; text-shadow:0 0 32px rgba(255,214,111,.46),0 5px 18px rgba(0,0,0,.62); }
+  }
+  @keyframes janmashtamiLabelGlow {
+    0%,100% { text-shadow:0 0 8px rgba(255,214,111,.10); }
+    50% { text-shadow:0 0 22px rgba(255,214,111,.42); }
+  }
+  @keyframes janmashtamiRowReveal {
+    0% { opacity:0; transform:translateY(12px); }
+    100% { opacity:1; transform:translateY(0); }
+  }
+  @keyframes janmashtamiRowGlow {
+    0%,16% { border-color:rgba(255,214,111,.48); box-shadow:inset 5px 0 0 rgba(255,214,111,.96),0 0 18px rgba(103,230,213,.12); }
+    24%,100% { border-color:rgba(103,230,213,.16); box-shadow:inset 3px 0 0 rgba(255,214,111,.72); }
+  }
+  @keyframes janmashtamiIconFloat {
+    0%,100% { transform:translateY(0); }
+    50% { transform:translateY(-4px); }
+  }
+  @keyframes janmashtamiObservanceGlow {
+    0%,100% { color:#e1edf3; text-shadow:0 0 7px rgba(103,230,213,.08); }
+    50% { color:#fff2b7; text-shadow:0 0 18px rgba(255,214,111,.30); }
+  }
+
   .next-event.janmashtami-upcoming {
     margin-top:10px; gap:7px; justify-content:flex-start; overflow:hidden; font-size:20px; line-height:1.17;
   }
@@ -805,7 +897,7 @@
   .janmashtami-upcoming-head .santo-schedule-label {
     margin:0 auto 5px; color:#9af3e7; border-color:rgba(103,230,213,.56); background:rgba(11,71,88,.72);
   }
-  .janmashtami-upcoming-title { color:#ffe18a; font-size:37px; line-height:1.02; font-weight:700; }
+  .janmashtami-upcoming-title { color:#ffe18a; font-size:44px; line-height:1.02; font-weight:700; }
   .janmashtami-upcoming-subtitle {
     margin-top:3px; color:#a8f4e9; font-size:17px; font-weight:700; letter-spacing:1.7px; text-transform:uppercase;
   }
@@ -820,23 +912,23 @@
     grid-column:2; color:#c8e5e1; font-size:15px; line-height:1.16; font-style:italic;
   }
   .janmashtami-upcoming-observances {
-    color:#cbdce8; font-size:15px; line-height:1.16; font-weight:700; text-align:center;
+    color:#e1edf3; font-size:18px; line-height:1.16; font-weight:700; text-align:center;
   }
   .hero.event-day .today-events.janmashtami-program.fit-tight { margin-top:0; gap:5px; }
-  .hero.event-day .today-events.janmashtami-program.fit-tight .janmashtami-event-name { font-size:45px; }
+  .hero.event-day .today-events.janmashtami-program.fit-tight .janmashtami-event-name { font-size:58px; }
   .hero.event-day .today-events.janmashtami-program.fit-tight .janmashtami-row { min-height:49px; padding-top:6px; padding-bottom:6px; }
   .hero.event-day .today-events.janmashtami-program.fit-tight .janmashtami-time { font-size:22px; }
   .hero.event-day .today-events.janmashtami-program.fit-tight .janmashtami-detail { font-size:23px; }
-  .hero.event-day .today-events.janmashtami-program.fit-ultra .janmashtami-event-name { font-size:41px; }
+  .hero.event-day .today-events.janmashtami-program.fit-ultra .janmashtami-event-name { font-size:52px; }
   .hero.event-day .today-events.janmashtami-program.fit-ultra .janmashtami-row { min-height:45px; padding-top:5px; padding-bottom:5px; }
   .hero.event-day .today-events.janmashtami-program.fit-ultra .janmashtami-time { font-size:20px; }
   .hero.event-day .today-events.janmashtami-program.fit-ultra .janmashtami-detail { font-size:21px; }
   .upcoming.fit-tight .next-event.janmashtami-upcoming { gap:5px; }
-  .upcoming.fit-tight .janmashtami-upcoming-title { font-size:33px; }
+  .upcoming.fit-tight .janmashtami-upcoming-title { font-size:39px; }
   .upcoming.fit-tight .janmashtami-upcoming-row { padding:5px 7px; }
   .upcoming.fit-tight .janmashtami-upcoming-time { font-size:16px; }
   .upcoming.fit-tight .janmashtami-upcoming-detail { font-size:17px; }
-  .upcoming.fit-ultra .janmashtami-upcoming-title { font-size:30px; }
+  .upcoming.fit-ultra .janmashtami-upcoming-title { font-size:36px; }
   .upcoming.fit-ultra .janmashtami-upcoming-time { font-size:15px; }
   .upcoming.fit-ultra .janmashtami-upcoming-detail { font-size:16px; }
   .upcoming.fit-ultra .janmashtami-upcoming-note,
@@ -847,22 +939,37 @@
     body.janmashtami-day .hero.event-day .today-copy { padding-top:104px; }
     body.janmashtami-day .hero.event-day .today-title { min-height:92px; }
     body.janmashtami-day .hero.event-day .today-events.janmashtami-program { margin-top:8px; gap:8px; }
-    .janmashtami-event-name { font-size:clamp(36px,10vw,50px); }
+    .janmashtami-event-name { font-size:clamp(42px,11vw,60px); }
     .janmashtami-schedule-title { font-size:clamp(16px,4.4vw,21px); }
     .janmashtami-timeline { gap:8px; }
     .janmashtami-row { grid-template-columns:1fr; gap:3px; padding:11px 13px; }
     .janmashtami-time { font-size:clamp(18px,4.8vw,24px); text-align:center; white-space:normal; }
     .janmashtami-detail { font-size:clamp(20px,5.3vw,27px); text-align:center; }
     .janmashtami-note { grid-column:1; font-size:clamp(15px,3.9vw,19px); text-align:center; }
-    .janmashtami-observances { font-size:clamp(15px,3.8vw,19px); }
+    .janmashtami-observances { font-size:clamp(20px,5vw,24px); }
     .next-event.janmashtami-upcoming { overflow:visible; }
-    .janmashtami-upcoming-title { font-size:clamp(31px,8vw,42px); }
+    .janmashtami-upcoming-title { font-size:clamp(34px,8.8vw,46px); }
     .janmashtami-upcoming-subtitle { font-size:clamp(15px,4vw,19px); }
     .janmashtami-upcoming-row { grid-template-columns:1fr; gap:3px; padding:10px 11px; }
     .janmashtami-upcoming-time { font-size:clamp(17px,4.5vw,22px); }
     .janmashtami-upcoming-detail { font-size:clamp(19px,5vw,25px); }
     .janmashtami-upcoming-note { grid-column:1; font-size:clamp(14px,3.8vw,18px); }
-    .janmashtami-upcoming-observances { font-size:clamp(14px,3.8vw,18px); }
+    .janmashtami-upcoming-observances { font-size:clamp(17px,4.4vw,20px); }
+  }
+
+  @media (prefers-reduced-motion:reduce) {
+    body.janmashtami-day .screen,
+    body.janmashtami-day .screen::before,
+    body.janmashtami-day .screen::after,
+    body.janmashtami-day .today-title,
+    body.janmashtami-day .janmashtami-event-name,
+    body.janmashtami-day .next-label,
+    body.janmashtami-day .janmashtami-row,
+    body.janmashtami-day .janmashtami-icon,
+    body.janmashtami-day .janmashtami-observances {
+      animation:none !important;
+    }
+    body.janmashtami-day .janmashtami-row { opacity:1; transform:none; }
   }
 
   /* SSMB brand typography: Philosopher is used for every visible text element. */
@@ -923,10 +1030,10 @@ const SANTO_SCHEDULE = [
 const JANMASHTAMI_DATE = '2026-09-04';
 const JANMASHTAMI_SCHEDULE = [
   {icon:'🕢', time:'7:30 PM – 8:15 PM', detail:'Nitya Aarti & Chesta'},
-  {icon:'📖', time:'8:15 PM onwards', detail:'Janmotsav Katha, Matki Fod & Raas Utsav together', note:'Utsav Aarti will be done at the moment of Janm in the Katha'},
+  {icon:'📖', time:'8:15 PM onwards', detail:'Janamotsav Katha, Matki Fod & Raas Utsav together', note:'Utsav Aarti will be done at the moment of Janam in the Katha'},
   {icon:'🙏', time:'10:30 PM – 12:00 AM', detail:'Vishnu Sahastranaam Poojan with Navdha Bhakti Arpan at every 100 naam'},
   {icon:'🎶', time:'If time permits', detail:'Kirtan Bhajan'},
-  {icon:'🕛', time:'12:00 AM onwards', detail:'Janmotsav Aarti, Stuti & Podhaniya'}
+  {icon:'🕛', time:'12:00 AM onwards', detail:'Janamotsav Aarti, Stuti & Podhaniya'}
 ];
 
 const SANTO_SCHEDULE_REPLACEMENTS = new Set([
@@ -968,9 +1075,7 @@ function janmashtamiObservances(events) {
 function janmashtamiTodayMarkup(events) {
   const observances = janmashtamiObservances(events);
   return '<div class="janmashtami-heading">' +
-    '<span class="santo-schedule-label">Santo Schedule</span>' +
-    '<div class="janmashtami-event-name">Shree Krishna Janmashtami</div>' +
-    '<div class="janmashtami-schedule-title">Evening Schedule</div></div>' +
+    '<div class="janmashtami-event-name">Shree Krishna Janmashtami</div></div>' +
     '<div class="janmashtami-timeline">' + JANMASHTAMI_SCHEDULE.map(item =>
       '<div class="janmashtami-row">' +
       '<div class="janmashtami-time"><span class="janmashtami-icon" aria-hidden="true">' + escapeHtml(item.icon) + '</span>' + escapeHtml(item.time) + '</div>' +
@@ -984,9 +1089,7 @@ function janmashtamiTodayMarkup(events) {
 function janmashtamiUpcomingMarkup(events) {
   const observances = janmashtamiObservances(events);
   return '<div class="janmashtami-upcoming-head">' +
-    '<span class="santo-schedule-label">Santo Schedule</span>' +
-    '<div class="janmashtami-upcoming-title">Shree Krishna Janmashtami</div>' +
-    '<div class="janmashtami-upcoming-subtitle">Evening Schedule</div></div>' +
+    '<div class="janmashtami-upcoming-title">Shree Krishna Janmashtami</div></div>' +
     '<div class="janmashtami-upcoming-list">' + JANMASHTAMI_SCHEDULE.map(item =>
       '<div class="janmashtami-upcoming-row">' +
       '<div class="janmashtami-upcoming-time">' + escapeHtml(item.time) + '</div>' +
@@ -2044,16 +2147,17 @@ function render() {
   const isJanmashtami = today === JANMASHTAMI_DATE;
   const isPrasannatmaShibir = today === '2026-09-06';
   const rotatingThemes = ['theme-amber','theme-royal','theme-lotus','theme-teal'];
-  document.body.classList.remove('raksha-bandhan-day','janmashtami-day','prasannatma-shibir-day', ...rotatingThemes);
-  if (isRakshaBandhan) {
-    document.body.classList.add('raksha-bandhan-day');
-  } else if (isJanmashtami) {
-    document.body.classList.add('janmashtami-day');
-  } else if (isPrasannatmaShibir) {
-    document.body.classList.add('prasannatma-shibir-day');
-  } else {
-    const themeIndex = [...today].reduce((sum,ch) => sum + ch.charCodeAt(0), 0) % rotatingThemes.length;
-    document.body.classList.add(rotatingThemes[themeIndex]);
+  const themeIndex = [...today].reduce((sum,ch) => sum + ch.charCodeAt(0), 0) % rotatingThemes.length;
+  const activeTheme = isRakshaBandhan
+    ? 'raksha-bandhan-day'
+    : isJanmashtami
+      ? 'janmashtami-day'
+      : isPrasannatmaShibir
+        ? 'prasannatma-shibir-day'
+        : rotatingThemes[themeIndex];
+  if (!document.body.classList.contains(activeTheme)) {
+    document.body.classList.remove('raksha-bandhan-day','janmashtami-day','prasannatma-shibir-day', ...rotatingThemes);
+    document.body.classList.add(activeTheme);
   }
   const calendarEvents = [
     ...EVENTS.filter(event => !SANTO_SCHEDULE_REPLACEMENTS.has(event.date + '|' + event.event)),
