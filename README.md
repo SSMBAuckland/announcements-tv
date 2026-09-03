@@ -58,7 +58,6 @@ If it doesn't automatically do this, you'll have to log in to the dashboard and 
 1. Check that the updates look correct by visiting **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)** on your computer or phone.
 2. If the physical display screen does not update automatically within a few minutes, **restart the Yodeck media player** connected to the TV/monitor:
    * **Via Yodeck Dashboard:**
-   * <img width="550" height="801" alt="image" src="https://github.com/user-attachments/assets/af2c77b5-49ca-43f2-a546-2135cda1d927" />
    * **Manually:** Unplug the power cable from the small Yodeck player box behind the TV, wait **10 seconds**, and plug it back in.
 
 ---
