@@ -1,4 +1,4 @@
-# 🕒 SSMB Auckland Clock + Announcements TV
+# 🕒 SSMB Announcements TV
 
 This repository hosts the live display code for **[ssmbauckland.github.io/announcements-tv](https://ssmbauckland.github.io/announcements-tv/)**.
 
