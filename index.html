@@ -2068,6 +2068,53 @@ render();
 scheduleDashboardPanelFit();
 if (document.fonts && document.fonts.ready) document.fonts.ready.then(scheduleDashboardPanelFit);
 setInterval(render, 1000);
+
+(function initSecretDatePicker() {
+  const dateCard = document.querySelector('.date-card');
+  if (!dateCard) return;
+
+  const hiddenDateInput = document.createElement('input');
+  hiddenDateInput.type = 'date';
+  hiddenDateInput.setAttribute('aria-hidden', 'true');
+  hiddenDateInput.tabIndex = -1;
+  Object.assign(hiddenDateInput.style, {
+    position: 'fixed',
+    top: '0',
+    left: '0',
+    width: '1px',
+    height: '1px',
+    opacity: '0',
+    pointerEvents: 'none',
+    border: '0',
+    padding: '0',
+    margin: '0'
+  });
+  document.body.appendChild(hiddenDateInput);
+
+  const currentPreview = new URLSearchParams(window.location.search).get('previewDate');
+  if (currentPreview) hiddenDateInput.value = currentPreview;
+
+  hiddenDateInput.addEventListener('change', () => {
+    if (!hiddenDateInput.value) return;
+    const url = new URL(window.location.href);
+    url.searchParams.set('previewDate', hiddenDateInput.value);
+    window.location.href = url.toString();
+  });
+
+  dateCard.addEventListener('click', () => {
+    try {
+      if (typeof hiddenDateInput.showPicker === 'function') {
+        hiddenDateInput.showPicker();
+      } else {
+        hiddenDateInput.focus();
+        hiddenDateInput.click();
+      }
+    } catch (err) {
+      hiddenDateInput.focus();
+      hiddenDateInput.click();
+    }
+  });
+})();
 </script>
 </body>
 </html>
