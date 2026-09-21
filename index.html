@@ -270,13 +270,17 @@
     .today-copy { max-width:none; padding:0; gap:17px; }
     .today-title { width:100%; padding:15px 16px; font-size:clamp(25px,7vw,36px); text-align:center; white-space:normal; border-radius:15px; }
     .today-events { font-size:clamp(48px,12vw,70px); text-align:center; }
-    .upcoming { min-height:300px; padding:28px 22px; border-radius:22px; }
-    .next-wrap { justify-content:center; text-align:center; }
+    .upcoming { min-height:300px; padding:28px 22px; border-radius:22px; overflow:visible; }
+    .next-wrap { justify-content:center; text-align:center; height:auto; }
     .next-label { align-self:center; padding-bottom:8px; font-size:clamp(23px,6vw,30px); border-bottom-width:3px; }
-    .next-event { margin-top:16px; font-size:clamp(50px,12.5vw,72px); }
+    .next-event { margin-top:16px; font-size:clamp(50px,12.5vw,72px); min-height:0; }
     .next-event.multiple-events { font-size:clamp(38px,9vw,54px); }
     .next-event.many-events { font-size:clamp(30px,7.4vw,42px); }
     .next-event-item { padding:13px 0 15px; }
+    .next-event.multiple-events .next-event-item,
+    .next-event.many-events .next-event-item {
+      flex:0 0 auto; min-height:auto;
+    }
     .santo-schedule-label { margin-bottom:10px; padding:7px 16px; font-size:clamp(19px,5vw,26px); letter-spacing:1.6px; }
     .next-event-item .santo-schedule-label { margin:0 auto 10px; font-size:clamp(17px,4.5vw,22px); }
     .next-event-time { margin-top:8px; font-size:clamp(22px,5.8vw,30px); }
@@ -453,6 +457,48 @@
   }
 
   /* Bal Krishna Chhathi: date-specific midnight-blue, lotus-pink and gold theme for 9 September 2026. */
+  /* The "prominent" event-day treatment above is sized for the scaled 1920px TV
+     canvas; on a real portrait phone (no canvas scaling) those raw pixel values
+     would overflow the viewport, so give every one of its states a phone-sized
+     rewrite here (placed after the rules above so it wins the specificity tie). */
+  @media (max-width:1200px) and (orientation:portrait) {
+    .hero.event-day .today-copy,
+    .hero.empty-day .today-copy {
+      position:static; width:100%; padding:0; height:auto; flex:none;
+      align-items:center; justify-content:flex-start;
+    }
+    .hero.event-day .today-title,
+    .hero.empty-day .today-title {
+      position:static; top:auto; left:auto; transform:none;
+      width:100%; min-height:0; margin:0 0 16px; padding:15px 16px;
+      font-size:clamp(24px,6.8vw,34px);
+    }
+    .hero.event-day .today-events {
+      width:100%; max-width:none; margin:0; flex:none;
+      font-size:clamp(40px,10.5vw,58px); line-height:1.1;
+    }
+    .hero.event-day .today-events .event-line { flex:none; }
+    .hero.event-day .today-events.quote-medium,
+    .hero.event-day .today-events.quote-long,
+    .hero.event-day .today-events.quote-xlong {
+      margin-top:10px; font-size:clamp(40px,10.5vw,58px);
+    }
+    .hero.event-day .today-events.multiple-events {
+      margin-top:8px; font-size:clamp(30px,8vw,46px);
+    }
+    .hero.event-day .today-events.multiple-events .santo-schedule-label {
+      font-size:clamp(16px,4.4vw,22px); padding:6px 14px; margin-bottom:6px;
+    }
+    .hero.event-day .today-events.multiple-events .today-event-time { font-size:clamp(18px,5vw,26px); }
+    .hero.event-day .today-events.multiple-events .today-event-note { font-size:clamp(14px,4vw,19px); }
+    .hero.event-day .today-events.multiple-events.no-quote { font-size:clamp(34px,9vw,52px); }
+    .hero.event-day .today-events.multiple-events.no-quote .santo-schedule-label {
+      font-size:clamp(18px,4.8vw,24px);
+    }
+    .hero.event-day .today-events.multiple-events.no-quote .today-event-time { font-size:clamp(20px,5.6vw,30px); }
+    .hero.event-day .today-events.multiple-events.no-quote .today-event-note { font-size:clamp(15px,4.2vw,20px); }
+  }
+
   body.chhathi-day {
     --gold:#ffd978; --gold2:#fff0b5; --pink:#f08ab8; --pink2:#ffc1dc;
     --cream:#fff9e7; --muted:#ccd2e6; --line:rgba(255,217,120,.34);
