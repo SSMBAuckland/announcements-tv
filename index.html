@@ -981,7 +981,20 @@
   }
   .pv-bar[hidden] { display:none; }
   .pv-bar.is-awake, .pv-bar:hover, .pv-bar:focus-within { opacity:1; }
-  @media (hover:none) { .pv-bar { opacity:1; } }
+  @media (hover:none) and (orientation:portrait) { .pv-bar { opacity:1; } }
+  /* Phones held sideways show the scaled TV canvas; keep the bar small so it hides less. */
+  @media (max-height:520px) and (orientation:landscape) {
+    .pv-bar { bottom:8px; padding:4px; gap:2px; }
+    .pv-badge { padding:6px; }
+    .pv-badge span { display:none; }
+    .pv-bar-step { width:30px; height:30px; }
+    .pv-bar-date { min-width:0; padding:2px 10px; }
+    .pv-bar-date strong { font-size:13px; }
+    .pv-bar-date span { font-size:10px; }
+    .pv-bar-live { padding:6px 11px; font-size:13px; }
+    .pv-overlay { padding:8px; }
+    .pv-dialog { max-height:calc(100vh - 16px); }
+  }
   .pv-bar button { font-size:inherit; line-height:inherit; }
   .pv-badge {
     display:inline-flex; align-items:center; gap:6px; padding:8px 13px; border-radius:999px;
@@ -1028,9 +1041,20 @@
     .pv-date { font-size:24px; }
     .pv-mini { width:104px; height:60px; }
     .pv-events { max-height:none; }
-    .pv-foot { padding:14px 16px 18px; }
+    .pv-title { font-size:clamp(17px,5vw,20px); }
+    /* Keep the Preview button in reach while the sheet scrolls. */
+    .pv-foot {
+      position:sticky; bottom:0; z-index:2; gap:10px;
+      padding:12px 16px calc(14px + env(safe-area-inset-bottom));
+      background:var(--bg); box-shadow:0 -12px 24px rgba(0,0,0,.35);
+    }
+    .pv-quick { width:100%; flex-wrap:nowrap; }
+    .pv-chip { flex:1 1 auto; justify-content:center; padding:7px 8px; font-size:13px; white-space:nowrap; }
+    .pv-btn { padding:10px 12px; font-size:14px; white-space:nowrap; }
     .pv-actions { width:100%; }
-    .pv-actions .pv-btn { flex:1; justify-content:center; }
+    .pv-actions { flex-wrap:nowrap; }
+    .pv-actions .pv-btn { flex:1 1 auto; min-width:0; justify-content:center; }
+    .pv-dialog { overflow-x:hidden; }
     .pv-bar { bottom:calc(12px + env(safe-area-inset-bottom)); }
     .pv-badge { padding:8px; }
     .pv-badge span { display:none; }
@@ -2784,6 +2808,7 @@ setInterval(render, 1000);
   });
 
   document.addEventListener('mousemove', wakeBar, {passive:true});
+  document.addEventListener('touchstart', wakeBar, {passive:true});
   document.addEventListener('keydown', event => {
     if (!overlay.hidden || bar.hidden || event.altKey || event.ctrlKey || event.metaKey) return;
     if (event.key === 'ArrowLeft') stepPreview(-1);
