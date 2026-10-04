@@ -11,6 +11,7 @@ Follow the simple step-by-step instructions below whenever you generate new disp
 2. [Method A: Edit the File Directly in GitHub (Recommended)](#method-a-edit-the-file-directly-in-github-recommended)
 3. [Method B: Upload a New File](#method-b-upload-a-new-file)
 4. [Updating the Physical Screen (Yodeck)](#-updating-the-physical-screen-yodeck)
+5. [Changelog](#-changelog)
 
 ---
 
@@ -59,6 +60,12 @@ If it doesn't automatically do this, you'll have to log in to the dashboard and 
 2. If the physical display screen does not update automatically within a few minutes, **restart the Yodeck media player** connected to the TV/monitor:
    * **Via Yodeck Dashboard:**
    * **Manually:** Unplug the power cable from the small Yodeck player box behind the TV, wait **10 seconds**, and plug it back in.
+
+---
+
+## 📝 Changelog
+
+Every time you publish a new `index.html`, add a short entry at the top of **[CHANGELOG.md](CHANGELOG.md)** describing what changed (new events, time changes, design updates).
 
 ---
 
