@@ -2,6 +2,20 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-05
+
+### Added
+- **Festival messages:** on festival days, the festival's short message now appears in italics under today's events (one per day, the main festival's own message first).
+- **More upcoming days:** the Upcoming panel now shows up to 4 upcoming days (the next one in full, the rest as compact rows) when they fit, and the title changes to "Upcoming Events".
+- **Festival countdown:** for the 21 days before Navratri, Dashera, Sharad Poonam, Diwali, Annkutotsav, Nutan Varsh and Prabodhini Ekadashi, a "Countdown to …" card appears at the bottom of the Upcoming panel. It is hidden when the festival is already listed in the panel.
+- **Festival themes:** each of those festivals gets its own colour theme on the day. Navratri, Dashera, Diwali and Nutan Varsh also replace the "Today at the Mandir" title with a greeting (e.g. "Happy Diwali!", "Nutan Varshabhinandan!"). The festival list is `FESTIVALS` in `index.html`.
+
+### Fixed
+- Removed the duplicate "Chopada Poojan" (8 Nov, same as Chopda Pujan) and the second "Gita Jayanti" (20 Dec).
+- Removed a double space in "HH 1008 Acharya Shree Koshalendra Prasadji Maharaj".
+- Shloks that share one translation (3–6, 49–54, 77–78, 81–82, 93–95, 101–102, 109–110, 153–154, 175–176, 194–195) are now shown once, labelled e.g. "Shikshapatri, Shloks 3–6" (212 entries → 195).
+- Fixed broken words in shlok text ("rosaries", "non-violence", "households", "marriage-connections", "sensory-organs") and removed the "(Vide page 5 SHIKSHAPATRI ARTHA DEEPIKA)" note from shlok 1.
+
 ## 2026-10-04
 
 ### Changed
