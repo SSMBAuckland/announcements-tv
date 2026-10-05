@@ -933,6 +933,11 @@ function festivalFor(e) {
   const name = e.event.trim().toLowerCase();
   return FESTIVALS.find(f => f.event.toLowerCase() === name) || null;
 }
+
+// Within each day: big festivals first, then other festivals, then scheduled programmes
+// (events with a source such as the Mandal Santos Schedule). Otherwise the listed order is kept.
+function eventRank(e) { return festivalFor(e) ? 0 : e.source ? 2 : 1; }
+Object.keys(EVENTS_BY_DAY).forEach(key => EVENTS_BY_DAY[key].sort((a, b) => eventRank(a) - eventRank(b)));
 function eventTheme(e) {
   const f = festivalFor(e);
   return e.theme || (f && f.theme) || '';

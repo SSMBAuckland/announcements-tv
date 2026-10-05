@@ -10,6 +10,8 @@ All notable changes to the SSMB Announcements TV display (`index.html`) are reco
 - **Festival countdown:** for the 21 days before Navratri, Dashera, Sharad Poonam, Diwali, Annkutotsav, Nutan Varsh and Prabodhini Ekadashi, a "Countdown to …" card appears at the bottom of the Upcoming panel. It is hidden when the festival is already listed in the panel.
 - **Festival themes:** each of those festivals gets its own colour theme on the day. Navratri, Dashera, Diwali and Nutan Varsh also replace the "Today at the Mandir" title with a greeting (e.g. "Happy Diwali!", "Nutan Varshabhinandan!"). The festival list is `FESTIVALS` in `index.html`.
 
+- **Festivals listed first:** within each day, big festivals come first (e.g. Diwali before Laxmi Pujan and Chopda Pujan), then other festivals, then scheduled programmes such as the Mandal Santos Schedule.
+
 ### Fixed
 - Removed the duplicate "Chopada Poojan" (8 Nov, same as Chopda Pujan) and the second "Gita Jayanti" (20 Dec).
 - Removed a double space in "HH 1008 Acharya Shree Koshalendra Prasadji Maharaj".
