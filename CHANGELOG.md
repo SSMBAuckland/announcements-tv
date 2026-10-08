@@ -3,6 +3,9 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-09
+- Added "Q&A with Santos, 7:00 PM onwards" to Saturday 10 Oct.
+- **Live event status on the Today panel:** the event in progress gets an "On now" tag beside its time, and finished events move out of the main list into a small "✓ Earlier today" line underneath, so the next event is always the big one. When everything with a time has finished, the panel says "Today's programme is complete – Thank you for joining us". Events without a time (festivals) are never marked finished. An event with only a start time is treated as running until the next timed event (at most 3 hours, or 90 minutes if it's the last one); "onwards" runs to the end of the day.
+- Previews can now set a time of day too: `?previewDate=2026-10-10&previewTime=19:30`.
 - Saturday 10 Oct programme: Mahapooja (3:30 AM), Anushthan (6:00 AM, as per the schedule) and Aarti, Nitya Niyam & Katha (7:00 AM). Replaces the earlier "Anushthan & Q&A with Santos, 7:45 – 9:00 AM" entry.
 - The "Mandal Santos Schedule" label (and any other source label) now appears once above a run of events that share it, instead of on every line.
 - The festival countdown card now hides itself when tomorrow's events would otherwise be squeezed too small to read (or cut off).

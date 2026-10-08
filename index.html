@@ -189,6 +189,23 @@ body.tv-canvas .screen {
 .fest-name { display: block; margin-top: 6px; font-size: 50px; line-height: 1.08; font-weight: 700; color: var(--ink); }
 .fest-days { display: block; margin-top: 8px; font-size: 30px; line-height: 1.2; color: var(--soft); }
 .fest-days b { font-size: 58px; line-height: 1; color: var(--accent); }
+/* "On now" pill beside the time of the event in progress */
+.ev-live {
+  display: inline-block; margin-left: .55em; padding: .1em .65em .16em; border-radius: 999px; vertical-align: .14em;
+  font-size: .58em; line-height: 1.1; letter-spacing: .04em; background: var(--accent); color: var(--deep);
+  animation: livePulse 2.6s ease-in-out infinite;
+}
+@keyframes livePulse { 50% { opacity: .62; } }
+/* Finished events: one quiet line under the rest of today */
+.ev-earlier {
+  margin-top: calc(12px * var(--u)); padding-top: calc(12px * var(--u)); border-top: 1px solid var(--hair);
+  text-align: center; font-size: calc(var(--s-note) * var(--u) * .9px); line-height: 1.45; color: var(--soft);
+}
+.ev-earlier-label {
+  display: block; margin-bottom: .15em; font-size: .78em; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2);
+}
+.ev-earlier-item { display: inline-block; margin: 0 .7em; opacity: .8; }
+.ev-earlier-time { opacity: .75; font-size: .9em; }
 .ev-quote {
   margin: calc(18px * var(--u)) auto calc(6px * var(--u)); max-width: 1000px;
   text-align: center; font-size: calc(var(--s-note) * var(--u) * 1.05px); line-height: 1.3; font-style: italic; color: var(--accent-2);
@@ -244,7 +261,7 @@ body.tv-canvas .screen {
   .shlok.is-leaving { transform: none; }
   .shlok.is-entering { animation: none; }
   .clock-hm .c { transition: none; }
-  .screen::before, .brand::before, .fest::after { animation: none; }
+  .screen::before, .brand::before, .fest::after, .ev-live { animation: none; }
   .ambient { display: none; }
 }
 
@@ -671,6 +688,7 @@ const EVENTS = [
   {"date": "10/10/2026", "event": "Mahapooja", "time": "3:30 AM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "10/10/2026", "event": "Anushthan", "time": "6:00 AM", "note": "As per the schedule", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "10/10/2026", "event": "Aarti, Nitya Niyam & Katha", "time": "7:00 AM", "source": "Mandal Santos Schedule", "progress": false},
+  {"date": "10/10/2026", "event": "Q&A with Santos", "time": "7:00 PM onwards", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "11/10/2026", "event": "Outing with Santos", "time": "9:00 AM – 2:00 PM", "note": "Followed by Special Sabha: Mandir Mahima", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "12/10/2026", "event": "Special Sabha: Bhojan/Ahar", "time": "7:45 – 8:45 PM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "13/10/2026", "event": "Special Sabha: Dasatva", "time": "7:45 – 8:45 PM", "source": "Mandal Santos Schedule", "progress": false},
@@ -921,7 +939,9 @@ function aucklandNow() {
 }
 function aucklandDateKey(now) {
   const previewDate = dashboardPreviewDate();
-  if (previewDate) return previewDate;
+  return previewDate || realDateKey(now);
+}
+function realDateKey(now) {
   const parts = new Intl.DateTimeFormat('en-CA', {
     year: 'numeric', month: '2-digit', day: '2-digit', timeZone: 'Pacific/Auckland'
   }).formatToParts(now).reduce((result, part) => {
@@ -929,6 +949,45 @@ function aucklandDateKey(now) {
     return result;
   }, {});
   return parts.year + '-' + parts.month + '-' + parts.day;
+}
+
+/* ───────── Today's event status: finished / on now ───────── */
+const fmtClock24 = new Intl.DateTimeFormat('en-GB', {hour: '2-digit', minute: '2-digit', hourCycle: 'h23', timeZone: 'Pacific/Auckland'});
+// Minutes since midnight in Auckland. Previews use ?previewTime=HH:MM if given, the real time when
+// previewing today, and otherwise treat the day as not started.
+function aucklandMinutesNow(todayKey) {
+  const t = new URLSearchParams(window.location.search).get('previewTime') || '';
+  if (/^\d{1,2}:\d{2}$/.test(t)) { const [h, m] = t.split(':').map(Number); return h * 60 + m; }
+  const real = new Date();
+  if (todayKey !== realDateKey(real)) return null;
+  const [h, m] = fmtClock24.format(real).split(':').map(Number);
+  return h * 60 + m;
+}
+// Reads times such as "3:30 AM", "7:00 PM onwards", "6:15 – 7:00 PM" or "9:00 AM – 2:00 PM".
+const TIME_RE = /(\d{1,2}):(\d{2})\s*(AM|PM)?(?:\s*[–-]\s*(\d{1,2}):(\d{2})\s*(AM|PM))?/i;
+function clockMinutes(h, m, period) { return (Number(h) % 12 + (/pm/i.test(period) ? 12 : 0)) * 60 + Number(m); }
+function timeWindow(e) {
+  const m = e.time ? e.time.match(TIME_RE) : null;
+  if (!m || !(m[3] || m[6])) return null;
+  let start = clockMinutes(m[1], m[2], m[3] || m[6]);
+  const end = m[4] ? clockMinutes(m[4], m[5], m[6]) : null;
+  if (end !== null && !m[3] && start > end) start -= 12 * 60;   // "11:30 – 1:00 PM"
+  return {start, end, onwards: /onwards/i.test(e.time)};
+}
+// For each of today's events: 'done', 'now' or '' (still to come, or no time given).
+// An event with only a start time runs until the next timed event (at most 3 hours, 90 minutes
+// if it is the last); "onwards" runs to the end of the day.
+function eventStatuses(events, nowMin) {
+  const wins = events.map(timeWindow);
+  return wins.map(w => {
+    if (!w || nowMin === null) return '';
+    let end = w.end;
+    if (end === null) {
+      const later = wins.filter(x => x && x.start > w.start).map(x => x.start);
+      end = w.onwards ? 24 * 60 : later.length ? Math.min(Math.min(...later), w.start + 180) : w.start + 90;
+    }
+    return nowMin >= end ? 'done' : nowMin >= w.start ? 'now' : '';
+  });
 }
 const fmtWeekday = new Intl.DateTimeFormat('en-NZ', {weekday: 'long', timeZone: 'Pacific/Auckland'});
 const fmtFull = new Intl.DateTimeFormat('en-NZ', {day: 'numeric', month: 'long', year: 'numeric', timeZone: 'Pacific/Auckland'});
@@ -1114,20 +1173,31 @@ function noteLines(e) {
 // them in small steps until the whole day fits inside the niche.
 const TODAY_SIZES = {1: [140, 62, 40], 2: [112, 52, 34], 3: [92, 44, 30], 4: [80, 38, 28], 5: [68, 34, 26]};
 
-function todayMarkup(events) {
+// Events still to come (or on now) are shown in full; finished ones move to a small
+// "Earlier today" line underneath.
+function todayMarkup(events, statuses) {
   if (!events.length) {
     return '<div class="ev-list"><div class="ev">' +
       '<div class="ev-name">Enjoy a blessed day of satsang and seva.</div></div></div>';
   }
-  return '<div class="ev-list">' + events.map((e, i) =>
-    '<article class="ev">' +
-      (showSource(events, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
+  const active = events.filter((e, i) => statuses[i] !== 'done');
+  const live = events.filter((e, i) => statuses[i] === 'now');
+  const done = events.filter((e, i) => statuses[i] === 'done');
+  const main = active.length ? active.map((e, i) =>
+    '<article class="ev' + (live.includes(e) ? ' is-now' : '') + '">' +
+      (showSource(active, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
       '<div class="ev-name">' + escapeHtml(e.event) + '</div>' +
       (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
-      (e.time ? '<div class="ev-time">' + escapeHtml(e.time) + '</div>' : '') +
+      (e.time ? '<div class="ev-time">' + escapeHtml(e.time) +
+        (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' : '') +
       noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') +
     '</article>'
-  ).join('') + quoteMarkup(events) + '</div>';
+  ).join('') : '<article class="ev"><div class="ev-name">Today’s programme is complete</div>' +
+    '<div class="ev-note">Thank you for joining us</div></article>';
+  const earlier = done.length ? '<div class="ev-earlier"><span class="ev-earlier-label">Earlier today</span>' +
+    done.map(e => '<span class="ev-earlier-item">✓ ' + escapeHtml(e.event) +
+      ' <span class="ev-earlier-time">' + escapeHtml(e.time) + '</span></span>').join('') + '</div>' : '';
+  return '<div class="ev-list">' + main + earlier + quoteMarkup(events) + '</div>';
 }
 
 // A source label (e.g. "Mandal Santos Schedule") is shown once, above the first of a run of events that share it.
@@ -1163,7 +1233,7 @@ function portraitScale() { return Math.max(.34, Math.min(.8, window.innerWidth /
 
 function layoutToday() {
   const box = $('todayEvents');
-  const count = Math.min(state.todayEvents.length, 5);
+  const count = Math.min(state.activeCount, 5);
   const sizes = count === 0 ? [88, 50, 30] : (TODAY_SIZES[count] || [60, 30, 24]);
   const scale = inCanvas() ? 1 : portraitScale();
   box.style.setProperty('--s-name', sizes[0]);
@@ -1390,7 +1460,8 @@ function render() {
     key: k, dt: dateFromKey(k), events: EVENTS_BY_DAY[k]
   }));
   const festival = nextFestival(today);
-  const sig = [today, inCanvas() ? 'tv' : 'phone', festival ? festival.key : '']
+  const statuses = eventStatuses(todayEvents, aucklandMinutesNow(today));
+  const sig = [today, inCanvas() ? 'tv' : 'phone', festival ? festival.key : '', statuses.join(',')]
     .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro].join('~')))
     .concat(upcoming.map(g => g.key + ':' + g.events.map(e => [e.event, e.time, e.note, e.source].join('~')).join('|')))
     .join('||');
@@ -1400,7 +1471,9 @@ function render() {
     state.todayEvents = todayEvents;
     state.upcoming = upcoming;
     state.festival = festival;
-    $('todayEvents').innerHTML = todayMarkup(todayEvents);
+    // A finished day keeps the size of a one-event day for its closing message.
+    state.activeCount = Math.max(statuses.filter(s => s !== 'done').length, todayEvents.length ? 1 : 0);
+    $('todayEvents').innerHTML = todayMarkup(todayEvents, statuses);
     layoutPanels();
   }
   updateShlok(now);
