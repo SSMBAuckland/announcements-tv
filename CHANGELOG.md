@@ -2,6 +2,14 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-10
+- **Bigger events on busy days.** When today has both Mandal Santos Schedule items and festivals, the Today panel now splits in two:
+  - **Left (two-thirds):** the Mandal programme in its own highlighted card, laid out as a timetable (time on the left, event on the right) under a gold "Mandal Santos Schedule" heading. "Earlier today" sits at the bottom of this card.
+  - **Right (one-third):** festivals under an "Also today" label, with the festival message. Festival names are never more than 80% of the programme's size, so the programme always leads.
+- On busy days (two columns, or three or more events still to come) the Shikshapatri band is slimmer (164px instead of 236px, text up to 30px instead of 40px), giving the events more room. Quiet days keep the larger shlok.
+- Slightly larger maximum sizes for days with 2–5 events.
+- Event sizing now also checks width, so a long word such as "Bhojan/Ahar" shrinks to fit instead of running off the edge.
+
 ## 2026-10-09
 - Added "Q&A with Santos, 7:00 PM onwards" to Saturday 10 Oct.
 - **Live event status on the Today panel:** the event in progress gets an "On now" tag beside its time, and finished events move out of the main list into a small "✓ Earlier today" line underneath, so the next event is always the big one. When everything with a time has finished, the panel says "Today's programme is complete – Thank you for joining us". Events without a time (festivals) are never marked finished. An event with only a start time is treated as running until the next timed event (at most 3 hours, or 90 minutes if it's the last one); "onwards" runs to the end of the day.

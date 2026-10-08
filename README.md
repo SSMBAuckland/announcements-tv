@@ -24,7 +24,7 @@ The whole display is one file, `index.html`. When it changes on `main`, the webs
 | Area | What it shows |
 |---|---|
 | **Header** | Mandir crest and name, a large clock (with seconds), and today's date. |
-| **Today at the Mandir** | Today's events with times and notes, and the festival's message. The event in progress is tagged "On now"; finished ones move to a small "Earlier today" line. On big festivals the title becomes a greeting, e.g. "Happy Diwali!". |
+| **Today at the Mandir** | Today's events with times and notes, and the festival's message. When there are both Mandal programme items and festivals, the programme is shown as a timetable card on the left and festivals on the right ("Also today"). The event in progress is tagged "On now"; finished ones move to a small "Earlier today" line. On big festivals the title becomes a greeting, e.g. "Happy Diwali!". |
 | **Shlok band** | A Shikshapatri shlok that changes every 2 minutes. Long shloks are shown in parts. |
 | **Upcoming Events** | The next day with events in full, plus up to three more days as short rows. |
 | **Festival countdown** | For the 21 days before a big festival, a "Countdown to …" card. |

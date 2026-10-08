@@ -133,6 +133,38 @@ body.tv-canvas .screen {
 .ev-time { margin-top: calc(8px * var(--u)); font-size: calc(var(--s-time) * var(--u) * 1px); line-height: 1.12; font-weight: 700; color: var(--accent); }
 .ev-note { margin-top: calc(4px * var(--u)); font-size: calc(var(--s-note) * var(--u) * 1px); line-height: 1.2; color: var(--soft); }
 
+/* Two columns on busy days: the programme (left, in its own card) and festivals (right) */
+.ev-split {
+  flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
+  column-gap: 30px; padding: 6px 0 18px;
+}
+/* Timetable rows in the programme card */
+.ev-row {
+  display: grid; grid-template-columns: 5.6em minmax(0, 1fr); column-gap: 22px; align-items: baseline;
+  text-align: left; font-size: calc(var(--s-time) * var(--u) * 1px);
+}
+.ev-col-main .ev-source + .ev-row { border-top: 0; }
+.ev-when { text-align: right; }
+.ev-row .ev-time { margin-top: 0; }
+.ev-row .ev-live { display: inline-block; margin: .3em 0 0; font-size: .5em; }
+.ev-row .ev-intro { margin-left: 0; }
+.ev-col { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
+.ev-col-main {
+  padding: 4px 26px; border-radius: 40px;
+  background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
+}
+.ev-col-main .ev-source {
+  margin: calc(14px * var(--u)) 0 calc(6px * var(--u));
+  font-size: calc(var(--s-note) * var(--u) * 1.12px); background: var(--accent); color: var(--deep); font-weight: 700;
+}
+.ev-col-label {
+  display: block; width: fit-content; margin: 0 auto calc(8px * var(--u)); padding: .12em .85em .2em; border-radius: 999px;
+  background: rgba(255,255,255,.1); color: var(--accent-2); line-height: 1.15;
+  font-size: calc(var(--s-note) * var(--u) * 1px);
+}
+
 /* The rotating shlok sits at the foot of the Today box */
 .shlok-band {
   flex: none; height: 236px; margin: 0 -56px; padding: 0 64px;
@@ -146,6 +178,10 @@ body.tv-canvas .screen {
 .shlok-box { height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .shlok-text { display: block; max-width: 100%; font-size: 40px; line-height: 1.26; color: var(--ink); }
 .shlok-source { margin-top: 8px; font-size: 27px; line-height: 1.2; color: var(--accent-2); }
+/* Busy days: a slimmer shlok band so the events get the room */
+body.tv-canvas .today.is-busy .shlok-band { height: 164px; }
+body.tv-canvas .today.is-busy .shlok-box { height: 106px; }
+body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 21px; }
 
 /* Upcoming Event(s): the next day in full, later days in brief, plus a festival countdown */
 .coming {
@@ -243,6 +279,9 @@ body.tv-canvas .screen {
   .today { padding: 28px 18px 0; border-radius: 34px; }
   .today-title { white-space: normal; font-size: clamp(24px, 6.4vw, 40px); }
   .today-events { overflow: visible; }
+  .ev-split { grid-template-columns: 1fr; row-gap: 16px; padding-bottom: 12px; }
+  .ev-col { overflow: visible; }
+  .ev-col-main { padding: 4px 14px; border-radius: 26px; }
   .shlok-band { height: auto; margin: 0 -18px; padding: 20px 18px 24px; }
   .shlok-box { height: auto; min-height: 120px; overflow: visible; }
   .shlok-source { margin-top: 6px; font-size: clamp(13px, 3.6vw, 20px); }
@@ -1171,10 +1210,45 @@ function noteLines(e) {
 
 // Largest sizes (px) for name / time / note, by how many events are on today. layoutToday() shrinks
 // them in small steps until the whole day fits inside the niche.
-const TODAY_SIZES = {1: [140, 62, 40], 2: [112, 52, 34], 3: [92, 44, 30], 4: [80, 38, 28], 5: [68, 34, 26]};
+const TODAY_SIZES = {1: [140, 62, 40], 2: [116, 54, 34], 3: [100, 50, 32], 4: [88, 46, 30], 5: [78, 42, 28]};
+// Same, for one column of the two-column layout (by the number of events in that column).
+const COLUMN_SIZES = {1: [92, 52, 34], 2: [84, 50, 32], 3: [76, 46, 30], 4: [70, 44, 28], 5: [62, 40, 26]};
+
+function eventArticles(list, live) {
+  return list.map((e, i) =>
+    '<article class="ev' + (live.includes(e) ? ' is-now' : '') + '">' +
+      (showSource(list, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
+      '<div class="ev-name">' + escapeHtml(e.event) + '</div>' +
+      (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
+      (e.time ? '<div class="ev-time">' + escapeHtml(e.time) +
+        (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' : '') +
+      noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') +
+    '</article>'
+  ).join('');
+}
+// Timetable rows for the programme card: time on the left, event (and its notes) on the right.
+function timetableRows(list, live) {
+  return list.map((e, i) =>
+    (showSource(list, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
+    '<article class="ev ev-row' + (live.includes(e) ? ' is-now' : '') + '">' +
+      '<div class="ev-when">' + (e.time ? '<div class="ev-time">' + escapeHtml(e.time) + '</div>' : '') +
+        (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' +
+      '<div class="ev-what"><div class="ev-name">' + escapeHtml(e.event) + '</div>' +
+        (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
+        noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') + '</div>' +
+    '</article>'
+  ).join('');
+}
+function earlierMarkup(done) {
+  return done.length ? '<div class="ev-earlier"><span class="ev-earlier-label">Earlier today</span>' +
+    done.map(e => '<span class="ev-earlier-item">✓ ' + escapeHtml(e.event) +
+      ' <span class="ev-earlier-time">' + escapeHtml(e.time) + '</span></span>').join('') + '</div>' : '';
+}
 
 // Events still to come (or on now) are shown in full; finished ones move to a small
-// "Earlier today" line underneath.
+// "Earlier today" line underneath. When the day has both scheduled programmes (events with a
+// source, e.g. the Mandal Santos Schedule) and festivals still to come, they are shown side by
+// side: the programme on the left in its own card, festivals on the right.
 function todayMarkup(events, statuses) {
   if (!events.length) {
     return '<div class="ev-list"><div class="ev">' +
@@ -1183,21 +1257,19 @@ function todayMarkup(events, statuses) {
   const active = events.filter((e, i) => statuses[i] !== 'done');
   const live = events.filter((e, i) => statuses[i] === 'now');
   const done = events.filter((e, i) => statuses[i] === 'done');
-  const main = active.length ? active.map((e, i) =>
-    '<article class="ev' + (live.includes(e) ? ' is-now' : '') + '">' +
-      (showSource(active, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
-      '<div class="ev-name">' + escapeHtml(e.event) + '</div>' +
-      (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
-      (e.time ? '<div class="ev-time">' + escapeHtml(e.time) +
-        (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' : '') +
-      noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') +
-    '</article>'
-  ).join('') : '<article class="ev"><div class="ev-name">Today’s programme is complete</div>' +
+  const programme = active.filter(e => e.source), festivals = active.filter(e => !e.source);
+  if (programme.length && festivals.length) {
+    return '<div class="ev-split">' +
+      '<div class="ev-col ev-col-main" data-count="' + programme.length + '"><div class="ev-list">' +
+        timetableRows(programme, live) + earlierMarkup(done) + '</div></div>' +
+      '<div class="ev-col ev-col-side" data-count="' + festivals.length + '"><div class="ev-list">' +
+        '<div class="ev-col-label">Also today</div>' + eventArticles(festivals, live) + quoteMarkup(events) + '</div></div>' +
+    '</div>';
+  }
+  const main = active.length ? eventArticles(active, live) :
+    '<article class="ev"><div class="ev-name">Today’s programme is complete</div>' +
     '<div class="ev-note">Thank you for joining us</div></article>';
-  const earlier = done.length ? '<div class="ev-earlier"><span class="ev-earlier-label">Earlier today</span>' +
-    done.map(e => '<span class="ev-earlier-item">✓ ' + escapeHtml(e.event) +
-      ' <span class="ev-earlier-time">' + escapeHtml(e.time) + '</span></span>').join('') + '</div>' : '';
-  return '<div class="ev-list">' + main + earlier + quoteMarkup(events) + '</div>';
+  return '<div class="ev-list">' + main + earlierMarkup(done) + quoteMarkup(events) + '</div>';
 }
 
 // A source label (e.g. "Mandal Santos Schedule") is shown once, above the first of a run of events that share it.
@@ -1231,22 +1303,44 @@ function comingDayMarkup(group, todayDate, full) {
 function inCanvas() { return document.body.classList.contains('tv-canvas'); }
 function portraitScale() { return Math.max(.34, Math.min(.8, window.innerWidth / 900)); }
 
+function setEventSizes(el, sizes) {
+  el.style.setProperty('--s-name', sizes[0]);
+  el.style.setProperty('--s-time', sizes[1]);
+  el.style.setProperty('--s-note', sizes[2]);
+}
+// Shrinks one box's events (via --u, starting from maxU) until its list fits. Returns the u used.
+function fitEvents(el, maxU = 1) {
+  const list = el.firstElementChild;
+  const names = [...el.querySelectorAll('.ev-name')];
+  // Too tall for the box, or a long word (e.g. "Bhojan/Ahar") wider than its line.
+  const overflows = () => list.offsetHeight > el.clientHeight || names.some(n => n.scrollWidth > n.clientWidth + 1);
+  let u = Math.round(maxU * 100) / 100;
+  el.style.setProperty('--u', String(u));
+  while (list && overflows() && u > .32) {
+    u = Math.round((u - .03) * 100) / 100;
+    el.style.setProperty('--u', String(u));
+  }
+  return u;
+}
+
 function layoutToday() {
   const box = $('todayEvents');
+  const cols = [...box.querySelectorAll('.ev-col')];
   const count = Math.min(state.activeCount, 5);
-  const sizes = count === 0 ? [88, 50, 30] : (TODAY_SIZES[count] || [60, 30, 24]);
-  const scale = inCanvas() ? 1 : portraitScale();
-  box.style.setProperty('--s-name', sizes[0]);
-  box.style.setProperty('--s-time', sizes[1]);
-  box.style.setProperty('--s-note', sizes[2]);
-  if (!inCanvas()) { box.style.setProperty('--u', scale.toFixed(2)); return; }
-  const list = box.firstElementChild;
-  let u = 1;
-  box.style.setProperty('--u', '1');
-  while (list && list.offsetHeight > box.clientHeight && u > .32) {
-    u = Math.round((u - .03) * 100) / 100;
-    box.style.setProperty('--u', String(u));
+  setEventSizes(box, count === 0 ? [88, 50, 30] : (TODAY_SIZES[count] || [60, 30, 24]));
+  cols.forEach(col => setEventSizes(col, COLUMN_SIZES[Math.min(Number(col.dataset.count) || 1, 5)]));
+  if (!inCanvas()) {
+    box.style.setProperty('--u', portraitScale().toFixed(2));
+    cols.forEach(col => col.style.removeProperty('--u'));
+    return;
   }
+  box.style.setProperty('--u', '1');
+  if (!cols.length) { fitEvents(box); return; }
+  // The programme leads: festival names on the right are never more than 80% of its size.
+  const [main, side] = cols;
+  const nameSize = col => parseFloat(col.style.getPropertyValue('--s-name'));
+  const mainPx = nameSize(main) * fitEvents(main);
+  fitEvents(side, Math.min(1, mainPx * .8 / nameSize(side)));
 }
 
 // Height actually used by a box's content. (scrollHeight can't be used for a fit test:
@@ -1405,7 +1499,9 @@ function layoutShlokText() {
     text.style.fontSize = Math.round(len > 220 ? base * .82 : len > 140 ? base * .92 : base) + 'px';
     return;
   }
-  for (let size = 40; size >= 24; size -= 2) {
+  // On busy days the shlok band is compact, so the events can be bigger.
+  const busy = document.querySelector('.today').classList.contains('is-busy');
+  for (let size = busy ? 30 : 40; size >= (busy ? 20 : 24); size -= 2) {
     text.style.fontSize = size + 'px';
     if (text.offsetHeight <= box.clientHeight) break;
   }
@@ -1474,6 +1570,9 @@ function render() {
     // A finished day keeps the size of a one-event day for its closing message.
     state.activeCount = Math.max(statuses.filter(s => s !== 'done').length, todayEvents.length ? 1 : 0);
     $('todayEvents').innerHTML = todayMarkup(todayEvents, statuses);
+    // Busy day: two columns, or three or more events still to come.
+    document.querySelector('.today').classList.toggle('is-busy',
+      Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);
     layoutPanels();
   }
   updateShlok(now);
