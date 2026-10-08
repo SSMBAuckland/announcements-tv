@@ -668,7 +668,9 @@ const EVENTS = [
   {"date": "9/10/2026", "event": "Thaal, Chesta, Aarti & Nitya Niyam", "time": "6:15 – 7:00 PM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "9/10/2026", "event": "Mahaprashad", "time": "7:00 – 8:00 PM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "9/10/2026", "event": "Katha Parayan – Day 5", "time": "8:00 – 9:30 PM", "note": "Dhiraj Akhyan", "source": "Mandal Santos Schedule", "progress": false},
-  {"date": "10/10/2026", "event": "Anushthan & Q&A with Santos", "time": "7:45 – 9:00 AM", "note": "Followed by Q&A with Santos", "source": "Mandal Santos Schedule", "progress": false},
+  {"date": "10/10/2026", "event": "Mahapooja", "time": "3:30 AM", "source": "Mandal Santos Schedule", "progress": false},
+  {"date": "10/10/2026", "event": "Anushthan", "time": "6:00 AM", "note": "As per the schedule", "source": "Mandal Santos Schedule", "progress": false},
+  {"date": "10/10/2026", "event": "Aarti, Nitya Niyam & Katha", "time": "7:00 AM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "11/10/2026", "event": "Outing with Santos", "time": "9:00 AM – 2:00 PM", "note": "Followed by Special Sabha: Mandir Mahima", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "12/10/2026", "event": "Special Sabha: Bhojan/Ahar", "time": "7:45 – 8:45 PM", "source": "Mandal Santos Schedule", "progress": false},
   {"date": "13/10/2026", "event": "Special Sabha: Dasatva", "time": "7:45 – 8:45 PM", "source": "Mandal Santos Schedule", "progress": false},
@@ -1117,15 +1119,20 @@ function todayMarkup(events) {
     return '<div class="ev-list"><div class="ev">' +
       '<div class="ev-name">Enjoy a blessed day of satsang and seva.</div></div></div>';
   }
-  return '<div class="ev-list">' + events.map(e =>
+  return '<div class="ev-list">' + events.map((e, i) =>
     '<article class="ev">' +
-      (e.source ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
+      (showSource(events, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
       '<div class="ev-name">' + escapeHtml(e.event) + '</div>' +
       (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
       (e.time ? '<div class="ev-time">' + escapeHtml(e.time) + '</div>' : '') +
       noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') +
     '</article>'
   ).join('') + quoteMarkup(events) + '</div>';
+}
+
+// A source label (e.g. "Mandal Santos Schedule") is shown once, above the first of a run of events that share it.
+function showSource(events, i) {
+  return Boolean(events[i].source) && (i === 0 || events[i - 1].source !== events[i].source);
 }
 
 // One festival message per day: the big festival's own if it has one, else the first listed.
@@ -1141,9 +1148,9 @@ function comingDayMarkup(group, todayDate, full) {
   return '<section class="cday' + (full ? '' : ' brief') + '">' +
     '<span class="cday-date">' + escapeHtml((full ? fmtDayMonth : fmtShortDay).format(group.dt)) + '</span>' +
     '<span class="cday-rel">' + rel + '</span>' +
-    group.events.map(e =>
+    group.events.map((e, i) =>
       '<div class="cev">' +
-        (full && e.source ? '<div class="cev-source">' + escapeHtml(e.source) + '</div>' : '') +
+        (full && showSource(group.events, i) ? '<div class="cev-source">' + escapeHtml(e.source) + '</div>' : '') +
         '<div class="cev-name">' + escapeHtml(e.event) + '</div>' +
         (e.time ? '<div class="cev-time">' + escapeHtml(e.time) + '</div>' : '') +
         (full ? noteLines(e).map(n => '<div class="cev-note">' + escapeHtml(n) + '</div>').join('') : '') +
@@ -1185,16 +1192,16 @@ function countdownMarkup(f) {
     '<span class="fest-days"><b>' + f.days + '</b> ' + (f.days === 1 ? 'day' : 'days') + ' to go</span>';
 }
 
-// Fills the Upcoming panel and returns how many days it shows.
+// Fills the Upcoming panel. Returns how many days it shows, the size used (u) and whether it all fits.
 function fitComing(wrap, groups, todayDate) {
   if (!groups.length) {
     wrap.innerHTML = '<div class="coming-empty">No further events are listed yet.</div>';
-    return 0;
+    return {days: 0, u: 1, fits: true};
   }
   if (!inCanvas()) {
     wrap.style.setProperty('--u2', portraitScale().toFixed(2));
     wrap.innerHTML = groups.map((g, i) => comingDayMarkup(g, todayDate, i === 0)).join('');
-    return groups.length;
+    return {days: groups.length, u: 1, fits: true};
   }
   for (let days = Math.min(MAX_UPCOMING_DAYS, groups.length); days >= 1; days--) {
     wrap.innerHTML = groups.slice(0, days).map((g, i) => comingDayMarkup(g, todayDate, i === 0)).join('');
@@ -1202,11 +1209,13 @@ function fitComing(wrap, groups, todayDate) {
     // With one day shown there is room to spare, so start a little larger and shrink only if needed.
     for (let u = days === 1 ? 1.2 : 1; u >= floor - .001; u = Math.round((u - .04) * 100) / 100) {
       wrap.style.setProperty('--u2', String(u));
-      if (contentBottom(wrap) <= wrap.clientHeight - 16) return days;
+      if (contentBottom(wrap) <= wrap.clientHeight - 16) return {days, u, fits: true};
     }
   }
-  return 1; // best effort: smallest size, anything beyond is clipped
+  return {days: 1, u: .4, fits: false}; // best effort: smallest size, anything beyond is clipped
 }
+
+const COMING_MIN_READABLE = .72;   // below this size, tomorrow's events win over the festival countdown
 
 function layoutComing() {
   const wrap = $('nextEvent'), fest = $('festCountdown');
@@ -1215,13 +1224,14 @@ function layoutComing() {
   const f = state.festival;
   fest.hidden = !f;
   if (f) fest.innerHTML = countdownMarkup(f);
-  let shown = fitComing(wrap, groups, todayDate);
-  // No countdown when the festival is already listed in the panel.
-  if (f && groups.slice(0, shown).some(g => g.key === f.key)) {
+  let fit = fitComing(wrap, groups, todayDate);
+  // No countdown when the festival is already listed in the panel, or when it would squeeze
+  // tomorrow's events too small to read.
+  if (f && (groups.slice(0, fit.days).some(g => g.key === f.key) || !fit.fits || fit.u < COMING_MIN_READABLE)) {
     fest.hidden = true;
-    shown = fitComing(wrap, groups, todayDate);
+    fit = fitComing(wrap, groups, todayDate);
   }
-  $('comingTitle').textContent = shown > 1 ? 'Upcoming Events' : 'Upcoming Event';
+  $('comingTitle').textContent = fit.days > 1 ? 'Upcoming Events' : 'Upcoming Event';
 }
 
 function layoutPanels() {

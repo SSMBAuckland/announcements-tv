@@ -2,6 +2,11 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-09
+- Saturday 10 Oct programme: Mahapooja (3:30 AM), Anushthan (6:00 AM, as per the schedule) and Aarti, Nitya Niyam & Katha (7:00 AM). Replaces the earlier "Anushthan & Q&A with Santos, 7:45 – 9:00 AM" entry.
+- The "Mandal Santos Schedule" label (and any other source label) now appears once above a run of events that share it, instead of on every line.
+- The festival countdown card now hides itself when tomorrow's events would otherwise be squeezed too small to read (or cut off).
+
 ## 2026-10-08
 - Added the full 9 Oct evening programme: Thaal, Chesta, Aarti & Nitya Niyam (6:15 – 7:00 PM), Mahaprashad (7:00 – 8:00 PM) and Katha Parayan – Day 5 (8:00 – 9:30 PM). Fixed the old note that put Mahaprashad after the Katha.
 - Added subtle ambient animations: the background glow slowly drifts, a few soft sparks in the day's accent colour float upwards, a gentle halo breathes behind the crest, and a band of light passes across the festival countdown card every few seconds. Only transform/opacity are animated so the Yodeck player stays smooth, and all of it switches off for viewers who ask their device for reduced motion.
