@@ -4,6 +4,8 @@ All notable changes to the SSMB Announcements TV display (`index.html`) are reco
 
 ## 2026-10-08
 - Added the full 9 Oct evening programme: Thaal, Chesta, Aarti & Nitya Niyam (6:15 – 7:00 PM), Mahaprashad (7:00 – 8:00 PM) and Katha Parayan – Day 5 (8:00 – 9:30 PM). Fixed the old note that put Mahaprashad after the Katha.
+- Added subtle ambient animations: the background glow slowly drifts, a few soft sparks in the day's accent colour float upwards, a gentle halo breathes behind the crest, and a band of light passes across the festival countdown card every few seconds. Only transform/opacity are animated so the Yodeck player stays smooth, and all of it switches off for viewers who ask their device for reduced motion.
+- Fixed missing spaces in shlok 206 ("Dharma (virtue), Artha (wealth), Kama (pleasure) and Moksha (salvation)"), which was being cut off on phones.
 
 ## 2026-10-05
 
