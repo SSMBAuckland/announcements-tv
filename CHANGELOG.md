@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-14
+- Fixed misaligned layout when the Mandal programme has only one item beside festivals (e.g. 14 Oct "Special Sabha: Seva" with Vinayaki Choth): it was drawn as a one-row timetable, squeezing the name into three lines with the time out of line. A single item now stacks — heading, large name, time — all on one left edge. Timetable rows are used only when there are two or more timed items.
+
 ## 2026-10-13
 - **Readable from across the hall.** On the TV, text never shrinks below wall-legible minimums: event names 56px (44px for festivals in the side column), today's times 40px, Upcoming names 38–42px and times 30–32px, notes / festival message / "Earlier today" / shlok 28–30px, small capital labels 22–24px (previously some text went as small as 13px). Phones keep their own sizing.
 - When a day is too full to fit at those sizes, the least important content gives way instead of text shrinking: the festival message and introductions on the Today panel, notes and source labels in Upcoming.

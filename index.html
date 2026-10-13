@@ -176,6 +176,7 @@ body.tv-canvas .screen {
 .ev-row .ev-intro { margin-left: 0; }
 .ev-col { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .ev-col-main { padding-right: 40px; }
+.ev-col-main .ev { text-align: left; }
 .ev-col-side { padding-left: 40px; border-left: 1px solid var(--hair); text-align: center; }
 /* Under a timetable, "Earlier today" lines up with it */
 .ev-table + .ev-earlier, .ev-col-main .ev-earlier { text-align: left; }
@@ -1297,7 +1298,9 @@ function todayMarkup(events, statuses) {
   if (programme.length && festivals.length) {
     return '<div class="ev-split">' +
       '<div class="ev-col ev-col-main" data-count="' + programme.length + '"><div class="ev-list">' +
-        timetableRows(programme, live) + earlierMarkup(done) + '</div></div>' +
+        // A timetable needs at least two timed items; a single item is stacked, name over time.
+        (programme.filter(e => e.time).length >= 2 ? timetableRows(programme, live) : eventArticles(programme, live)) +
+        earlierMarkup(done) + '</div></div>' +
       '<div class="ev-col ev-col-side" data-count="' + festivals.length + '"><div class="ev-list">' +
         '<div class="ev-col-label">Also today</div>' + eventArticles(festivals, live) + quoteMarkup(events) + '</div></div>' +
     '</div>';
