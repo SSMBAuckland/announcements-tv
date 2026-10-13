@@ -57,9 +57,25 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
   80%  { opacity: .4; }
   100% { transform: translate3d(-12px, -1140px, 0); opacity: 0; }
 }
+/* Wall legibility: on the TV, text never shrinks below these sizes (phones scale freely) */
+body.tv-canvas {
+  --min-22: 22px;
+  --min-23: 23px;
+  --min-24: 24px;
+  --min-27: 27px;
+  --min-28: 28px;
+  --min-30: 30px;
+  --min-32: 32px;
+  --min-34: 34px;
+  --min-38: 38px;
+  --min-40: 40px;
+  --min-42: 42px;
+  --min-44: 44px;
+  --min-56: 56px;
+}
 body.tv-canvas .screen {
-  flex: 0 0 auto; width: 1920px; height: 1080px; padding: 44px 64px 52px; gap: 30px;
-  display: grid; grid-template-rows: 200px minmax(0, 1fr);
+  flex: 0 0 auto; width: 1920px; height: 1080px; padding: 40px 64px 48px; gap: 30px;
+  display: grid; grid-template-rows: 148px minmax(0, 1fr);
   transform-origin: center center;
 }
 
@@ -75,95 +91,100 @@ body.tv-canvas .screen {
   opacity: .12; animation: crestHalo 7s ease-in-out infinite;
 }
 @keyframes crestHalo { 50% { opacity: .3; transform: scale(1.08); } }
-.crest { display: block; height: 120px; width: auto; flex: none; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
-.brand-name { font-size: 46px; line-height: 1.05; font-weight: 700; color: var(--ink); text-wrap: balance; }
-.brand-place { margin-top: 6px; font-size: 30px; line-height: 1.1; color: var(--soft); }
+.crest { display: block; height: 108px; width: auto; flex: none; filter: drop-shadow(0 4px 14px rgba(0,0,0,.4)); }
+.brand-name { font-size: 48px; line-height: 1.05; font-weight: 700; color: var(--ink); text-wrap: balance; }
+.brand-place { margin-top: 6px; font-size: 31px; line-height: 1.1; color: var(--soft); }
 
 .date-card {
   appearance: none; -webkit-appearance: none; cursor: pointer; text-align: center;
-  padding: 14px 34px 16px; border-radius: 30px;
-  border: 1px solid rgba(255,255,255,.14); background: rgba(255,255,255,.075);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.14);
-  transition: background .2s ease;
+  padding: 12px 0 14px 28px; border-radius: 24px; text-align: right;
+  border: 1px solid transparent; background: transparent;
+  transition: background .2s ease, border-color .2s ease, padding .2s ease;
 }
-.date-card:hover { background: rgba(255,255,255,.13); }
+/* The date opens the preview calendar; it only looks like a button when pointed at */
+.date-card:hover { padding-right: 28px; background: rgba(255,255,255,.07); border-color: var(--hair); }
 .date-card:focus-visible { outline: 3px solid var(--accent-2); outline-offset: 5px; }
-.day-name { display: block; font-size: 44px; line-height: 1.05; font-weight: 700; color: var(--accent); }
-.full-date { display: block; margin-top: 4px; font-size: 34px; line-height: 1.1; color: var(--ink); }
+.day-name { display: block; font-size: 54px; line-height: 1.05; font-weight: 700; color: var(--accent); }
+.full-date { display: block; margin-top: 6px; font-size: 38px; line-height: 1.1; color: var(--ink); }
 
-.time { display: flex; align-items: center; gap: 22px; }
-.clock-hm { display: flex; align-items: baseline; font-size: 196px; line-height: 1; font-weight: 700; color: var(--ink); }
+.time { display: flex; align-items: center; gap: 18px; }
+.clock-hm { display: flex; align-items: baseline; font-size: 140px; font-variant-numeric: tabular-nums; line-height: 1; font-weight: 700; color: var(--ink); }
 .clock-hm .d { display: inline-block; width: .6em; text-align: center; }
 .clock-hm .d.ph { visibility: hidden; }
 .clock-hm .c { display: inline-block; width: .3em; text-align: center; transition: opacity .25s ease; }
 .time.off .c { opacity: .35; }
-.clock-side { display: flex; flex-direction: column; align-items: center; gap: 14px; padding-top: 18px; }
-.clock-sec {
-  display: flex; align-items: center; justify-content: center;
-  padding: 6px 16px 8px; border-radius: 999px;
-  background: rgba(255,255,255,.12); border: 1px solid rgba(255,255,255,.16);
-  font-size: 48px; line-height: 1; font-weight: 700; color: var(--ink);
-}
+.clock-side { display: flex; flex-direction: column; align-items: flex-start; gap: 8px; padding-top: 4px; }
+.clock-sec { display: flex; font-size: 44px; line-height: 1; font-weight: 700; color: var(--soft); }
 .clock-sec .d { display: inline-block; width: .6em; text-align: center; }
-.clock-period { font-size: 64px; line-height: 1; font-weight: 700; color: var(--accent); }
+.clock-period { font-size: 54px; line-height: 1; font-weight: 700; color: var(--accent); }
 
 /* ───────── Main: Today (70%) and Upcoming Event (30%) ───────── */
 .main { display: grid; grid-template-columns: minmax(0, 7fr) minmax(0, 3fr); column-gap: 36px; min-height: 0; }
 
 .today {
   position: relative; min-height: 0; overflow: hidden;
-  display: flex; flex-direction: column; padding: 40px 56px 0; border-radius: 56px;
+  display: flex; flex-direction: column; padding: 34px 56px 0; border-radius: 40px;
   background: linear-gradient(180deg, rgba(255,255,255,.115), rgba(255,255,255,.05));
   border: 1px solid rgba(255,255,255,.15);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 40px 90px rgba(0,0,0,.3);
 }
-.today-title { flex: none; text-align: center; white-space: nowrap; font-size: 54px; line-height: 1; font-weight: 700; color: var(--accent); }
+.today-title {
+  flex: none; display: flex; align-items: center; gap: 26px; white-space: nowrap;
+  font-size: 50px; line-height: 1; font-weight: 700; color: var(--accent);
+}
+.today-title::after, .coming-title::after {
+  content: ""; flex: 1 1 auto; height: 1px; background: linear-gradient(90deg, var(--line), transparent);
+}
 .today-events { flex: 1 1 auto; min-height: 0; margin-top: 8px; display: flex; flex-direction: column; overflow: hidden; }
 .ev-list { width: 100%; margin: auto 0; }
 
 .ev { text-align: center; padding: calc(12px * var(--u)) 0 calc(14px * var(--u)); }
 .ev + .ev { border-top: 1px solid var(--hair); }
-.ev-source, .cev-source {
-  display: inline-block; padding: .12em .85em .2em; border-radius: 999px;
-  background: rgba(255,255,255,.1); color: var(--accent-2); line-height: 1.15;
+.ev-source, .cev-source, .ev-col-label {
+  display: block; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; line-height: 1.2; color: var(--accent-2);
 }
-.ev-source { margin-bottom: calc(10px * var(--u)); font-size: calc(var(--s-note) * var(--u) * 1px); }
-.ev-name { font-size: calc(var(--s-name) * var(--u) * 1px); line-height: 1.06; font-weight: 700; color: var(--ink); }
-.ev-intro { margin: calc(10px * var(--u)) auto 0; max-width: 900px; font-size: calc(var(--s-note) * var(--u) * 1px); line-height: 1.25; color: var(--ink); }
-.ev-time { margin-top: calc(8px * var(--u)); font-size: calc(var(--s-time) * var(--u) * 1px); line-height: 1.12; font-weight: 700; color: var(--accent); }
-.ev-note { margin-top: calc(4px * var(--u)); font-size: calc(var(--s-note) * var(--u) * 1px); line-height: 1.2; color: var(--soft); }
+.ev-source { margin-bottom: calc(8px * var(--u)); font-size: max(var(--min-24, 0px), calc(var(--s-note) * var(--u) * .8px)); }
+.ev-name { font-size: max(var(--min-56, 0px), calc(var(--s-name) * var(--u) * 1px)); line-height: 1.06; font-weight: 700; color: var(--ink); }
+.ev-intro { margin: calc(10px * var(--u)) auto 0; max-width: 900px; font-size: max(var(--min-28, 0px), calc(var(--s-note) * var(--u) * 1px)); line-height: 1.25; color: var(--ink); }
+.ev-time { margin-top: calc(8px * var(--u)); font-size: max(var(--min-40, 0px), calc(var(--s-time) * var(--u) * 1px)); line-height: 1.12; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.ev-note { margin-top: calc(4px * var(--u)); font-size: max(var(--min-28, 0px), calc(var(--s-note) * var(--u) * 1px)); line-height: 1.2; color: var(--soft); }
 
 /* Two columns on busy days: the programme (left, in its own card) and festivals (right) */
 .ev-split {
   flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: minmax(0, 2fr) minmax(0, 1fr);
-  column-gap: 30px; padding: 6px 0 18px;
+  padding: 10px 0 18px;
 }
 /* Timetable rows in the programme card */
+.ev-table, .ev-col-main { text-align: left; }
 .ev-row {
-  display: grid; grid-template-columns: 5.6em minmax(0, 1fr); column-gap: 22px; align-items: baseline;
-  text-align: left; font-size: calc(var(--s-time) * var(--u) * 1px);
+  display: grid; grid-template-columns: var(--when, 5.6em) minmax(0, 1fr); column-gap: 26px; align-items: baseline;
+  text-align: left; font-size: max(var(--min-40, 0px), calc(var(--s-time) * var(--u) * 1px));
 }
-.ev-col-main .ev-source + .ev-row { border-top: 0; }
+.ev-source + .ev-row { border-top: 0; }
+/* The event in progress: a soft wash across its row */
+.ev-row.is-now {
+  margin: 0 calc(-18px * var(--u)); padding-left: calc(18px * var(--u)); padding-right: calc(18px * var(--u));
+  border-radius: calc(22px * var(--u)); background: linear-gradient(90deg, var(--daily-wash-a), transparent 85%);
+}
+.ev-row.is-now + .ev-row { border-top-color: transparent; }
 .ev-when { text-align: right; }
-.ev-row .ev-time { margin-top: 0; }
-.ev-row .ev-live { display: inline-block; margin: .3em 0 0; font-size: .5em; }
+.ev-row .ev-time { margin-top: 0; white-space: nowrap; }
+.ev-when-note {
+  display: block; margin-top: .2em; font-size: max(var(--min-24, 0px), .52em); line-height: 1.1; letter-spacing: .12em; text-transform: uppercase; color: var(--soft);
+}
+.ev-row .ev-live { display: block; margin: .35em 0 0; font-size: max(var(--min-24, 0px), .5em); }
 .ev-row .ev-intro { margin-left: 0; }
 .ev-col { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
-.ev-col-main {
-  padding: 4px 26px; border-radius: 40px;
-  background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
-  border: 1px solid var(--line);
-  box-shadow: inset 0 1px 0 rgba(255,255,255,.1);
-}
-.ev-col-main .ev-source {
-  margin: calc(14px * var(--u)) 0 calc(6px * var(--u));
-  font-size: calc(var(--s-note) * var(--u) * 1.12px); background: var(--accent); color: var(--deep); font-weight: 700;
-}
-.ev-col-label {
-  display: block; width: fit-content; margin: 0 auto calc(8px * var(--u)); padding: .12em .85em .2em; border-radius: 999px;
-  background: rgba(255,255,255,.1); color: var(--accent-2); line-height: 1.15;
-  font-size: calc(var(--s-note) * var(--u) * 1px);
-}
+.ev-col-main { padding-right: 40px; }
+.ev-col-side { padding-left: 40px; border-left: 1px solid var(--hair); text-align: center; }
+/* Under a timetable, "Earlier today" lines up with it */
+.ev-table + .ev-earlier, .ev-col-main .ev-earlier { text-align: left; }
+.ev-table + .ev-earlier .ev-earlier-item, .ev-col-main .ev-earlier-item { margin: 0 1.4em 0 0; }
+.ev-col-main .ev-source { margin: calc(6px * var(--u)) 0 calc(4px * var(--u)); font-size: max(var(--min-27, 0px), calc(var(--s-note) * var(--u) * .9px)); color: var(--accent); }
+.ev-col-label { margin-bottom: calc(6px * var(--u)); font-size: max(var(--min-24, 0px), calc(var(--s-note) * var(--u) * .8px)); }
+.ev-col-side .ev-name { font-size: max(var(--min-44, 0px), calc(var(--s-name) * var(--u) * 1px)); }
+/* Too full to fit at legible sizes: the festival message and introductions give way first */
+.is-tight .ev-quote, .is-tight .ev-intro { display: none; }
 
 /* The rotating shlok sits at the foot of the Today box */
 .shlok-band {
@@ -177,38 +198,39 @@ body.tv-canvas .screen {
 @keyframes shlokIn { 0% { opacity: 0; transform: translateY(16px); } 100% { opacity: 1; transform: none; } }
 .shlok-box { height: 150px; display: flex; align-items: center; justify-content: center; overflow: hidden; }
 .shlok-text { display: block; max-width: 100%; font-size: 40px; line-height: 1.26; color: var(--ink); }
-.shlok-source { margin-top: 8px; font-size: 27px; line-height: 1.2; color: var(--accent-2); }
+.shlok-source { margin-top: 8px; font-size: 29px; line-height: 1.2; color: var(--accent-2); }
 /* Busy days: a slimmer shlok band so the events get the room */
-body.tv-canvas .today.is-busy .shlok-band { height: 164px; }
-body.tv-canvas .today.is-busy .shlok-box { height: 106px; }
-body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 21px; }
+body.tv-canvas .today.is-busy .shlok-band { height: 176px; }
+body.tv-canvas .today.is-busy .shlok-box { height: 114px; }
+body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; }
 
 /* Upcoming Event(s): the next day in full, later days in brief, plus a festival countdown */
 .coming {
-  min-height: 0; display: flex; flex-direction: column; padding: 40px 40px 34px; border-radius: 44px;
+  min-height: 0; display: flex; flex-direction: column; padding: 34px 40px 34px; border-radius: 40px;
   background: rgba(0,0,0,.26); border: 1px solid rgba(255,255,255,.09);
 }
 .coming-title {
-  flex: none; align-self: flex-start; font-size: 46px; line-height: 1.1; font-weight: 700; color: var(--accent-2);
-  text-decoration: underline; text-decoration-thickness: 4px; text-underline-offset: 12px;
+  flex: none; display: flex; align-items: center; gap: 22px; white-space: nowrap;
+  font-size: 48px; line-height: 1; font-weight: 700; color: var(--accent-2);
 }
-.coming-days { flex: 1 1 auto; min-height: 0; margin-top: 34px; overflow: hidden; }
-.cday-date { display: block; font-size: calc(42px * var(--u2)); line-height: 1.1; font-weight: 700; color: var(--ink); }
+.coming-days { flex: 1 1 auto; min-height: 0; margin-top: 30px; overflow: hidden; }
+.cday-date { display: block; font-size: max(var(--min-34, 0px), calc(46px * var(--u2))); line-height: 1.1; font-weight: 700; color: var(--ink); }
 .cday-rel {
-  display: inline-block; margin-top: calc(12px * var(--u2)); padding: .1em .75em .18em; border-radius: 999px;
-  background: rgba(255,255,255,.12); font-size: calc(28px * var(--u2)); line-height: 1.15; color: var(--accent);
+  display: block; margin-top: calc(8px * var(--u2)); font-size: max(var(--min-24, 0px), calc(27px * var(--u2))); line-height: 1.15;
+  font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
 }
 .cday + .cday { margin-top: calc(30px * var(--u2)); padding-top: calc(26px * var(--u2)); border-top: 1px solid var(--hair); }
 .cev { margin-top: calc(26px * var(--u2)); }
 .cev + .cev { margin-top: calc(24px * var(--u2)); padding-top: calc(22px * var(--u2)); border-top: 1px solid var(--hair); }
-.cev-source { margin-bottom: calc(8px * var(--u2)); font-size: calc(26px * var(--u2)); }
-.cev-name { font-size: calc(56px * var(--u2)); line-height: 1.07; font-weight: 700; color: var(--ink); }
-.brief .cev-name { font-size: calc(38px * var(--u2)); }
-.cev-time { margin-top: calc(6px * var(--u2)); font-size: calc(36px * var(--u2)); line-height: 1.12; font-weight: 700; color: var(--accent); }
-.cev-note { margin-top: calc(4px * var(--u2)); font-size: calc(28px * var(--u2)); line-height: 1.2; color: var(--soft); }
+.cev-source { margin-bottom: calc(6px * var(--u2)); font-size: max(var(--min-23, 0px), calc(25px * var(--u2))); }
+.cev-name { font-size: max(var(--min-42, 0px), calc(62px * var(--u2))); line-height: 1.07; font-weight: 700; color: var(--ink); }
+.brief .cev-name { font-size: max(var(--min-38, 0px), calc(44px * var(--u2))); }
+.cev-time { margin-top: calc(6px * var(--u2)); font-size: max(var(--min-32, 0px), calc(40px * var(--u2))); line-height: 1.12; font-weight: 700; color: var(--accent); font-variant-numeric: tabular-nums; }
+.cev-note { margin-top: calc(4px * var(--u2)); font-size: max(var(--min-28, 0px), calc(30px * var(--u2))); line-height: 1.2; color: var(--soft); }
 .coming-empty { font-size: 36px; line-height: 1.25; color: var(--soft); }
 .fest {
-  flex: none; margin-top: 18px; padding: 22px 26px 24px; border-radius: 30px; text-align: center;
+  flex: none; margin-top: 18px; padding: 18px 28px 20px; border-radius: 26px;
+  display: grid; grid-template-columns: auto minmax(0, 1fr); align-items: center; column-gap: 22px;
   background: linear-gradient(160deg, var(--daily-wash-a), var(--daily-wash-b)), rgba(255,255,255,.06);
   border: 1px solid var(--line);
   position: relative; overflow: hidden;
@@ -221,38 +243,47 @@ body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 21px; 
 }
 @keyframes festSheen { 0%, 70% { transform: translateX(-120%); } 100% { transform: translateX(330%); } }
 .fest[hidden] { display: none; }
-.fest-label { display: block; font-size: 24px; line-height: 1.2; letter-spacing: .08em; text-transform: uppercase; color: var(--accent-2); }
-.fest-name { display: block; margin-top: 6px; font-size: 50px; line-height: 1.08; font-weight: 700; color: var(--ink); }
-.fest-days { display: block; margin-top: 8px; font-size: 30px; line-height: 1.2; color: var(--soft); }
-.fest-days b { font-size: 58px; line-height: 1; color: var(--accent); }
+.fest-days {
+  display: flex; flex-direction: column; align-items: center; padding-right: 22px; border-right: 1px solid var(--line);
+  font-size: 23px; line-height: 1.1; font-weight: 700; letter-spacing: .08em; white-space: nowrap; text-transform: uppercase; color: var(--soft);
+}
+.fest-days b { font-size: 92px; line-height: .95; letter-spacing: 0; color: var(--accent); font-variant-numeric: tabular-nums; }
+.fest-what { min-width: 0; }
+.fest-label { display: block; font-size: 24px; line-height: 1.2; font-weight: 700; letter-spacing: .07em; white-space: nowrap; text-transform: uppercase; color: var(--accent-2); }
+.fest-name { display: block; margin-top: 6px; font-size: 52px; line-height: 1.08; font-weight: 700; color: var(--ink); text-wrap: balance; }
 /* "On now" pill beside the time of the event in progress */
 .ev-live {
-  display: inline-block; margin-left: .55em; padding: .1em .65em .16em; border-radius: 999px; vertical-align: .14em;
-  font-size: .58em; line-height: 1.1; letter-spacing: .04em; background: var(--accent); color: var(--deep);
-  animation: livePulse 2.6s ease-in-out infinite;
+  display: inline-block; margin-left: .7em; vertical-align: .14em; white-space: nowrap;
+  font-size: max(var(--min-24, 0px), .5em); line-height: 1.1; font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent);
 }
-@keyframes livePulse { 50% { opacity: .62; } }
+.ev-live::before {
+  content: ""; display: inline-block; width: .62em; height: .62em; margin-right: .45em; border-radius: 50%; vertical-align: .02em;
+  background: var(--accent); box-shadow: 0 0 .7em var(--accent); animation: livePulse 2.6s ease-in-out infinite;
+}
+@keyframes livePulse { 50% { opacity: .45; transform: scale(.8); } }
 /* Finished events: one quiet line under the rest of today */
 .ev-earlier {
   margin-top: calc(12px * var(--u)); padding-top: calc(12px * var(--u)); border-top: 1px solid var(--hair);
-  text-align: center; font-size: calc(var(--s-note) * var(--u) * .9px); line-height: 1.45; color: var(--soft);
+  text-align: center; font-size: max(var(--min-28, 0px), calc(var(--s-note) * var(--u) * .9px)); line-height: 1.45; color: var(--soft);
 }
 .ev-earlier-label {
-  display: block; margin-bottom: .15em; font-size: .78em; letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2);
+  display: block; margin-bottom: .15em; font-size: max(var(--min-24, 0px), .78em); letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2);
 }
 .ev-earlier-item { display: inline-block; margin: 0 .7em; opacity: .8; }
 .ev-earlier-time { opacity: .75; font-size: .9em; }
 .ev-quote {
   margin: calc(18px * var(--u)) auto calc(6px * var(--u)); max-width: 1000px;
-  text-align: center; font-size: calc(var(--s-note) * var(--u) * 1.05px); line-height: 1.3; font-style: italic; color: var(--accent-2);
+  text-align: center; font-size: max(var(--min-30, 0px), calc(var(--s-note) * var(--u) * 1.05px)); line-height: 1.3; font-style: italic; color: var(--accent-2);
 }
 /* Later days in the Upcoming panel: one compact row each */
 .cday.brief + .cday, .cday + .cday.brief { margin-top: calc(22px * var(--u2)); padding-top: calc(18px * var(--u2)); }
-.brief .cday-date { display: inline; font-size: calc(30px * var(--u2)); }
-.brief .cday-rel { margin: 0 0 0 calc(10px * var(--u2)); vertical-align: .15em; font-size: calc(22px * var(--u2)); }
+.brief .cday-date { display: inline; font-size: max(var(--min-32, 0px), calc(36px * var(--u2))); }
+.brief .cday-rel { display: inline; margin: 0 0 0 calc(12px * var(--u2)); vertical-align: .12em; font-size: max(var(--min-22, 0px), calc(23px * var(--u2))); }
 .brief .cev { margin-top: calc(8px * var(--u2)); }
 .brief .cev + .cev { margin-top: calc(4px * var(--u2)); padding-top: 0; border-top: 0; }
-.brief .cev-time { font-size: calc(28px * var(--u2)); }
+.brief .cev-time { font-size: max(var(--min-30, 0px), calc(32px * var(--u2))); }
+/* Upcoming too full: notes and source labels give way before anything shrinks further */
+.coming-days.is-tight .cev-note, .coming-days.is-tight .cev-source { display: none; }
 
 /* ───────── Phones held upright: stack everything ───────── */
 @media (max-width: 1200px) and (orientation: portrait) {
@@ -264,35 +295,38 @@ body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 21px; 
   .crest { height: 62px; }
   .brand-name { font-size: clamp(19px, 5.4vw, 30px); }
   .brand-place { margin-top: 3px; font-size: clamp(14px, 3.9vw, 22px); }
-  .date-card { padding: 10px 18px 12px; border-radius: 20px; text-align: left; }
+  .date-card { padding: 6px 0; border-radius: 16px; text-align: left; }
+  .date-card:hover { padding: 6px 12px; }
   .day-name { font-size: clamp(20px, 5.4vw, 34px); }
   .full-date { margin-top: 2px; font-size: clamp(15px, 4.2vw, 26px); }
   .time { justify-self: end; gap: 8px; }
   .clock-hm { font-size: clamp(44px, 12vw, 80px); }
   .clock-period { font-size: clamp(16px, 4.4vw, 28px); }
   .clock-side { gap: 6px; padding-top: 4px; }
-  .clock-sec { padding: 3px 9px 4px; font-size: clamp(14px, 3.8vw, 24px); }
+  .clock-sec { font-size: clamp(14px, 3.8vw, 24px); }
   .header .date-card { order: 1; }
   .header .time { order: 2; }
   .brand { max-width: none; }
   .main { display: flex; flex-direction: column; gap: 18px; }
-  .today { padding: 28px 18px 0; border-radius: 34px; }
+  .today { padding: 26px 18px 0; border-radius: 30px; }
   .today-title { white-space: normal; font-size: clamp(24px, 6.4vw, 40px); }
   .today-events { overflow: visible; }
   .ev-split { grid-template-columns: 1fr; row-gap: 16px; padding-bottom: 12px; }
   .ev-col { overflow: visible; }
-  .ev-col-main { padding: 4px 14px; border-radius: 26px; }
+  .ev-col-main { padding-right: 0; }
+  .ev-col-side { padding: 16px 0 0; border-left: 0; border-top: 1px solid var(--hair); }
   .shlok-band { height: auto; margin: 0 -18px; padding: 20px 18px 24px; }
   .shlok-box { height: auto; min-height: 120px; overflow: visible; }
   .shlok-source { margin-top: 6px; font-size: clamp(13px, 3.6vw, 20px); }
   .coming { padding: 26px 20px 28px; border-radius: 30px; }
-  .coming-title { font-size: clamp(24px, 6.4vw, 36px); text-decoration-thickness: 3px; text-underline-offset: 8px; }
+  .coming-title { font-size: clamp(24px, 6.4vw, 36px); }
   .coming-days { overflow: visible; margin-top: 22px; }
-  .fest { padding: 16px 18px 18px; border-radius: 22px; }
+  .fest { padding: 14px 18px 16px; border-radius: 20px; column-gap: 16px; }
+  .fest-days { padding-right: 16px; }
   .fest-label { font-size: clamp(12px, 3.2vw, 18px); }
   .fest-name { font-size: clamp(26px, 7vw, 40px); }
-  .fest-days { font-size: clamp(16px, 4.2vw, 24px); }
-  .fest-days b { font-size: clamp(28px, 8vw, 44px); }
+  .fest-days { font-size: clamp(11px, 3vw, 15px); }
+  .fest-days b { font-size: clamp(40px, 12vw, 64px); }
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -937,7 +971,7 @@ const DAILY_SHLOKS = [
 /* How many upcoming event days "Upcoming Event" shows. One day, as on the previous screen. */
 const MAX_UPCOMING_DAYS = 4;              // the next day is shown in full, later days in brief if they fit
 const SHLOK_ROTATION_MS = 2 * 60 * 1000;   // a new shlok every 2 minutes
-const SHLOK_PAGE_CHARS = 260;               // longer shloks are shown in parts, each part large enough to read
+const SHLOK_PAGE_CHARS = 160;               // longer shloks are shown in parts, each short enough to read from across the hall
 const SHLOK_PAGE_MAX_MS = 30 * 1000;        // longest time one part stays on screen
 
 const $ = id => document.getElementById(id);
@@ -1231,7 +1265,9 @@ function timetableRows(list, live) {
   return list.map((e, i) =>
     (showSource(list, i) ? '<div class="ev-source">' + escapeHtml(e.source) + '</div>' : '') +
     '<article class="ev ev-row' + (live.includes(e) ? ' is-now' : '') + '">' +
-      '<div class="ev-when">' + (e.time ? '<div class="ev-time">' + escapeHtml(e.time) + '</div>' : '') +
+      // "7:00 PM onwards" shows as the time with a small "onwards" beneath, keeping the time column narrow.
+      '<div class="ev-when">' + (e.time ? '<div class="ev-time">' + escapeHtml(e.time.replace(/\s*onwards\s*$/i, '')) +
+        (/onwards\s*$/i.test(e.time) ? '<span class="ev-when-note">onwards</span>' : '') + '</div>' : '') +
         (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' +
       '<div class="ev-what"><div class="ev-name">' + escapeHtml(e.event) + '</div>' +
         (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
@@ -1266,7 +1302,9 @@ function todayMarkup(events, statuses) {
         '<div class="ev-col-label">Also today</div>' + eventArticles(festivals, live) + quoteMarkup(events) + '</div></div>' +
     '</div>';
   }
-  const main = active.length ? eventArticles(active, live) :
+  // Two or more timed events read best as a timetable; a single event stays large and centred.
+  const timed = active.filter(e => e.time).length >= 2;
+  const main = active.length ? (timed ? '<div class="ev-table">' + timetableRows(active, live) + '</div>' : eventArticles(active, live)) :
     '<article class="ev"><div class="ev-name">Today’s programme is complete</div>' +
     '<div class="ev-note">Thank you for joining us</div></article>';
   return '<div class="ev-list">' + main + earlierMarkup(done) + quoteMarkup(events) + '</div>';
@@ -1309,17 +1347,33 @@ function setEventSizes(el, sizes) {
   el.style.setProperty('--s-note', sizes[2]);
 }
 // Shrinks one box's events (via --u, starting from maxU) until its list fits. Returns the u used.
+// Timetable rows share one time column, as wide as the longest time (in em, so it scales with --u).
+function sizeTimeColumn(el) {
+  const times = [...el.querySelectorAll('.ev-row .ev-time')];
+  if (!times.length) return;
+  const em = Math.max(...times.map(t => t.scrollWidth / parseFloat(getComputedStyle(t).fontSize)));
+  el.style.setProperty('--when', (Math.ceil(em * 20) / 20 + .1) + 'em');
+}
+
 function fitEvents(el, maxU = 1) {
+  sizeTimeColumn(el);
   const list = el.firstElementChild;
   const names = [...el.querySelectorAll('.ev-name')];
   // Too tall for the box, or a long word (e.g. "Bhojan/Ahar") wider than its line.
   const overflows = () => list.offsetHeight > el.clientHeight || names.some(n => n.scrollWidth > n.clientWidth + 1);
-  let u = Math.round(maxU * 100) / 100;
-  el.style.setProperty('--u', String(u));
-  while (list && overflows() && u > .32) {
-    u = Math.round((u - .03) * 100) / 100;
+  const shrink = () => {
+    let u = Math.round(maxU * 100) / 100;
     el.style.setProperty('--u', String(u));
-  }
+    while (list && overflows() && u > .32) {
+      u = Math.round((u - .03) * 100) / 100;
+      el.style.setProperty('--u', String(u));
+    }
+    return u;
+  };
+  // Text never goes below its legible minimum; if the day still doesn't fit, the extras give way.
+  el.classList.remove('is-tight');
+  let u = shrink();
+  if (list && overflows()) { el.classList.add('is-tight'); u = shrink(); }
   return u;
 }
 
@@ -1351,9 +1405,9 @@ function contentBottom(box) {
 }
 
 function countdownMarkup(f) {
-  return '<span class="fest-label">Countdown to</span>' +
-    '<span class="fest-name">' + escapeHtml(f.label) + '</span>' +
-    '<span class="fest-days"><b>' + f.days + '</b> ' + (f.days === 1 ? 'day' : 'days') + ' to go</span>';
+  return '<span class="fest-days"><b>' + f.days + '</b>' + (f.days === 1 ? 'day' : 'days') + ' to go</span>' +
+    '<span class="fest-what"><span class="fest-label">Countdown to</span>' +
+    '<span class="fest-name">' + escapeHtml(f.label) + '</span></span>';
 }
 
 // Fills the Upcoming panel. Returns how many days it shows, the size used (u) and whether it all fits.
@@ -1367,6 +1421,7 @@ function fitComing(wrap, groups, todayDate) {
     wrap.innerHTML = groups.map((g, i) => comingDayMarkup(g, todayDate, i === 0)).join('');
     return {days: groups.length, u: 1, fits: true};
   }
+  wrap.classList.remove('is-tight');
   for (let days = Math.min(MAX_UPCOMING_DAYS, groups.length); days >= 1; days--) {
     wrap.innerHTML = groups.slice(0, days).map((g, i) => comingDayMarkup(g, todayDate, i === 0)).join('');
     const floor = days === 1 ? .4 : .8;   // tomorrow keeps its size; extra days are added only if they fit
@@ -1376,7 +1431,13 @@ function fitComing(wrap, groups, todayDate) {
       if (contentBottom(wrap) <= wrap.clientHeight - 16) return {days, u, fits: true};
     }
   }
-  return {days: 1, u: .4, fits: false}; // best effort: smallest size, anything beyond is clipped
+  // Tomorrow alone still doesn't fit: drop its notes and source labels, then try once more.
+  wrap.classList.add('is-tight');
+  for (let u = 1.2; u >= .4 - .001; u = Math.round((u - .04) * 100) / 100) {
+    wrap.style.setProperty('--u2', String(u));
+    if (contentBottom(wrap) <= wrap.clientHeight - 16) return {days: 1, u, fits: true};
+  }
+  return {days: 1, u: .4, fits: false}; // best effort: anything beyond is clipped
 }
 
 const COMING_MIN_READABLE = .72;   // below this size, tomorrow's events win over the festival countdown
@@ -1443,7 +1504,7 @@ function currentShlok(now) {
 const pageCache = {};
 function shlokPages(text) {
   if (pageCache[text]) return pageCache[text];
-  if (text.length <= SHLOK_PAGE_CHARS + 40) return pageCache[text] = [text];
+  if (text.length <= SHLOK_PAGE_CHARS + 20) return pageCache[text] = [text];
   const count = Math.ceil(text.length / SHLOK_PAGE_CHARS);
   const target = Math.ceil(text.length / count);
   const sentences = text.match(/[^.;?!]+[.;?!]+["”’)]*\s*|[^.;?!]+$/g) || [text];
@@ -1462,13 +1523,15 @@ function shlokPages(text) {
   const pages = [];
   let cur = '';
   tokens.forEach(t => {
-    if (cur && cur.length + 1 + t.length > target && cur.length >= target * .6) { pages.push(cur); cur = t; }
+    const next = cur.length + 1 + t.length;
+    // Break near the target length, and always before a part would outgrow the band.
+    if (cur && ((next > target && cur.length >= target * .6) || next > SHLOK_PAGE_CHARS * 1.12)) { pages.push(cur); cur = t; }
     else cur = cur ? cur + ' ' + t : t;
   });
   if (cur) pages.push(cur);
   // Don't leave a stranded fragment on the last part.
   while (pages.length > 1 && pages[pages.length - 1].length < target * .5 &&
-         pages[pages.length - 2].length + 1 + pages[pages.length - 1].length <= SHLOK_PAGE_CHARS * 1.25) {
+         pages[pages.length - 2].length + 1 + pages[pages.length - 1].length <= SHLOK_PAGE_CHARS * 1.12) {
     const tail = pages.pop();
     pages[pages.length - 1] += ' ' + tail;
   }
@@ -1501,7 +1564,7 @@ function layoutShlokText() {
   }
   // On busy days the shlok band is compact, so the events can be bigger.
   const busy = document.querySelector('.today').classList.contains('is-busy');
-  for (let size = busy ? 30 : 40; size >= (busy ? 20 : 24); size -= 2) {
+  for (let size = busy ? 36 : 46; size >= (busy ? 28 : 32); size -= 2) {
     text.style.fontSize = size + 'px';
     if (text.offsetHeight <= box.clientHeight) break;
   }

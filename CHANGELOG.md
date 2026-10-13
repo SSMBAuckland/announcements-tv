@@ -2,6 +2,19 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-13
+- **Readable from across the hall.** On the TV, text never shrinks below wall-legible minimums: event names 56px (44px for festivals in the side column), today's times 40px, Upcoming names 38–42px and times 30–32px, notes / festival message / "Earlier today" / shlok 28–30px, small capital labels 22–24px (previously some text went as small as 13px). Phones keep their own sizing.
+- When a day is too full to fit at those sizes, the least important content gives way instead of text shrinking: the festival message and introductions on the Today panel, notes and source labels in Upcoming.
+- **Calmer, clearer layout:**
+  - Smaller clock (196 → 140px) and slimmer header, so the events get the space. The date is plain text on the right (it still opens the preview calendar when clicked).
+  - Pills removed: "Mandal Santos Schedule", "Tomorrow", "Also today" and the seconds are now small gold capitals or plain text; no more card inside a card on busy days (a hairline divides the programme and festival columns).
+  - Any day with two or more timed events shows a timetable (time | event) with the times lined up in one column; "onwards" sits beneath its time. A single event stays large and centred.
+  - The event in progress gets a soft highlight across its row, with a glowing dot and "ON NOW" under the time.
+  - "Today at the Mandir" and "Upcoming Events" titles have a fine gold rule instead of an underline.
+  - The festival countdown is a compact strip: "8 days to go │ Countdown to Dashera".
+- Bigger header and Upcoming text (weekday 54px, date 38px, Upcoming names up to 62px).
+- Long shloks are split into shorter parts (about 180 characters at most) so every part fits the band at the larger size.
+
 ## 2026-10-10
 - **Bigger events on busy days.** When today has both Mandal Santos Schedule items and festivals, the Today panel now splits in two:
   - **Left (two-thirds):** the Mandal programme in its own highlighted card, laid out as a timetable (time on the left, event on the right) under a gold "Mandal Santos Schedule" heading. "Earlier today" sits at the bottom of this card.
