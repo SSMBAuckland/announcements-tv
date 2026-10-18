@@ -2,6 +2,15 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-18
+- **2027 events added** from the Bhuj Mandir "Australia and New Zealand Utsav" Google Calendar (278 entries, 3 Jan – 29 Dec 2027). Festival messages are reused where the same festival already had one (123 entries).
+  - Left out, as with the 2026 list from the same calendar: daily/monthly observances (Pradosh Vrat, Masik Shivratri, Amas, Vrat ni Poonam), instructions for the pujaris ("Swing Shree Thakorji in the paranu…", "adorn Shree Thakorji in…"), astronomical notes ("Sun enters…", "Holashtak … at"), Snan/Kamurta notices and the individual daily Shraddh days (Shraddh Begins, Mahalay Ends and Sarvapitri Shraddh are kept).
+  - Historical anniversaries ("Birth of Sadguru Brahmanand Swami", "Shree Hari gave diksha…") are included, with the Samvat year and place as a note, and are listed after the day's festivals.
+  - "… Fast" is dropped from names (e.g. "Safala Ekadashi", "Shree Ramnavmi").
+- New big festivals with their own colour theme and countdown: **Shree Swaminarayan Jayanti** and **Janmashtami**. Annkutotsav and Nutan Varsh are also recognised under the 2027 calendar's spellings ("Annakutotsav", "New Year begins").
+- Very full days: if a day still doesn't fit at wall-legible sizes, the lowest-priority items are replaced by a "+ N more today" line (or "+ N more" in Upcoming) instead of being cut off.
+- Long festival names in the countdown strip (e.g. "Prabodhini Ekadashi") shrink to fit.
+
 ## 2026-10-14
 - Fixed misaligned layout when the Mandal programme has only one item beside festivals (e.g. 14 Oct "Special Sabha: Seva" with Vinayaki Choth): it was drawn as a one-row timetable, squeezing the name into three lines with the time out of line. A single item now stacks — heading, large name, time — all on one left edge. Timetable rows are used only when there are two or more timed items.
 
