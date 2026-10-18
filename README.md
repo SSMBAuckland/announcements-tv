@@ -58,6 +58,21 @@ Previews only affect your browser; the TVs always show today.
 
 ---
 
+## 📅 Automatic calendar sync
+
+Every **Monday at 6 am** (NZ time) a GitHub Action (`.github/workflows/calendar-sync.yml`) reads the
+Bhuj Mandir "Australia and New Zealand Utsav" Google Calendar and adds any **new** events to the display,
+then refreshes the website and the TVs and writes a line in [CHANGELOG.md](CHANGELOG.md).
+
+* **It only adds, never changes or removes.** Anything edited by hand (times, notes, Mandal programmes) is safe.
+* It skips the same things the screen never showed: daily observances (Pradosh Vrat, Masik Shivratri, Amas…),
+  instructions for the pujaris, astronomical notes and individual Shraddh days. The rules are at the top of
+  `scripts/sync_calendar.py`.
+* **Run it now:** Actions tab → *Weekly calendar sync* → **Run workflow**.
+* If a calendar event is later moved or cancelled, fix or delete it in `index.html` by hand (the sync won't).
+
+---
+
 ## ✏️ Adding or changing events
 
 Events live in the `EVENTS` list near the top of the `<script>` section in `index.html`. Each event is one line:

@@ -2,6 +2,10 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-19
+- **Weekly calendar sync.** A GitHub Action now checks the Bhuj Mandir Google Calendar every Monday at 6 am (NZ) and adds any new events, using the same filtering as the 2027 import. It only adds events (never edits or removes them), writes a changelog entry for what it added, and refreshes the website and TVs. It can also be run by hand from the Actions tab. Script: `scripts/sync_calendar.py`; workflow: `.github/workflows/calendar-sync.yml`.
+- The Yodeck refresh workflow can now also be called by other workflows (needed because automatic commits don't trigger it).
+
 ## 2026-10-18
 - **2027 events added** from the Bhuj Mandir "Australia and New Zealand Utsav" Google Calendar (278 entries, 3 Jan – 29 Dec 2027). Festival messages are reused where the same festival already had one (123 entries).
   - Left out, as with the 2026 list from the same calendar: daily/monthly observances (Pradosh Vrat, Masik Shivratri, Amas, Vrat ni Poonam), instructions for the pujaris ("Swing Shree Thakorji in the paranu…", "adorn Shree Thakorji in…"), astronomical notes ("Sun enters…", "Holashtak … at"), Snan/Kamurta notices and the individual daily Shraddh days (Shraddh Begins, Mahalay Ends and Sarvapitri Shraddh are kept).
