@@ -3,6 +3,10 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-19
+- **Calendar sync:** added 1 new event from the Bhuj Mandir calendar:
+  - 5 Nov 2026 Vaghbaras
+
+## 2026-10-19
 - **Weekly calendar sync.** A GitHub Action now checks the Bhuj Mandir Google Calendar every Monday at 6 am (NZ) and adds any new events, using the same filtering as the 2027 import. It only adds events (never edits or removes them), writes a changelog entry for what it added, and refreshes the website and TVs. It can also be run by hand from the Actions tab. Script: `scripts/sync_calendar.py`; workflow: `.github/workflows/calendar-sync.yml`.
 - The Yodeck refresh workflow can now also be called by other workflows (needed because automatic commits don't trigger it).
 
