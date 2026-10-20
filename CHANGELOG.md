@@ -2,6 +2,15 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-20
+- **Hanuman Jayanti, Diwali and Annakut programmes** added as "Mandir Programme" items:
+  - **Sat 7 Nov:** Hanuman Jayanti, 6:45 PM onwards (Hanumanji Jeevan Akhyan; Pujan, Aarti & Chalisa Paath).
+  - **Sun 8 Nov:** Lakshmi Poojan 6:00 – 7:00 PM, Thaal and Chesta 7:00 PM, Aarti, Nitya Niyam and Katha 7:30 PM, Deepotsav Aarti 8:00 PM. The calendar's "Laxmi Pujan" is hidden that day (marked `"hidden": true`, so the weekly sync won't add it back).
+  - **Mon 9 Nov:** Annakut Aarti and Thaal 4:00 – 4:30 PM, Annakut Darshan 4:00 – 7:00 PM, Thaal, Chesta, Katha & Ashirwad Clips 6:30 – 7:30 PM, Aarti and Nitya Niyam 7:30 PM, Sneh Milan 7:45 PM (followed by Mahaprashad).
+- **Festival scenery**, drawn in code (works offline, faint enough not to compete with text): Hanuman Jayanti — saffron theme, saffron flags across the top and faint mountains along the bottom; Diwali — marigold garland, a row of flickering diyas and a faint rangoli; Annakut — marigold garland, the Govardhan hill and rows of laddoo offerings. Hanuman Jayanti is a new themed festival (no countdown, so Diwali's countdown isn't displaced).
+- The Shikshapatri shlok is hidden on these three days (`"hideShlok": true` on an event hides it for that day) so the programme gets the room.
+- A programme of four or more items now uses the full width of the Today panel, with the day's festivals on one "Also today" line above it. "On now" sits beside the event name in timetable rows.
+
 ## 2026-10-19
 - **Calendar sync:** added 1 new event from the Bhuj Mandir calendar:
   - 5 Nov 2026 Vaghbaras

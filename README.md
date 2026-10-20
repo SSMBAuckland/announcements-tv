@@ -91,6 +91,8 @@ Events live in the `EVENTS` list near the top of the `<script>` section in `inde
 | `quote` | | Short festival message shown under today's events. |
 | `intro` | | A longer introduction shown under the event name. |
 | `progress` | | Leave as `false` unless told otherwise. |
+| `hideShlok` | | `true` hides the Shikshapatri shlok on that day, to give a full programme more room. |
+| `hidden` | | `true` keeps the entry in the data but off the screen (the weekly calendar sync won't add it back). |
 
 **Big festivals** (countdown, colour theme and greeting) are set in the `FESTIVALS` list. The `event` there must match the event name exactly.
 

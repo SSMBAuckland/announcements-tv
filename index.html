@@ -44,6 +44,15 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
   100% { transform: translate3d(4%, -1%, 0) scale(1.02); }
 }
 .ambient { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* Festival scenery (garland along the top, scene along the bottom), behind the panels */
+.festival-art { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
+.festival-art svg { position: absolute; left: 0; width: 100%; display: block; }
+.festival-art .art-top { top: 0; height: 64px; }
+.festival-art .art-bottom { bottom: 0; height: 64px; }
+.festival-art .art-tall { height: 340px; }
+.festival-art .art-back { inset: 0; height: 100%; }
+.festival-art .flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flameFlicker 2.2s ease-in-out infinite; }
+@keyframes flameFlicker { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(.94, 1.08); } 70% { transform: scale(1.04, .95); } }
 .ambient span {
   position: absolute; bottom: -24px; left: var(--x);
   width: var(--s); height: var(--s); border-radius: 50%; opacity: 0;
@@ -172,7 +181,7 @@ body.tv-canvas .screen {
 .ev-when-note {
   display: block; margin-top: .2em; font-size: max(var(--min-24, 0px), .52em); line-height: 1.1; letter-spacing: .12em; text-transform: uppercase; color: var(--soft);
 }
-.ev-row .ev-live { display: block; margin: .35em 0 0; font-size: max(var(--min-24, 0px), .5em); }
+.ev-row .ev-live { margin-left: .6em; vertical-align: .3em; font-size: max(var(--min-24, 0px), .4em); }
 .ev-row .ev-intro { margin-left: 0; }
 .ev-col { min-height: 0; display: flex; flex-direction: column; overflow: hidden; }
 .ev-col-main { padding-right: 40px; }
@@ -201,6 +210,8 @@ body.tv-canvas .screen {
 .shlok-text { display: block; max-width: 100%; font-size: 40px; line-height: 1.26; color: var(--ink); }
 .shlok-source { margin-top: 8px; font-size: 29px; line-height: 1.2; color: var(--accent-2); }
 /* Busy days: a slimmer shlok band so the events get the room */
+.today.no-shlok .shlok-band { display: none; }
+.today.no-shlok { padding-bottom: 28px; }
 body.tv-canvas .today.is-busy .shlok-band { height: 176px; }
 body.tv-canvas .today.is-busy .shlok-box { height: 114px; }
 body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; }
@@ -271,6 +282,13 @@ body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; 
   display: block; margin-bottom: .15em; font-size: max(var(--min-24, 0px), .78em); letter-spacing: .1em; text-transform: uppercase; color: var(--accent-2);
 }
 .ev-cut { display: none !important; }
+/* "Also today" festivals as one line above a full-width programme */
+.ev-also {
+  margin-bottom: calc(10px * var(--u)); padding-bottom: calc(12px * var(--u)); border-bottom: 1px solid var(--hair); text-align: left;
+  font-size: max(var(--min-44, 0px), calc(var(--s-name) * var(--u) * .62px)); line-height: 1.15; font-weight: 700; color: var(--ink);
+}
+.ev-also .ev-col-label { display: inline; margin: 0 .7em 0 0; vertical-align: .25em; }
+.ev-also-dot { margin: 0 .45em; color: var(--accent); }
 .ev-more {
   margin-top: calc(10px * var(--u)); text-align: center; font-size: max(var(--min-24, 0px), calc(var(--s-note) * var(--u) * .9px));
   font-weight: 700; letter-spacing: .12em; text-transform: uppercase; color: var(--accent-2);
@@ -347,6 +365,7 @@ body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; 
   .clock-hm .c { transition: none; }
   .screen::before, .brand::before, .fest::after, .ev-live { animation: none; }
   .ambient { display: none; }
+  .festival-art .flame { animation: none; }
 }
 
 /* Preview studio: opened by clicking the date card. Lives outside the scaled TV canvas,
@@ -617,6 +636,7 @@ body.tv-canvas .pv-bar { bottom: 6px; }
 </head>
 <body>
 <div class="screen">
+  <div id="festivalArt" class="festival-art" aria-hidden="true"></div>
   <div class="ambient" aria-hidden="true">
     <span style="--x:4%;  --s:10px; --t:26s; --d:-3s"></span>
     <span style="--x:13%; --s:7px;  --t:31s; --d:-17s"></span>
@@ -744,12 +764,22 @@ const EVENTS = [
   {"date": "6/11/2026", "event": "Dhanteras", "progress": false, "quote": "The greatest wealth is satsang, and the greatest treasure is devotion to Bhagwan."},
   {"date": "7/11/2026", "event": "Kali Chaudash", "progress": false, "quote": "May darkness within the heart be dispelled by the light of bhakti and divine remembrance."},
   {"date": "7/11/2026", "event": "Hanuman Pujan", "progress": false, "quote": "May Hanumanji’s strength, humility and unwavering devotion inspire our seva."},
-  {"date": "8/11/2026", "event": "Laxmi Pujan", "progress": false, "quote": "May true prosperity be measured in satsang, contentment, seva and devotion."},
+  {"date": "8/11/2026", "event": "Laxmi Pujan", "hidden": true, "progress": false, "quote": "May true prosperity be measured in satsang, contentment, seva and devotion."},
   {"date": "8/11/2026", "event": "Chopda Pujan", "progress": false, "quote": "May every account begin with gratitude to Bhagwan and every endeavour remain rooted in dharma."},
   {"date": "8/11/2026", "event": "Diwali", "progress": true, "quote": "May the light of bhakti remove darkness from the heart and illuminate every home with peace."},
   {"date": "9/11/2026", "event": "Annkutotsav", "progress": false, "quote": "When countless offerings are placed before Bhagwan, the heart learns that everything we have is His gift."},
   {"date": "9/11/2026", "event": "Govardhan Pujan", "progress": false, "quote": "Remember Bhagwan’s protection and cultivate humility, gratitude and unwavering faith."},
   {"date": "9/11/2026", "event": "Somvati Darsha Amavasya", "progress": false, "quote": "Let a sacred day of remembrance turn the mind inward towards peace and devotion."},
+  {"date": "7/11/2026", "event": "Hanuman Jayanti", "time": "6:45 PM onwards", "note": "Hanumanji Jeevan Akhyan • Pujan, Aarti & Chalisa Paath", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "8/11/2026", "event": "Lakshmi Poojan", "time": "6:00 – 7:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "8/11/2026", "event": "Thaal and Chesta", "time": "7:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "8/11/2026", "event": "Aarti, Nitya Niyam and Katha", "time": "7:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "8/11/2026", "event": "Deepotsav Aarti", "time": "8:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "9/11/2026", "event": "Annakut Aarti and Thaal", "time": "4:00 – 4:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "9/11/2026", "event": "Annakut Darshan", "time": "4:00 – 7:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "9/11/2026", "event": "Thaal, Chesta, Katha & Ashirwad Clips", "time": "6:30 – 7:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "9/11/2026", "event": "Aarti and Nitya Niyam", "time": "7:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
+  {"date": "9/11/2026", "event": "Sneh Milan", "time": "7:45 PM", "note": "Followed by Mahaprashad", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "10/11/2026", "event": "Nutan Varsharambh", "progress": false, "quote": "May the new year begin with niyam, satsang, seva and a heart devoted to Bhagwan."},
   {"date": "11/11/2026", "event": "Chandra Darshan", "progress": false, "quote": "As we behold the moon, may our hearts remain fixed on the radiant form of Maharaj."},
   {"date": "11/11/2026", "event": "Bhai Bij", "progress": false, "quote": "May family bonds be strengthened by affection, forgiveness and the shared joy of satsang."},
@@ -1360,7 +1390,8 @@ const fmtShortDay = new Intl.DateTimeFormat('en-NZ', {weekday: 'short', day: 'nu
 /* ───────── Event data: de-duplicated, sorted, grouped by day ───────── */
 const SORTED_EVENTS = (() => {
   const seen = {};
-  return EVENTS.map(e => ({...e, dt: parseDate(e.date)}))
+  // "hidden": true keeps an entry in the data (so the calendar sync won't add it again) but off the screen.
+  return EVENTS.filter(e => !e.hidden).map(e => ({...e, dt: parseDate(e.date)}))
     .filter(e => {
       const k = [dateKey(e.dt), e.event.trim().toLowerCase(), e.time || ''].join('|');
       if (seen[k]) return false;
@@ -1393,8 +1424,9 @@ const SPECIAL_PALETTES = {
   navratri:   {name: 'Navratri',            h: 334, s: 62, a: 44, b: 300},
   dashera:    {name: 'Dashera',             h: 14,  s: 66, a: 42, b: 30},
   sharad:     {name: 'Sharad Poonam',       h: 222, s: 42, a: 200, b: 205},
-  diwali:     {name: 'Diwali',              h: 6,   s: 74, a: 46, b: 42},
-  annkut:     {name: 'Annkutotsav',         h: 38,  s: 66, a: 48, b: 14},
+  diwali:     {name: 'Diwali',              h: 6,   s: 74, a: 46, b: 42, art: 'diwali'},
+  hanuman:    {name: 'Hanuman Jayanti',     h: 18,  s: 76, a: 44, b: 4,  art: 'hanuman'},
+  annkut:     {name: 'Annkutotsav',         h: 38,  s: 66, a: 48, b: 14, art: 'annakut'},
   nutan:      {name: 'Nutan Varsh',         h: 352, s: 58, a: 44, b: 38},
   prabodhini: {name: 'Prabodhini Ekadashi', h: 140, s: 40, a: 48, b: 100},
   harinavmi:  {name: 'Shree Swaminarayan Jayanti', h: 28, s: 70, a: 46, b: 340},
@@ -1408,6 +1440,7 @@ const FESTIVALS = [
   {event: 'Navratri Begins',     label: 'Navratri',            theme: 'navratri', greeting: 'Happy Navratri'},
   {event: 'Dashera',             label: 'Dashera',             theme: 'dashera', greeting: 'Happy Dashera'},
   {event: 'Sharad Poonam',       label: 'Sharad Poonam',       theme: 'sharad'},
+  {event: 'Hanuman Jayanti',     label: 'Hanuman Jayanti',     theme: 'hanuman', countdown: false},
   {event: 'Diwali',              label: 'Diwali',              theme: 'diwali', greeting: 'Happy Diwali'},
   {event: 'Annkutotsav',         label: 'Annkutotsav',         theme: 'annkut', also: ['Annakutotsav']},
   {event: 'Nutan Varsharambh',   label: 'Nutan Varsh',         theme: 'nutan', greeting: 'Nutan Varshabhinandan', also: ['New Year begins']},
@@ -1437,7 +1470,7 @@ function nextFestival(todayKey) {
     if (key <= todayKey) continue;
     const days = daysUntil(dateFromKey(key), todayDate);
     if (days > COUNTDOWN_DAYS) return null;
-    const e = EVENTS_BY_DAY[key].find(festivalFor);
+    const e = EVENTS_BY_DAY[key].find(x => festivalFor(x) && festivalFor(x).countdown !== false);
     if (e) return {key, days, label: festivalFor(e).label};
   }
   return null;
@@ -1487,13 +1520,116 @@ function paletteFor(key) {
   };
   const rgb = v => hslToRgb(v[0], v[1], v[2]);
   return paletteCache[key] = {
-    name: spec.name, special, vars,
+    name: spec.name, special, vars, art: spec.art || '',
     colours: {
       primary: rgb(c.accent), secondary: rgb(c.accent2), bg: rgb(c.deep), panel: rgb(c.archBot),
       panel2: rgb(c.field), heading: rgb(c.archTop), headingEnd: rgb(c.archBot),
       tint: hslToRgb(spec.h, Math.min(S + 14, 82), 52)
     }
   };
+}
+
+
+/* ───────── Festival scenery: drawn as SVG so it works offline and stays sharp ─────────
+   A garland (toran) across the top edge, a scene along the bottom edge, and on some days a
+   large faint motif behind the panels. Kept low-contrast so the text always reads first. */
+const SVGNS = 'http://www.w3.org/2000/svg';
+function svgEl(viewW, viewH, cls, inner) {
+  return '<svg class="' + cls + '" viewBox="0 0 ' + viewW + ' ' + viewH + '" preserveAspectRatio="xMidYMax meet" xmlns="' + SVGNS + '">' + inner + '</svg>';
+}
+// Points along a quadratic curve, for beads on a swag.
+function along(x0, y0, cx, cy, x1, y1, n) {
+  const pts = [];
+  for (let i = 0; i <= n; i++) {
+    const t = i / n, u = 1 - t;
+    pts.push([u * u * x0 + 2 * u * t * cx + t * t * x1, u * u * y0 + 2 * u * t * cy + t * t * y1]);
+  }
+  return pts;
+}
+function marigoldToran(colors, leaf) {
+  let out = '';
+  const swag = 240, sag = 26;
+  for (let x = 0; x < 1920; x += swag) {
+    along(x, -2, x + swag / 2, 2 * sag, x + swag, -2, 14).forEach(([px, py], i) => {
+      out += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="8.5" fill="' + colors[i % colors.length] + '" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>';
+    });
+    // mango leaves and a bead hanging from each hook
+    [-14, 0, 14].forEach(a => {
+      out += '<ellipse cx="' + x + '" cy="22" rx="6" ry="17" fill="' + leaf + '" transform="rotate(' + a + ' ' + x + ' 6)"/>';
+    });
+    out += '<circle cx="' + x + '" cy="44" r="7" fill="' + colors[0] + '" stroke="rgba(0,0,0,.25)" stroke-width="1.2"/>';
+  }
+  return svgEl(1920, 64, 'art-top', out);
+}
+function pennantToran(colors) {
+  let out = '';
+  const swag = 320, sag = 22;
+  for (let x = 0; x < 1920; x += swag) {
+    const pts = along(x, 0, x + swag / 2, 2 * sag, x + swag, 0, 8);
+    out += '<path d="M' + x + ' 0 Q' + (x + swag / 2) + ' ' + (2 * sag) + ' ' + (x + swag) + ' 0" fill="none" stroke="rgba(255,240,220,.45)" stroke-width="2"/>';
+    pts.slice(0, -1).forEach(([px, py], i) => {
+      const [qx, qy] = pts[i + 1], mx = (px + qx) / 2, my = (py + qy) / 2;
+      out += '<path d="M' + px.toFixed(1) + ' ' + py.toFixed(1) + ' L' + qx.toFixed(1) + ' ' + qy.toFixed(1) + ' L' + (mx).toFixed(1) + ' ' + (my + 30).toFixed(1) + 'Z" fill="' + colors[i % colors.length] + '" opacity=".92"/>';
+    });
+  }
+  return svgEl(1920, 64, 'art-top', out);
+}
+function diyaRow() {
+  let out = '<defs><radialGradient id="diyaGlow"><stop offset="0" stop-color="#ffd27a" stop-opacity=".75"/><stop offset="1" stop-color="#ff9a2e" stop-opacity="0"/></radialGradient></defs>';
+  for (let x = 60, i = 0; x < 1920; x += 120, i++) {
+    out += '<g transform="translate(' + x + ' 0)">' +
+      '<circle cx="0" cy="40" r="34" fill="url(#diyaGlow)"/>' +
+      '<g class="flame" style="animation-delay:-' + (i * .37 % 2.2).toFixed(2) + 's"><path d="M0 18 C7 30 6 40 0 44 C-6 40 -7 30 0 18Z" fill="#ffd36b"/><path d="M0 28 C3 35 3 40 0 43 C-3 40 -3 35 0 28Z" fill="#fff4cf"/></g>' +
+      '<path d="M-24 44 Q0 70 24 44 Z" fill="#b5532a"/><path d="M-24 44 L24 44" stroke="#e08a4a" stroke-width="3"/>' +
+      '<path d="M-12 50 Q0 58 12 50" stroke="#f2b167" stroke-width="2" fill="none" opacity=".7"/></g>';
+  }
+  return svgEl(1920, 64, 'art-bottom', out);
+}
+function rangoli(cx, cy, r, color) {
+  let out = '<g fill="none" stroke="' + color + '" stroke-width="3">';
+  for (let ring = 0; ring < 3; ring++) {
+    const rr = r * (1 - ring * .28), n = 8 + ring * 4;
+    for (let k = 0; k < n; k++) {
+      const a = 360 / n * k;
+      out += '<ellipse cx="' + cx + '" cy="' + (cy - rr * .55) + '" rx="' + (rr * .14).toFixed(1) + '" ry="' + (rr * .42).toFixed(1) + '" transform="rotate(' + a + ' ' + cx + ' ' + cy + ')"/>';
+    }
+    out += '<circle cx="' + cx + '" cy="' + cy + '" r="' + (rr * .12).toFixed(1) + '"/>';
+  }
+  return out + '</g>';
+}
+function annakutHill() {
+  // Govardhan hill, with tiers of offerings (laddoos and bowls) along its slopes.
+  let out = '<path d="M0 340 C260 300 420 120 760 70 C960 40 1120 120 1300 170 C1500 230 1700 250 1920 300 L1920 340Z" fill="rgba(255,214,140,.10)"/>' +
+            '<path d="M0 340 C300 320 520 220 820 190 C1060 170 1260 240 1500 270 C1700 290 1820 300 1920 320 L1920 340Z" fill="rgba(255,214,140,.08)"/>';
+  const cols = ['#f6b63c', '#e98a2c', '#fbe08a', '#d9653a'];
+  for (let x = 40, i = 0; x < 1920; x += 76, i++) {
+    // a small pyramid of laddoos on a bowl, along the bottom edge
+    out += '<g transform="translate(' + x + ' 300)"><path d="M-26 30 Q0 50 26 30Z" fill="#9a4a24"/>' +
+      [[-14, 22], [0, 22], [14, 22], [-7, 10], [7, 10], [0, -1]].map(([dx, dy], k) =>
+        '<circle cx="' + dx + '" cy="' + dy + '" r="8" fill="' + cols[(i + k) % cols.length] + '" stroke="rgba(0,0,0,.2)" stroke-width="1"/>').join('') + '</g>';
+  }
+  return svgEl(1920, 340, 'art-bottom art-tall', out);
+}
+function mountains() {
+  return svgEl(1920, 300,
+    'art-bottom art-tall',
+    '<circle cx="1610" cy="120" r="90" fill="rgba(255,200,120,.10)"/>' +
+    '<path d="M0 300 L0 210 L180 120 L330 190 L520 60 L700 170 L860 110 L1020 200 L1200 90 L1380 180 L1560 130 L1740 200 L1920 140 L1920 300Z" fill="rgba(255,190,120,.10)"/>' +
+    '<path d="M0 300 L0 250 L240 190 L420 240 L640 160 L860 240 L1080 180 L1300 250 L1520 200 L1720 250 L1920 210 L1920 300Z" fill="rgba(255,190,120,.08)"/>');
+}
+const FESTIVAL_ART = {
+  diwali:  () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') + diyaRow() +
+                 svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
+  annakut: () => marigoldToran(['#ffc93c', '#f59a1b'], '#3f8f3a') + annakutHill(),
+  hanuman: () => pennantToran(['#f26b1d', '#f7a325', '#d9481c']) + mountains()
+};
+let shownArt = null;
+function setFestivalArt(name) {
+  if (name === shownArt) return;
+  shownArt = name;
+  const box = $('festivalArt');
+  box.innerHTML = name && FESTIVAL_ART[name] ? FESTIVAL_ART[name]() : '';
+  document.body.dataset.art = name || '';
 }
 
 let appliedTheme = '';
@@ -1503,6 +1639,7 @@ function applyTheme(key) {
   Object.keys(palette.vars).forEach(p => document.body.style.setProperty(p, palette.vars[p]));
   document.body.dataset.themeDate = key;
   document.body.dataset.themeName = palette.name;
+  setFestivalArt(palette.art);
   appliedTheme = key;
 }
 
@@ -1562,9 +1699,9 @@ function timetableRows(list, live) {
     '<article class="ev ev-row' + (live.includes(e) ? ' is-now' : '') + '">' +
       // "7:00 PM onwards" shows as the time with a small "onwards" beneath, keeping the time column narrow.
       '<div class="ev-when">' + (e.time ? '<div class="ev-time">' + escapeHtml(e.time.replace(/\s*onwards\s*$/i, '')) +
-        (/onwards\s*$/i.test(e.time) ? '<span class="ev-when-note">onwards</span>' : '') + '</div>' : '') +
+        (/onwards\s*$/i.test(e.time) ? '<span class="ev-when-note">onwards</span>' : '') + '</div>' : '') + '</div>' +
+      '<div class="ev-what"><div class="ev-name">' + escapeHtml(e.event) +
         (live.includes(e) ? '<span class="ev-live">On now</span>' : '') + '</div>' +
-      '<div class="ev-what"><div class="ev-name">' + escapeHtml(e.event) + '</div>' +
         (e.intro ? '<p class="ev-intro">' + escapeHtml(e.intro) + '</p>' : '') +
         noteLines(e).map(n => '<div class="ev-note">' + escapeHtml(n) + '</div>').join('') + '</div>' +
     '</article>'
@@ -1589,6 +1726,13 @@ function todayMarkup(events, statuses) {
   const live = events.filter((e, i) => statuses[i] === 'now');
   const done = events.filter((e, i) => statuses[i] === 'done');
   const programme = active.filter(e => e.source), festivals = active.filter(e => !e.source);
+  // A full programme (four or more items) gets the whole width; the day's festivals become one line above it.
+  if (programme.length >= 4 && festivals.length) {
+    return '<div class="ev-list">' +
+      '<div class="ev-also"><span class="ev-col-label">Also today</span>' +
+        festivals.map(e => '<span class="ev-also-name">' + escapeHtml(e.event) + '</span>').join('<span class="ev-also-dot">·</span>') + '</div>' +
+      '<div class="ev-table">' + timetableRows(programme, live) + '</div>' + earlierMarkup(done) + quoteMarkup(events) + '</div>';
+  }
   if (programme.length && festivals.length) {
     return '<div class="ev-split">' +
       '<div class="ev-col ev-col-main" data-count="' + programme.length + '"><div class="ev-list">' +
@@ -1958,9 +2102,14 @@ function render() {
     state.upcoming = upcoming;
     state.festival = festival;
     // A finished day keeps the size of a one-event day for its closing message.
-    state.activeCount = Math.max(statuses.filter(s => s !== 'done').length, todayEvents.length ? 1 : 0);
+    const stillOn = todayEvents.filter((e, i) => statuses[i] !== 'done');
+    const progCount = stillOn.filter(e => e.source).length;
+    // With the festivals on one line (see todayMarkup), size the rows for the programme alone.
+    state.activeCount = Math.max(progCount >= 4 && stillOn.length > progCount ? progCount : stillOn.length, todayEvents.length ? 1 : 0);
     $('todayEvents').innerHTML = todayMarkup(todayEvents, statuses);
     // Busy day: two columns, or three or more events still to come.
+    // An event can ask for the shlok band to be hidden that day, to give a full programme the room.
+    document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok));
     document.querySelector('.today').classList.toggle('is-busy',
       Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);
     layoutPanels();
