@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-20 (later)
+- **Sat 7 Nov:** the programme item is renamed from "Hanuman Jayanti" to **Kali Chaudash** (6:45 PM onwards; Hanumanji Jeevan Akhyan; Pujan, Aarti & Chalisa Paath). The calendar's own "Kali Chaudash" entry is hidden that day so it isn't listed twice, and its festival message moves to the programme item. Kali Chaudash keeps the saffron Hanuman theme and scenery (also in 2027, where the calendar spells it "Kali Chaudas").
+
 ## 2026-10-20
 - **Hanuman Jayanti, Diwali and Annakut programmes** added as "Mandir Programme" items:
   - **Sat 7 Nov:** Hanuman Jayanti, 6:45 PM onwards (Hanumanji Jeevan Akhyan; Pujan, Aarti & Chalisa Paath).
