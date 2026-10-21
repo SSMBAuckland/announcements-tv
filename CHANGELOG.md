@@ -3,6 +3,10 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-21
+- **From the admin team (WhatsApp) — Removed: Hello Haiku 1008:**
+  - Removed: 20 Oct Hello Haiku 1008
+
+## 2026-10-21
 - **From the admin team (WhatsApp) — Hello Haiku 1008:**
   - Added: 20 Oct Hello Haiku 1008
 
