@@ -3,6 +3,10 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-21
+- **From the admin team (WhatsApp) — Hello Haiku 1008:**
+  - Added: 20 Oct Hello Haiku 1008
+
+## 2026-10-21
 - **Groundwork for updates from WhatsApp** (not switched on yet). A new GitHub Action, *WhatsApp update*, will put announcements the admin team approves on WhatsApp onto the display. Plain event changes go through `scripts/apply_update.py` (no AI); festive themes and other changes are made by Claude Code. Every change is checked at 1920×1080 by `scripts/check_display.py` before it is published. No change to what the screen shows.
 
 ## 2026-10-20 (later)
