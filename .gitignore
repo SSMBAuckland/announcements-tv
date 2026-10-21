@@ -1,0 +1,11 @@
+# Local only, never commit
+# Notes for Claude about the WhatsApp/n8n automation (numbers, group IDs, setup)
+CLAUDE.local.md
+# API keys and tokens (n8n, WAHA, Claude team API key)
+.env
+.env.*
+# Sample WhatsApp messages and posters used to build the automation
+whatsapp-samples/
+# Claude Code's personal settings and browser-testing artefacts
+.claude/settings.local.json
+.playwright-mcp/
