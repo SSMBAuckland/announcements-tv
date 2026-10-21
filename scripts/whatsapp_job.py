@@ -168,11 +168,23 @@ def callback():
         out['screens'] = os.environ.get('SCREENS')
     if os.environ.get('COMMIT'):
         out['commit'] = os.environ['COMMIT']
-    req = urllib.request.Request(url, data=json.dumps(out, ensure_ascii=False).encode('utf-8'), method='POST',
+    data = json.dumps(out, ensure_ascii=False).encode('utf-8')
+    req = urllib.request.Request(url, data=data, method='POST',
                                  headers={'Content-Type': 'application/json', 'X-SSMB-Key': key or '',
                                           'User-Agent': 'ssmb-tv-workflow'})
-    with urllib.request.urlopen(req, timeout=30) as r:
-        print('Reported to n8n:', r.status)
+    try:
+        with urllib.request.urlopen(req, timeout=30) as r:
+            print('Reported back:', r.status)
+            return
+    except urllib.error.HTTPError as e:
+        print('Report refused:', e.code, e.headers.get('server'), e.headers.get('cf-ray'), e.read()[:300])
+    # second try with curl (a different client fingerprint)
+    r = subprocess.run(['curl', '-sS', '-o', '/dev/stderr', '-w', '%{http_code}', '-X', 'POST', url, '-H', 'Content-Type: application/json',
+                        '-H', 'X-SSMB-Key: ' + (key or ''), '-A', 'ssmb-tv-workflow', '--data-binary', '@-'],
+                       input=data, capture_output=True)
+    print('curl:', r.stdout.decode(), r.stderr.decode()[:300])
+    if r.stdout.decode() != '200':
+        sys.exit(1)
 
 
 if __name__ == '__main__':
