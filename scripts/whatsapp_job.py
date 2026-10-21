@@ -40,7 +40,8 @@ especially the minimum text sizes (the screen is read from across the hall).
 with a question starting with "QUESTION:".
 
 Your final reply is posted in the admin team's WhatsApp group: at most three short sentences of plain text (no \
-markdown, no headings), saying what you changed and on which dates."""
+markdown, no headings), saying what you changed and on which dates. Never mention n8n there; if you need to refer to \
+the bot's settings, call them "the WAHA config"."""
 
 LIMIT = re.compile(r'usage limit|hit your .{0,40}limit|limit reached|limit will reset|resets? (at )?\d|'
                    r'credit balance is too low|out of (extra )?usage|rate.?limit', re.I)
