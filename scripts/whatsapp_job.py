@@ -154,13 +154,12 @@ def finish(out):
         with open(gh, 'a', encoding='utf-8') as f:
             f.write('status=%s\n' % out['status'])
     print(json.dumps(out, ensure_ascii=False, indent=1))
+    # one line the bot looks for when it reads this run's log
+    print('SSMB_RESULT ' + json.dumps(out, ensure_ascii=False))
 
 
 def callback():
     url, key = os.environ.get('N8N_CALLBACK_URL'), os.environ.get('N8N_CALLBACK_KEY')
-    if not url:
-        print('N8N_CALLBACK_URL is not set; not reporting back.')
-        return
     out = json.load(open(RESULT, encoding='utf-8')) if os.path.exists(RESULT) else {
         'ref': os.environ.get('REF', ''), 'kind': os.environ.get('KIND', ''), 'status': 'failed',
         'summary': 'The update job stopped before it finished.'}
@@ -168,6 +167,9 @@ def callback():
         out['screens'] = os.environ.get('SCREENS')
     if os.environ.get('COMMIT'):
         out['commit'] = os.environ['COMMIT']
+    if not url:
+        print('No direct report address set; the bot reads the result from this run instead.')
+        return
     data = json.dumps(out, ensure_ascii=False).encode('utf-8')
     req = urllib.request.Request(url, data=data, method='POST',
                                  headers={'Content-Type': 'application/json', 'X-SSMB-Key': key or '',
@@ -182,9 +184,8 @@ def callback():
     r = subprocess.run(['curl', '-sS', '-o', '/dev/stderr', '-w', '%{http_code}', '-X', 'POST', url, '-H', 'Content-Type: application/json',
                         '-H', 'X-SSMB-Key: ' + (key or ''), '-A', 'ssmb-tv-workflow', '--data-binary', '@-'],
                        input=data, capture_output=True)
-    print('curl:', r.stdout.decode(), r.stderr.decode()[:300])
-    if r.stdout.decode() != '200':
-        sys.exit(1)
+    # Not fatal: the bot also checks finished runs every minute and reads the SSMB_RESULT line.
+    print('curl:', r.stdout.decode(), r.stderr.decode()[:200])
 
 
 if __name__ == '__main__':

@@ -1,4 +1,6 @@
 name: WhatsApp update
+# The ref in the run name lets the bot find this run and read its result.
+run-name: WhatsApp update ${{ inputs.ref }}
 
 # Changes approved by the admin team on WhatsApp. Started by the n8n automation, which also gets the result back
 # and replies in the admin group.
