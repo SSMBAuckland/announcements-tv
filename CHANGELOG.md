@@ -3,6 +3,10 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-21
+- **From the admin team (WhatsApp) — Sharad Purnima Raas:**
+  - Added: 25 Oct Thaal and Chesta; 25 Oct Aarti and Nitya Niyam; 25 Oct Sharad Purnima Raas; 25 Oct Podhaniya; 25 Oct Prasad Rupi Bhojan
+
+## 2026-10-21
 - **From the admin team (WhatsApp) — Removed: Hello Haiku 1008:**
   - Removed: 20 Oct Hello Haiku 1008
 
