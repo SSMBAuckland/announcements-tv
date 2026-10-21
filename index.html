@@ -1428,7 +1428,7 @@ const SPECIAL_PALETTES = {
   chhathi:    {name: 'Bal Krishna Chhathi', h: 232, s: 60, a: 44, b: 330},
   navratri:   {name: 'Navratri',            h: 334, s: 62, a: 44, b: 300},
   dashera:    {name: 'Dashera',             h: 14,  s: 66, a: 42, b: 30},
-  sharad:     {name: 'Sharad Poonam',       h: 222, s: 42, a: 200, b: 205},
+  sharad:     {name: 'Sharad Poonam',       h: 222, s: 42, a: 200, b: 205, art: 'sharad'},
   diwali:     {name: 'Diwali',              h: 6,   s: 74, a: 46, b: 42, art: 'diwali'},
   hanuman:    {name: 'Hanuman Jayanti',     h: 18,  s: 76, a: 44, b: 4,  art: 'hanuman'},
   annkut:     {name: 'Annkutotsav',         h: 38,  s: 66, a: 48, b: 14, art: 'annakut'},
@@ -1444,7 +1444,7 @@ const SPECIAL_PALETTES = {
 const FESTIVALS = [
   {event: 'Navratri Begins',     label: 'Navratri',            theme: 'navratri', greeting: 'Happy Navratri'},
   {event: 'Dashera',             label: 'Dashera',             theme: 'dashera', greeting: 'Happy Dashera'},
-  {event: 'Sharad Poonam',       label: 'Sharad Poonam',       theme: 'sharad'},
+  {event: 'Sharad Poonam',       label: 'Sharad Poonam',       theme: 'sharad', greeting: 'Happy Sharad Poonam'},
   {event: 'Hanuman Jayanti',     label: 'Hanuman Jayanti',     theme: 'hanuman', countdown: false, also: ['Kali Chaudash', 'Kali Chaudas']},
   {event: 'Diwali',              label: 'Diwali',              theme: 'diwali', greeting: 'Happy Diwali'},
   {event: 'Annkutotsav',         label: 'Annkutotsav',         theme: 'annkut', also: ['Annakutotsav']},
@@ -1622,7 +1622,47 @@ function mountains() {
     '<path d="M0 300 L0 210 L180 120 L330 190 L520 60 L700 170 L860 110 L1020 200 L1200 90 L1380 180 L1560 130 L1740 200 L1920 140 L1920 300Z" fill="rgba(255,190,120,.10)"/>' +
     '<path d="M0 300 L0 250 L240 190 L420 240 L640 160 L860 240 L1080 180 L1300 250 L1520 200 L1720 250 L1920 210 L1920 300Z" fill="rgba(255,190,120,.08)"/>');
 }
+function jasmineToran() {
+  // Strings of white jasmine (mogra) with pearl drops, for the moonlit night of Sharad Poonam.
+  let out = '';
+  const swag = 240, sag = 24;
+  for (let x = 0; x < 1920; x += swag) {
+    along(x, -2, x + swag / 2, 2 * sag, x + swag, -2, 16).forEach(([px, py], i) => {
+      out += '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + (i % 2 ? 6 : 7.5) + '" fill="' + (i % 2 ? '#e8eefc' : '#fbfcff') + '" stroke="rgba(120,140,190,.45)" stroke-width="1"/>';
+    });
+    out += '<path d="M' + x + ' 0 L' + x + ' 22" stroke="rgba(230,238,255,.6)" stroke-width="2"/>' +
+      '<circle cx="' + x + '" cy="26" r="6" fill="#fbfcff" stroke="rgba(120,140,190,.45)"/>' +
+      '<circle cx="' + x + '" cy="37" r="4" fill="#d9e4ff"/>';
+  }
+  return svgEl(1920, 64, 'art-top', out);
+}
+function sharadMoon() {
+  // A large, faint full moon with its halo, and a scatter of twinkling stars.
+  let out = '<defs><radialGradient id="moonHalo"><stop offset=".3" stop-color="#eaf1ff" stop-opacity=".16"/><stop offset="1" stop-color="#9fb8ff" stop-opacity="0"/></radialGradient>' +
+            '<radialGradient id="moonFace" cx=".42" cy=".4"><stop offset="0" stop-color="#ffffff" stop-opacity=".13"/><stop offset="1" stop-color="#cfdcff" stop-opacity=".07"/></radialGradient></defs>' +
+            '<circle cx="1600" cy="560" r="430" fill="url(#moonHalo)"/>' +
+            '<circle cx="1600" cy="560" r="240" fill="url(#moonFace)"/>';
+  [[480, 190], [760, 60], [1440, 200], [1880, 170], [60, 400], [1310, 1060], [30, 760], [1890, 1050], [820, 205]].forEach(([x, y], i) => {
+    out += '<g class="flame" style="animation-delay:-' + (i * .53 % 2.2).toFixed(2) + 's"><path d="M' + x + ' ' + (y - 9) + ' L' + (x + 2.5) + ' ' + (y - 2.5) + ' L' + (x + 9) + ' ' + y + ' L' + (x + 2.5) + ' ' + (y + 2.5) + ' L' + x + ' ' + (y + 9) + ' L' + (x - 2.5) + ' ' + (y + 2.5) + ' L' + (x - 9) + ' ' + y + ' L' + (x - 2.5) + ' ' + (y - 2.5) + 'Z" fill="rgba(235,242,255,.55)"/></g>';
+  });
+  return svgEl(1920, 1080, 'art-back', out);
+}
+function raasDandiyas() {
+  // The Yamuna's moonlit ripples, with pairs of crossed dandiya sticks for the raas.
+  let out = '<path d="M0 54 Q60 46 120 54 T240 54 T360 54 T480 54 T600 54 T720 54 T840 54 T960 54 T1080 54 T1200 54 T1320 54 T1440 54 T1560 54 T1680 54 T1800 54 T1920 54" fill="none" stroke="rgba(200,215,255,.22)" stroke-width="3"/>';
+  const cols = ['#f2c14e', '#e8607a', '#7fc4e8', '#f59a1b'];
+  for (let x = 80, i = 0; x < 1920; x += 160, i++) {
+    const c1 = cols[i % cols.length], c2 = cols[(i + 2) % cols.length];
+    out += '<g transform="translate(' + x + ' 34)" opacity=".85">' +
+      '<path d="M-20 -22 L20 22" stroke="' + c1 + '" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M20 -22 L-20 22" stroke="' + c2 + '" stroke-width="6" stroke-linecap="round"/>' +
+      '<path d="M-20 -22 L-12 -14 M20 -22 L12 -14" stroke="#fff4cf" stroke-width="6" stroke-linecap="round"/>' +
+      '<circle cx="-22" cy="26" r="3.5" fill="#ffd36b"/><circle cx="22" cy="26" r="3.5" fill="#ffd36b"/></g>';
+  }
+  return svgEl(1920, 64, 'art-bottom', out);
+}
 const FESTIVAL_ART = {
+  sharad:  () => sharadMoon() + jasmineToran() + raasDandiyas(),
   diwali:  () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') + diyaRow() +
                  svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
   annakut: () => marigoldToran(['#ffc93c', '#f59a1b'], '#3f8f3a') + annakutHill(),

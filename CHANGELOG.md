@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-21 (later)
+- **Sharad Poonam festive look** (Sun 25 Oct 2026, and 14 Oct 2027): the Today title becomes **"Happy Sharad Poonam!"**, and the moonlit blue theme gets its own scenery, drawn in code and kept faint behind the text: a white jasmine garland with pearl drops along the top, a large glowing full moon with twinkling stars, and crossed raas dandiyas over the Yamuna's ripples along the bottom.
+
 ## 2026-10-21
 - **From the admin team (WhatsApp) — Sharad Purnima Raas:**
   - Added: 25 Oct Thaal and Chesta; 25 Oct Aarti and Nitya Niyam; 25 Oct Sharad Purnima Raas; 25 Oct Podhaniya; 25 Oct Prasad Rupi Bhojan
