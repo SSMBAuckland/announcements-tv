@@ -44,6 +44,7 @@ For a festival day with a programme, make one calendar entry for the day (for ex
 - `major`: true for the mandir's big festivals and special occasions, where a festive TV theme and the homepage banner would suit: Diwali, Annakut, Nutan Varsh, Janmashtami, Shree Swaminarayan Jayanti (Ramnavmi), Hindola, Patotsav, a shibir, the santos' visit.
 - `summary`: one line per TV day for the WhatsApp message, at most 8 lines, e.g. "Sun 8 Nov · Lakshmi Poojan 6:00 – 7:00 PM, Deepotsav Aarti 8:00 PM".
 - `banner`: homepage banner text in case the admins feature the event. `eyebrow` is the small line ("Sun 8 – Mon 9 November"), `title` the first line of the heading ("Diwali &"), `accent` its second line ("Annakut Utsav"), and `lead` one welcoming sentence under 140 characters.
+- `requested`: posts shared by an admin in the admin team's group can carry instructions ("Add the above to the TV", "website only", "put it everywhere", "make it festive"). Set `given` to true only if they say where to publish. Then set `tv`, `calendar` and `banner` to exactly the places they named (the homepage banner is "everywhere" or explicitly asked for), and `fancy` if they want it festive. Otherwise `given` and the rest are false.
 - `admin_note`: what the admins should check (unclear dates or times, duplicates, guesses you made), in one or two short sentences. Empty if there's nothing.
 
 Posts may be partly in Gujarati. Write everything in English, with Gujarati names transliterated the way the mandir writes them.
