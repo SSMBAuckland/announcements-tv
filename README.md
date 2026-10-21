@@ -73,6 +73,19 @@ then refreshes the website and the TVs and writes a line in [CHANGELOG.md](CHANG
 
 ---
 
+## 💬 Updates approved on WhatsApp
+
+When the admin team approves an announcement (or asks for a change) in their WhatsApp group, the
+*WhatsApp update* GitHub Action (`.github/workflows/whatsapp-update.yml`) changes the display:
+
+* **Event changes** (add, update, remove) are applied by `scripts/apply_update.py`, without AI.
+* **Anything else** (a festive theme, a design tweak) is done by Claude Code, following `CLAUDE.md`.
+* Every change is checked at 1920×1080 by `scripts/check_display.py` before it's published, then the TVs are
+  refreshed and a line is added to [CHANGELOG.md](CHANGELOG.md).
+* The instructions Claude follows when reading posters and requests are in `automation/`.
+
+---
+
 ## ✏️ Adding or changing events
 
 Events live in the `EVENTS` list near the top of the `<script>` section in `index.html`. Each event is one line:

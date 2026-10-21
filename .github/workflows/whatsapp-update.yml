@@ -1,0 +1,181 @@
+name: WhatsApp update
+
+# Changes approved by the admin team on WhatsApp. Started by the n8n automation, which also gets the result back
+# and replies in the admin group.
+#   kind=events  adds, updates or removes the given events with scripts/apply_update.py (no AI involved)
+#   kind=claude  Claude Code makes the requested change (design tweaks, festive themes, anything free-form),
+#                on the Claude Pro plan (billing=pro) or the team API key (billing=api, capped at $3 a run)
+# Every change is checked at 1920x1080 (scripts/check_display.py) before it is published; then the website is
+# rebuilt and the TVs are refreshed.
+# Secrets: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`), ANTHROPIC_API_KEY, N8N_CALLBACK_URL, N8N_CALLBACK_KEY.
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'events or claude'
+        type: choice
+        options: [events, claude]
+        default: events
+      ref:
+        description: 'Reference from n8n, sent back with the result'
+        required: true
+      title:
+        description: 'Short title for the changelog'
+        required: false
+      changes:
+        description: 'kind=events: {"add": [...], "remove": [...]} as in scripts/apply_update.py'
+        required: false
+      request:
+        description: 'kind=claude: the change to make'
+        required: false
+      billing:
+        description: 'kind=claude: pro (Claude Pro plan) or api (team API key)'
+        type: choice
+        options: [pro, api]
+        default: pro
+      model:
+        description: 'kind=claude: sonnet, or opus for festive themes'
+        type: choice
+        options: [sonnet, opus]
+        default: sonnet
+
+permissions:
+  contents: write
+  pages: write
+
+# One change at a time, so two quick requests can't overwrite each other.
+concurrency:
+  group: tv-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 40
+    env:
+      TZ: Pacific/Auckland
+      KIND: ${{ inputs.kind }}
+      REF: ${{ inputs.ref }}
+      BILLING: ${{ inputs.billing }}
+      MODEL: ${{ inputs.model }}
+    outputs:
+      status: ${{ steps.result.outputs.status }}
+      changed: ${{ steps.publish.outputs.changed }}
+      commit: ${{ steps.publish.outputs.commit }}
+      result: ${{ steps.save.outputs.result }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install the display checker
+        run: pip install --quiet playwright && python -m playwright install --with-deps chromium > /dev/null
+
+      - name: Apply the event changes
+        if: inputs.kind == 'events'
+        env:
+          CHANGES: ${{ inputs.changes }}
+          TITLE: ${{ inputs.title }}
+        run: |
+          python3 -c "import json, os; c = json.loads(os.environ['CHANGES'] or '{}'); c.setdefault('title', os.environ['TITLE']); json.dump(c, open('/tmp/changes.json', 'w'))"
+          python3 scripts/apply_update.py /tmp/changes.json /tmp/summary.json 2> /tmp/apply.err || cat /tmp/apply.err
+
+      - name: Ask Claude Code
+        if: inputs.kind == 'claude'
+        env:
+          REQUEST: ${{ inputs.request }}
+          PRO_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          if [ "$BILLING" = pro ] && [ -z "$PRO_TOKEN" ]; then
+            echo '{"is_error": true, "subtype": "error_during_execution", "result": "NO_PRO_TOKEN"}' > /tmp/claude.json
+            echo "No CLAUDE_CODE_OAUTH_TOKEN secret: reporting that the Pro plan isn't connected."
+            exit 0
+          fi
+          npm install --global --silent @anthropic-ai/claude-code
+          # Only one of the two may be set: an API key silently takes priority over the Pro plan token.
+          if [ "$BILLING" = api ]; then
+            export ANTHROPIC_API_KEY="$API_KEY"; LIMITS="--max-budget-usd 3"
+          else
+            export CLAUDE_CODE_OAUTH_TOKEN="$PRO_TOKEN"; LIMITS=""
+          fi
+          unset PRO_TOKEN API_KEY
+          set +e
+          claude -p "$(python3 scripts/whatsapp_job.py prompt)" --output-format json --model "$MODEL" --max-turns 60 $LIMITS \
+            --permission-mode acceptEdits \
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(python3 scripts/check_display.py:*),Bash(python3 scripts/apply_update.py:*),Bash(git diff:*),Bash(git status:*)" \
+            > /tmp/claude.json 2> /tmp/claude.err
+          echo "Claude Code exited with $?"
+          exit 0
+
+      - name: Check the display
+        id: check
+        if: ${{ !cancelled() }}
+        run: |
+          if git diff --quiet; then echo "No changes to check."; exit 0; fi
+          python3 scripts/check_display.py $(python3 scripts/whatsapp_job.py dates) > /tmp/check.txt 2>&1 || { cat /tmp/check.txt; exit 1; }
+          cat /tmp/check.txt
+
+      - name: Work out the result
+        id: result
+        if: ${{ !cancelled() }}
+        env:
+          CHECK: ${{ steps.check.outcome }}
+        run: python3 scripts/whatsapp_job.py result
+
+      - name: Publish
+        id: publish
+        if: steps.result.outputs.status == 'done'
+        env:
+          TITLE: ${{ inputs.title }}
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name "whatsapp-update[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A -- . ':!.github'
+          git commit -q -m "WhatsApp: ${TITLE:-change from the admin team}" -m "Requested by the admin team on WhatsApp ($KIND, ref $REF)."
+          git remote set-url origin "https://x-access-token:${GH_TOKEN}@github.com/${{ github.repository }}.git"
+          git pull --rebase -q origin main
+          git push -q origin HEAD:main
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+          echo "commit=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          gh api -X POST "repos/${{ github.repository }}/pages/builds" > /dev/null || echo "Pages build request failed; it will build on the next push."
+
+      - name: Keep the result for the report
+        id: save
+        if: ${{ !cancelled() }}
+        run: |
+          [ -f /tmp/result.json ] || echo '{"status":"failed","summary":"The update job stopped before it finished."}' > /tmp/result.json
+          echo "result=$(python3 -c "import json; print(json.dumps(json.load(open('/tmp/result.json'))))")" >> "$GITHUB_OUTPUT"
+
+  refresh-screens:
+    needs: update
+    if: needs.update.outputs.changed == 'true'
+    uses: ./.github/workflows/refresh-yodeck.yml
+    secrets:
+      YODECK_API_KEY: ${{ secrets.YODECK_API_KEY }}
+
+  report:
+    needs: [update, refresh-screens]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          sparse-checkout: scripts
+      - name: Tell n8n how it went
+        env:
+          RESULT: ${{ needs.update.outputs.result }}
+          SCREENS: ${{ needs.refresh-screens.result }}
+          COMMIT: ${{ needs.update.outputs.commit }}
+          REF: ${{ inputs.ref }}
+          KIND: ${{ inputs.kind }}
+          N8N_CALLBACK_URL: ${{ secrets.N8N_CALLBACK_URL }}
+          N8N_CALLBACK_KEY: ${{ secrets.N8N_CALLBACK_KEY }}
+        run: |
+          [ -n "$RESULT" ] && printf '%s' "$RESULT" > /tmp/result.json
+          python3 scripts/whatsapp_job.py callback

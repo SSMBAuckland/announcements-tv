@@ -6,6 +6,10 @@ CLAUDE.local.md
 .env.*
 # Sample WhatsApp messages and posters used to build the automation
 whatsapp-samples/
+# Local tools for setting up the automation (n8n workflow builder)
+.local/
 # Claude Code's personal settings and browser-testing artefacts
 .claude/settings.local.json
 .playwright-mcp/
+# Python cache from running the scripts
+__pycache__/

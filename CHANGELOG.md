@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-21
+- **Groundwork for updates from WhatsApp** (not switched on yet). A new GitHub Action, *WhatsApp update*, will put announcements the admin team approves on WhatsApp onto the display. Plain event changes go through `scripts/apply_update.py` (no AI); festive themes and other changes are made by Claude Code. Every change is checked at 1920×1080 by `scripts/check_display.py` before it is published. No change to what the screen shows.
+
 ## 2026-10-20 (later)
 - **Sat 7 Nov:** the programme item is renamed from "Hanuman Jayanti" to **Kali Chaudash** (6:45 PM onwards; Hanumanji Jeevan Akhyan; Pujan, Aarti & Chalisa Paath). The calendar's own "Kali Chaudash" entry is hidden that day so it isn't listed twice, and its festival message moves to the programme item. Kali Chaudash keeps the saffron Hanuman theme and scenery (also in 2027, where the calendar spells it "Kali Chaudas").
 
