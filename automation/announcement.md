@@ -29,15 +29,25 @@ Use the list of current TV events you are given:
 Keep a long programme to its main items, at most 6 per day, and fold minor ones into a note. For a multi-day event (a 3-day shibir, say), give one entry per day. For events outside New Zealand, include them only if New Zealand haribhaktos are clearly invited, and say so in `admin_note`.
 
 ## Website calendar entries (`calendar_events`)
-One entry per event. A multi-day event is a single entry with an `end_date`.
-- `title`: the name people would look for ("Diwali & Annakut Utsav", "Satsang Shibir 2027").
+The website calendar lists each day's entries in time order, and people add them to their phones. So every timed part of a programme gets its own entry with its own start time: Annakut Aarti and Thaal 4:00 – 4:30 PM, Annakut Darshan 4:00 – 7:00 PM and Sneh Milan 7:45 PM are three entries. Never list a timed programme inside one entry's description.
+- `title`: the item's name, the same as its TV entry when it has one ("Annakut Darshan", "Aarti and Nitya Niyam", "Sneh Milan"). An event without a programme gets the name people would look for ("Satsang Shibir 2027").
 - `date`, `end_date`: YYYY-MM-DD. Leave `end_date` empty for a single day.
-- `start`, `end`: 24-hour HH:MM when known, with the end after the start. Otherwise empty.
+- `start`, `end`: 24-hour HH:MM, the end after the start. Leave `end` empty when only a start is given ("7:45 PM", "6:45 PM onwards"), and both empty when there is no clock time.
 - `time_text`: free text when the time isn't a clock time ("After Sandhya Aarti"), otherwise empty.
+- `category`: "Festival" for a festival or utsav programme; otherwise "Sabha", "Class", "Katha", "Shibir", "Seva" or "Community".
 - `location`: empty when the event is at the mandir; otherwise the place.
-- `description`: one to three plain sentences, including the programme if there is one. No emoji or asterisks.
+- `description`: one or two short plain sentences: the occasion it belongs to ("Part of the Annakut Utsav celebrations.") and anything that goes with this item ("Followed by Mahaprashad."). No emoji or asterisks.
 
-For a festival day with a programme, make one calendar entry for the day (for example "Diwali Celebration") and list the programme in its description, rather than one entry per item.
+How to split a programme:
+- Every item with a time of its own is its own entry, even when items overlap (Darshan 4:00 – 7:00 PM with Aarti at 4:00 PM).
+- Items without a time of their own stay with the timed item they belong to, in its description ("6:45 PM onwards: Hanumanji Jeevan Akhyan, Pujan, Aarti & Chalisa Paath" is one entry). So does "followed by …".
+- At most 8 entries a day. With more, fold the shortest items into the description of the item before them.
+- Several days with the same hours (a katha 7:00 – 9:00 PM on three nights) are one entry with an `end_date`. When the days have different programmes, give each day's items as their own entries.
+- An event with a single time, or without a programme, is one entry.
+
+You are also given the website calendar's current entries:
+- An entry with the same date and title as one already there updates it, so use the existing title when it is the same item.
+- If the post replaces entries already there (one entry with the whole programme in its description, or an earlier version with other times or names), list them in `calendar_remove` with their date and exact title. They are removed when the new entries are published. Otherwise leave `calendar_remove` empty.
 
 ## Other fields
 - `title`: a short name for the whole post, for the admin team ("Diwali & Annakut Utsav").
