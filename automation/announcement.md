@@ -32,7 +32,7 @@ Keep a long programme to its main items, at most 6 per day, and fold minor ones 
 The website calendar lists each day's entries in time order, and people add them to their phones. So every timed part of a programme gets its own entry with its own start time: Annakut Aarti and Thaal 4:00 – 4:30 PM, Annakut Darshan 4:00 – 7:00 PM and Sneh Milan 7:45 PM are three entries. Never list a timed programme inside one entry's description.
 - `title`: the item's name, the same as its TV entry when it has one ("Annakut Darshan", "Aarti and Nitya Niyam", "Sneh Milan"). An event without a programme gets the name people would look for ("Satsang Shibir 2027").
 - `date`, `end_date`: YYYY-MM-DD. Leave `end_date` empty for a single day.
-- `start`, `end`: 24-hour HH:MM, the end after the start. Leave `end` empty when only a start is given ("7:45 PM", "6:45 PM onwards"), and both empty when there is no clock time.
+- `start`, `end`: 24-hour HH:MM, the end after the start; both empty when there is no clock time. An item with only a start ends when the next item of the programme starts: Aarti and Nitya Niyam 7:30 PM, then Sneh Milan 7:45 PM, makes Aarti and Nitya Niyam 19:30 – 19:45. Phones show an entry without an end as an hour long, on top of the items after it. Leave `end` empty only for the last item of the day, or one that runs on alongside the next ("6:45 PM onwards", a Darshan that stays open).
 - `time_text`: free text when the time isn't a clock time ("After Sandhya Aarti"), otherwise empty.
 - `category`: "Festival" for a festival or utsav programme; otherwise "Sabha", "Class", "Katha", "Shibir", "Seva" or "Community".
 - `location`: empty when the event is at the mandir; otherwise the place.
