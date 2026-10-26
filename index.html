@@ -38,6 +38,15 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
     radial-gradient(ellipse 68% 68% at 14% 6%, var(--glow), transparent 70%);
   animation: ambientDrift 46s ease-in-out infinite alternate;
 }
+/* Photo background: replace background.svg (a plain purple placeholder) with the picture, e.g. background.jpg, and change the url below.
+   The dark gradient on top keeps all text high-contrast; raise the alpha values if a picture is too bright. */
+.screen::after {
+  content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(10,4,14,.78), rgba(10,4,14,.66) 45%, rgba(10,4,14,.82)),
+    url("background.svg") center / cover no-repeat;
+  opacity: .9;
+}
 @keyframes ambientDrift {
   0%   { transform: translate3d(-3%, -2%, 0) scale(1); }
   50%  { transform: translate3d(2%, 1.5%, 0) scale(1.05); }
