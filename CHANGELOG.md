@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-27
+- **From the admin team (WhatsApp) — Lalji Maharaj's Visit look** (Sat 31 Oct 2026): removed the row of white lotuses along the bottom edge and the two faint flower rangolis in the background. The welcome toran, sky wash, falling petals, card frame, picture, colours and all text are unchanged.
+
 ## 2026-10-26
 - **From the admin team (WhatsApp) — Lalji Maharaj's Visit:**
   - Updated: 31 Oct Lalji Maharaj's Visit (time is now "5:00 PM onwards"; the welcome toran, lotus and flower theme, picture and poster colours stay as they were)

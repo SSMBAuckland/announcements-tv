@@ -1757,25 +1757,12 @@ function welcomeToran() {
   }
   return svgEl(1920, 64, 'art-top', out);
 }
-// White lotuses touched with light blue along the bottom edge, each on a maroon base.
-function lotusRow() {
-  let out = '';
-  for (let x = 60; x < 1920; x += 120) {
-    out += '<g transform="translate(' + x + ' 56)" opacity=".8">' +
-      '<path d="M-26 0 Q-30 -16 -12 -14 Q-10 -4 0 0Z" fill="#bfe2f6"/><path d="M26 0 Q30 -16 12 -14 Q10 -4 0 0Z" fill="#bfe2f6"/>' +
-      '<path d="M-14 0 Q-18 -26 0 -36 Q18 -26 14 0Z" fill="#fbfdff"/>' +
-      '<path d="M-14 0 Q-12 -18 -2 -24 Q-6 -10 0 0Z" fill="#dcefff"/><path d="M14 0 Q12 -18 2 -24 Q6 -10 0 0Z" fill="#dcefff"/>' +
-      '<path d="M-24 1 Q0 9 24 1" stroke="#9b2335" stroke-width="4" fill="none" stroke-linecap="round"/></g>';
-  }
-  return svgEl(1920, 64, 'art-bottom', out);
-}
-// A soft, airy light-blue sky behind the panels, faint flower rangolis and a slow shower of petals.
+// A soft, airy light-blue sky behind the panels and a slow shower of petals.
 function welcomeSky() {
   let out = '<defs><linearGradient id="skyWash" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8eefc" stop-opacity=".16"/><stop offset=".45" stop-color="#bfe2f6" stop-opacity=".05"/><stop offset="1" stop-color="#bfe2f6" stop-opacity="0"/></linearGradient>' +
             '<radialGradient id="skyGlow"><stop offset="0" stop-color="#e8f5ff" stop-opacity=".14"/><stop offset="1" stop-color="#bfe2f6" stop-opacity="0"/></radialGradient></defs>' +
             '<rect x="0" y="0" width="1920" height="620" fill="url(#skyWash)"/>' +
-            '<ellipse cx="1500" cy="140" rx="620" ry="260" fill="url(#skyGlow)"/><ellipse cx="300" cy="1000" rx="520" ry="220" fill="url(#skyGlow)"/>' +
-            rangoli(1640, 820, 420, 'rgba(200,232,252,.07)') + rangoli(240, 920, 300, 'rgba(200,232,252,.05)');
+            '<ellipse cx="1500" cy="140" rx="620" ry="260" fill="url(#skyGlow)"/><ellipse cx="300" cy="1000" rx="520" ry="220" fill="url(#skyGlow)"/>';
   const cols = ['#fbfdff', '#bfe2f6', '#c4485e', '#fbfdff', '#dcefff'];
   [40, 210, 390, 560, 700, 880, 1060, 1230, 1310, 1480, 1600, 1760, 1880].forEach((x, i) => {
     const t = 22 + (i * 7) % 12;
@@ -1789,7 +1776,7 @@ const FESTIVAL_ART = {
                  svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
   annakut: () => marigoldToran(['#ffc93c', '#f59a1b'], '#3f8f3a') + annakutHill(),
   hanuman: () => pennantToran(['#f26b1d', '#f7a325', '#d9481c']) + mountains(),
-  lalji:   () => welcomeSky() + welcomeToran() + lotusRow()
+  lalji:   () => welcomeSky() + welcomeToran()
 };
 let shownArt = null;
 function setFestivalArt(name) {
