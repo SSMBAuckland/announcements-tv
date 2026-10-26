@@ -7,6 +7,7 @@
   python3 scripts/whatsapp_job.py result     works out what happened and writes it to /tmp/result.json
   python3 scripts/whatsapp_job.py callback   sends /tmp/result.json to n8n (N8N_CALLBACK_URL, N8N_CALLBACK_KEY)
 """
+import base64
 import datetime as dt
 import json
 import os
@@ -141,9 +142,19 @@ def result():
     changed = bool(git('status', '--porcelain', '--', 'index.html').strip())
     days = sorted(changed_dates())
     out['dates'] = [d.isoformat() for d in days]
-    if days:
-        out['preview_url'] = '%s?previewDate=%s' % (PAGE, days[0].isoformat())
+    asked = [d for d in os.environ.get('DATES', '').replace(' ', '').split(',') if re.fullmatch(r'\d{4}-\d{2}-\d{2}', d)]
+    if days or asked:
+        out['preview_url'] = '%s?previewDate=%s' % (PAGE, days[0].isoformat() if days else asked[0])
 
+    if os.path.exists('/tmp/base.err'):
+        out['summary'] = 'The earlier version (%s) could not be applied, so nothing was changed.' % open('/tmp/base.err').read().strip()
+        return finish(out)
+    if kind == 'apply':
+        out['status'] = 'done' if changed else 'nochange'
+        out['summary'] = 'Put the version the admins approved on the TV.'
+        if out['status'] == 'done' and os.environ.get('CHECK') == 'failure':
+            out.update(status='failed', summary='The approved version did not pass the display check, so nothing was published.')
+        return finish(out)
     if kind == 'login':
         try:
             out.update(json.load(open('/tmp/login.json', encoding='utf-8')))
@@ -200,7 +211,49 @@ def result():
         out['status'] = 'failed'
         out['summary'] = 'The change did not pass the display check, so nothing was published. ' + \
                          open('/tmp/check.txt', encoding='utf-8', errors='replace').read().strip()[:300]
+    if out['status'] == 'done' and os.environ.get('PREVIEW'):
+        save_preview(out)
     return finish(out)
+
+
+def put_incoming(path, data):
+    """Upload a file to the incoming branch (the body goes on stdin: a picture is too big for an argument)."""
+    body = json.dumps({'message': 'Preview ' + path, 'content': base64.b64encode(data).decode(), 'branch': 'incoming'})
+    return subprocess.run(['gh', 'api', '-X', 'PUT', 'repos/%s/contents/%s' % (os.environ.get('GITHUB_REPOSITORY', ''), path), '--input', '-'],
+                          input=body, capture_output=True, text=True).returncode == 0
+
+
+def save_preview(out):
+    """A fancy design waits for the admins: its change (a patch) and screenshots of its days go to preview/<id>/ on the
+    incoming branch, and the bot shows them in the group (ok publishes it with kind=apply)."""
+    pid = os.environ.get('PREVIEW', '')
+    if not re.fullmatch(r'[\w.-]+', pid):
+        out.update(status='failed', summary='The design was ready, but its preview name was not valid.')
+        return
+    subprocess.run(['git', 'add', '-A', '--', '.', ':!.github'], capture_output=True)
+    patch = subprocess.run(['git', 'diff', '--cached', '--binary'], capture_output=True).stdout
+    asked = [d for d in os.environ.get('DATES', '').replace(' ', '').split(',') if re.fullmatch(r'\d{4}-\d{2}-\d{2}', d)]
+    days = (asked or [d.isoformat() for d in sorted(changed_dates())] or [dt.datetime.now(NZ).date().isoformat()])[:3]
+    shots = '/tmp/preview-shots'
+    subprocess.run([sys.executable, 'scripts/check_display.py', *days, '--shots', shots], capture_output=True, text=True)
+    files = {'preview/%s/change.patch' % pid: patch}
+    for d in days:
+        png = os.path.join(shots, d + '.png')
+        if not os.path.exists(png):
+            continue
+        try:  # a JPEG is a fraction of the size, quicker to open on a phone
+            from PIL import Image
+            Image.open(png).convert('RGB').save(png[:-4] + '.jpg', 'JPEG', quality=82, optimize=True)
+            files['preview/%s/%s.jpg' % (pid, d)] = open(png[:-4] + '.jpg', 'rb').read()
+        except Exception:
+            files['preview/%s/%s.png' % (pid, d)] = open(png, 'rb').read()
+    for path, data in files.items():
+        if not put_incoming(path, data):
+            out.update(status='failed', summary='The design was ready, but its preview could not be saved, so nothing was published.')
+            return
+    raw = 'https://raw.githubusercontent.com/%s/incoming/' % os.environ.get('GITHUB_REPOSITORY', '')
+    out['status'] = 'preview'
+    out['preview'] = {'id': pid, 'dates': days, 'shots': [raw + p for p in files if not p.endswith('.patch')]}
 
 
 def finish(out):
@@ -251,6 +304,9 @@ if __name__ == '__main__':
     elif cmd == 'dates':
         today = dt.datetime.now(NZ).date()
         days = changed_dates() | {today + dt.timedelta(n) for n in range(7)}
+        for d in os.environ.get('DATES', '').replace(' ', '').split(','):  # the days a preview shows
+            if re.fullmatch(r'\d{4}-\d{2}-\d{2}', d):
+                days.add(dt.date.fromisoformat(d))
         print(' '.join(d.isoformat() for d in sorted(days)))
     elif cmd == 'images':
         images()

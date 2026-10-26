@@ -8,6 +8,10 @@ run-name: WhatsApp update ${{ inputs.ref }}
 #   kind=claude  Claude Code makes the requested change (design tweaks, festive themes, anything free-form),
 #                on the Claude Pro plan (billing=pro) or the team API key (billing=api, capped at $3 a run)
 #   images       pictures the admins sent (either kind): fetched from the incoming branch, cropped and shrunk first
+#   preview      (kind=claude) a fancy design is not published: the change and screenshots of its days are saved on the
+#                incoming branch (preview/<id>/) for the admins to approve in the group
+#   base         start from an earlier preview (to make the admins' edits to it)
+#   kind=apply   puts an approved preview (base) on the TV
 #   kind=login   connects the Claude Pro plan: runs `claude setup-token`, relays its sign-in link and the admin's code
 #                through the bot (scripts/claude_login.py), and saves the token as the CLAUDE_CODE_OAUTH_TOKEN secret
 # Every change is checked at 1920x1080 (scripts/check_display.py) before it is published; then the website is
@@ -18,9 +22,9 @@ on:
   workflow_dispatch:
     inputs:
       kind:
-        description: 'events, claude or login'
+        description: 'events, claude, apply or login'
         type: choice
-        options: [events, claude, login]
+        options: [events, claude, apply, login]
         default: events
       ref:
         description: 'Reference from n8n, sent back with the result'
@@ -47,6 +51,15 @@ on:
       images:
         description: 'Pictures the admins sent, as uploaded to the incoming branch: [{"from": "incoming/…", "to": "images/….jpg", "crop": "X,Y,W,H"}]'
         required: false
+      preview:
+        description: 'kind=claude: save the result as this preview for the admins to approve, instead of publishing it'
+        required: false
+      base:
+        description: 'Start from this earlier preview (kind=claude: edits to it; kind=apply: publish it)'
+        required: false
+      dates:
+        description: 'Days to show in the preview screenshots, YYYY-MM-DD, comma-separated'
+        required: false
 
 permissions:
   contents: write
@@ -69,6 +82,9 @@ jobs:
       REF: ${{ inputs.ref }}
       BILLING: ${{ inputs.billing }}
       MODEL: ${{ inputs.model }}
+      PREVIEW: ${{ inputs.preview }}
+      BASE: ${{ inputs.base }}
+      DATES: ${{ inputs.dates }}
     outputs:
       status: ${{ steps.result.outputs.status }}
       changed: ${{ steps.publish.outputs.changed }}
@@ -86,6 +102,17 @@ jobs:
       - name: Install the display checker
         if: inputs.kind != 'login'
         run: pip install --quiet playwright pillow && python -m playwright install --with-deps chromium > /dev/null
+
+      # Edits to a design the admins saw, or publishing the approved one: start from that preview's change.
+      - name: Start from the earlier version
+        if: inputs.base != ''
+        run: |
+          git fetch -q --depth 1 origin incoming
+          if git show "origin/incoming:preview/$BASE/change.patch" > /tmp/base.patch && git apply --binary /tmp/base.patch; then
+            echo "Started from preview $BASE."
+          else
+            echo "Could not apply preview $BASE."; echo "$BASE" > /tmp/base.err
+          fi
 
       # The bot uploads pictures as the admins sent them to the "incoming" branch; here they are cropped to the part
       # worth showing and shrunk into images/ (scripts/prepare_image.py), before the events or Claude use them.
@@ -168,6 +195,7 @@ jobs:
         if: ${{ !cancelled() }}
         env:
           CHECK: ${{ steps.check.outcome }}
+          GH_TOKEN: ${{ github.token }}
         run: python3 scripts/whatsapp_job.py result
 
       - name: Publish
