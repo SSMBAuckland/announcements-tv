@@ -53,6 +53,14 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
 .festival-art .art-back { inset: 0; height: 100%; }
 .festival-art .flame { transform-box: fill-box; transform-origin: 50% 100%; animation: flameFlicker 2.2s ease-in-out infinite; }
 @keyframes flameFlicker { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(.94, 1.08); } 70% { transform: scale(1.04, .95); } }
+/* a slow shower of flower petals (pushpa vrushti) for a welcome */
+.festival-art .petal { transform-box: fill-box; transform-origin: 50% 50%; opacity: 0; animation: petalFall var(--t) linear var(--d) infinite; }
+@keyframes petalFall {
+  0%   { transform: translate(0, -40px) rotate(0deg); opacity: 0; }
+  10%  { opacity: 1; }
+  85%  { opacity: 1; }
+  100% { transform: translate(90px, 1140px) rotate(320deg); opacity: 0; }
+}
 .ambient span {
   position: absolute; bottom: -24px; left: var(--x);
   width: var(--s); height: var(--s); border-radius: 50%; opacity: 0;
@@ -137,16 +145,18 @@ body.tv-canvas .screen {
   border: 1px solid rgba(255,255,255,.15);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 40px 90px rgba(0,0,0,.3);
 }
-/* Lalji Maharaj's Visit: a gold double frame around the Today card, gold stars either side of the
-   source label and a warm glow behind the name (text sizes and colours unchanged). */
+/* Lalji Maharaj's Visit, in the colours of the poster: a light blue and maroon double frame around the
+   Today card, flowers either side of the source label and a soft sky-blue glow behind the name. The card stays
+   dark and the text light (sizes and colours unchanged). */
 body[data-art="lalji"] .today {
-  border: 2px solid var(--accent);
-  box-shadow: inset 0 0 0 10px hsla(36, 90%, 60%, .10), inset 0 0 0 12px hsla(40, 95%, 72%, .45),
-    0 0 0 6px hsla(36, 90%, 58%, .22), 0 0 70px hsla(28, 95%, 55%, .28), 0 40px 90px rgba(0,0,0,.3);
+  border: 2px solid hsl(200, 78%, 86%);
+  box-shadow: inset 0 0 0 10px hsla(200, 80%, 88%, .07), inset 0 0 0 12px hsla(352, 64%, 40%, .9),
+    inset 0 0 0 14px hsla(200, 80%, 90%, .5), 0 0 0 6px hsla(200, 75%, 84%, .16),
+    0 0 70px hsla(200, 85%, 78%, .22), 0 40px 90px rgba(0,0,0,.3);
 }
-body[data-art="lalji"] .today .ev-name { text-shadow: 0 0 30px hsla(38, 100%, 60%, .45), 0 3px 0 hsla(20, 80%, 18%, .55); }
+body[data-art="lalji"] .today .ev-name { text-shadow: 0 0 30px hsla(200, 90%, 82%, .35), 0 3px 0 hsla(352, 70%, 20%, .65); }
 body[data-art="lalji"] .today .ev-source::before,
-body[data-art="lalji"] .today .ev-source::after { content: '✦'; margin: 0 .7em; color: var(--accent-hi); }
+body[data-art="lalji"] .today .ev-source::after { content: '❀'; margin: 0 .7em; color: var(--accent); }
 .today-title {
   flex: none; display: flex; align-items: center; gap: 26px; white-space: nowrap;
   font-size: 50px; line-height: 1; font-weight: 700; color: var(--accent);
@@ -412,6 +422,7 @@ body.tv-canvas .today.photo-under:not(.is-busy) .today-events { margin-top: 290p
   .screen::before, .brand::before, .fest::after, .ev-live { animation: none; }
   .ambient { display: none; }
   .festival-art .flame { animation: none; }
+  .festival-art .petal { display: none; }
 }
 
 /* Preview studio: opened by clicking the date card. Lives outside the scaled TV canvas,
@@ -1484,7 +1495,7 @@ const SPECIAL_PALETTES = {
   prabodhini: {name: 'Prabodhini Ekadashi', h: 140, s: 40, a: 48, b: 100},
   harinavmi:  {name: 'Shree Swaminarayan Jayanti', h: 28, s: 70, a: 46, b: 340},
   janmashtami: {name: 'Janmashtami',        h: 228, s: 58, a: 46, b: 196},
-  lalji:      {name: 'Lalji Maharaj’s Visit', h: 20, s: 74, a: 44, b: 34, art: 'lalji'}
+  lalji:      {name: 'Lalji Maharaj’s Visit', h: 208, s: 48, a: 356, b: 196, art: 'lalji'}
 };
 
 /* Big festivals: each gets its own colour theme on the day (and its greeting, if any, as the
@@ -1721,15 +1732,64 @@ function raasDandiyas() {
   }
   return svgEl(1920, 64, 'art-bottom', out);
 }
+// A small flower: n petals round a centre.
+function flower(cx, cy, r, petal, centre, n) {
+  let out = '';
+  for (let k = 0; k < (n || 5); k++) {
+    out += '<ellipse cx="' + cx + '" cy="' + (cy - r * .55).toFixed(1) + '" rx="' + (r * .38).toFixed(1) + '" ry="' + (r * .55).toFixed(1) + '" fill="' + petal + '" transform="rotate(' + (360 / (n || 5) * k).toFixed(1) + ' ' + cx + ' ' + cy + ')"/>';
+  }
+  return out + '<circle cx="' + cx + '" cy="' + cy + '" r="' + (r * .32).toFixed(1) + '" fill="' + centre + '"/>';
+}
+// Lalji Maharaj's Visit, after the poster (light blue and white, maroon title): a welcome toran of white and
+// light blue flowers with maroon beads, and a white flower with a maroon bead hanging from each hook.
+function welcomeToran() {
+  let out = '';
+  const swag = 240, sag = 24;
+  for (let x = 0; x < 1920; x += swag) {
+    along(x, -2, x + swag / 2, 2 * sag, x + swag, -2, 16).forEach(([px, py], i) => {
+      out += i % 4 === 2
+        ? '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="6" fill="#9b2335" stroke="rgba(255,255,255,.35)" stroke-width="1"/>'
+        : '<circle cx="' + px.toFixed(1) + '" cy="' + py.toFixed(1) + '" r="' + (i % 2 ? 6.5 : 8) + '" fill="' + (i % 2 ? '#bfe2f6' : '#fbfdff') + '" stroke="rgba(90,140,180,.45)" stroke-width="1"/>';
+    });
+    out += '<path d="M' + x + ' 0 L' + x + ' 20" stroke="rgba(220,238,250,.7)" stroke-width="2"/>' +
+      flower(x, 30, 13, '#fbfdff', '#9b2335', 6) +
+      '<circle cx="' + x + '" cy="49" r="4.5" fill="#9b2335" stroke="rgba(255,255,255,.4)" stroke-width="1"/>';
+  }
+  return svgEl(1920, 64, 'art-top', out);
+}
+// White lotuses touched with light blue along the bottom edge, each on a maroon base.
+function lotusRow() {
+  let out = '';
+  for (let x = 60; x < 1920; x += 120) {
+    out += '<g transform="translate(' + x + ' 56)" opacity=".8">' +
+      '<path d="M-26 0 Q-30 -16 -12 -14 Q-10 -4 0 0Z" fill="#bfe2f6"/><path d="M26 0 Q30 -16 12 -14 Q10 -4 0 0Z" fill="#bfe2f6"/>' +
+      '<path d="M-14 0 Q-18 -26 0 -36 Q18 -26 14 0Z" fill="#fbfdff"/>' +
+      '<path d="M-14 0 Q-12 -18 -2 -24 Q-6 -10 0 0Z" fill="#dcefff"/><path d="M14 0 Q12 -18 2 -24 Q6 -10 0 0Z" fill="#dcefff"/>' +
+      '<path d="M-24 1 Q0 9 24 1" stroke="#9b2335" stroke-width="4" fill="none" stroke-linecap="round"/></g>';
+  }
+  return svgEl(1920, 64, 'art-bottom', out);
+}
+// A soft, airy light-blue sky behind the panels, faint flower rangolis and a slow shower of petals.
+function welcomeSky() {
+  let out = '<defs><linearGradient id="skyWash" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8eefc" stop-opacity=".16"/><stop offset=".45" stop-color="#bfe2f6" stop-opacity=".05"/><stop offset="1" stop-color="#bfe2f6" stop-opacity="0"/></linearGradient>' +
+            '<radialGradient id="skyGlow"><stop offset="0" stop-color="#e8f5ff" stop-opacity=".14"/><stop offset="1" stop-color="#bfe2f6" stop-opacity="0"/></radialGradient></defs>' +
+            '<rect x="0" y="0" width="1920" height="620" fill="url(#skyWash)"/>' +
+            '<ellipse cx="1500" cy="140" rx="620" ry="260" fill="url(#skyGlow)"/><ellipse cx="300" cy="1000" rx="520" ry="220" fill="url(#skyGlow)"/>' +
+            rangoli(1640, 820, 420, 'rgba(200,232,252,.07)') + rangoli(240, 920, 300, 'rgba(200,232,252,.05)');
+  const cols = ['#fbfdff', '#bfe2f6', '#c4485e', '#fbfdff', '#dcefff'];
+  [40, 210, 390, 560, 700, 880, 1060, 1230, 1310, 1480, 1600, 1760, 1880].forEach((x, i) => {
+    const t = 22 + (i * 7) % 12;
+    out += '<ellipse class="petal" style="--t:' + t + 's;--d:-' + ((i * 5.3) % t).toFixed(1) + 's" cx="' + x + '" cy="0" rx="7" ry="11" fill="' + cols[i % cols.length] + '" fill-opacity=".38"/>';
+  });
+  return svgEl(1920, 1080, 'art-back', out);
+}
 const FESTIVAL_ART = {
   sharad:  () => sharadMoon() + jasmineToran() + raasDandiyas(),
   diwali:  () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') + diyaRow() +
                  svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
   annakut: () => marigoldToran(['#ffc93c', '#f59a1b'], '#3f8f3a') + annakutHill(),
   hanuman: () => pennantToran(['#f26b1d', '#f7a325', '#d9481c']) + mountains(),
-  lalji:   () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') +
-                 svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)') +
-                   rangoli(240, 920, 300, 'rgba(255,214,140,.05)'))
+  lalji:   () => welcomeSky() + welcomeToran() + lotusRow()
 };
 let shownArt = null;
 function setFestivalArt(name) {

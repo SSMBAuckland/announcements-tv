@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-26 (Lalji Maharaj's Visit, poster look)
+- **From the admin team (WhatsApp) — Lalji Maharaj's Visit festive look in the poster's colours** (Sat 31 Oct 2026 only): the saffron-and-gold look is replaced by a light, airy one after the official poster (light blue and white, maroon title): a welcome toran of white and light blue flowers with maroon beads along the top, white lotuses along the bottom, a soft light-blue sky wash with faint flower rangolis and a slow shower of petals behind the panels, a light blue and maroon double frame around the Today card, flowers either side of the "Mandir Programme" label and a sky-blue glow behind the event name. The panels stay dark with light text (a light background would have made the text harder to read from across the hall); Lalji Maharaj's picture, all wording and text sizes are unchanged.
+
 ## 2026-10-26 (pictures)
 - **Pictures with an event:** an event can now show a picture in the Today card (`image`, a file in `images/`). Upright pictures (murtis, posters, portraits) stand on the right and fade into the card towards the text; wide ones fill the top of the card and fade to dark behind the text under them. The text keeps its sizes; the shlok gives way on picture days, and a picture that can't be loaded is left out (the display check reports it).
 - **Colours from a poster:** an event's `palette` sets the day's colours (field, accent and label hues), so the screen can match the poster the admins shared. The field stays dark and the text light; a festival theme keeps its scenery.
