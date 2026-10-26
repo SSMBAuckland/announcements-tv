@@ -2,6 +2,10 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-26
+- **From the admin team (WhatsApp) — Lalji Maharaj's Visit:**
+  - Updated: 31 Oct Lalji Maharaj's Visit (time is now "5:00 PM onwards"; the welcome toran, lotus and flower theme, picture and poster colours stay as they were)
+
 ## 2026-10-26 (Lalji Maharaj's Visit, poster look)
 - **From the admin team (WhatsApp) — Lalji Maharaj's Visit festive look in the poster's colours** (Sat 31 Oct 2026 only): the saffron-and-gold look is replaced by a light, airy one after the official poster (light blue and white, maroon title): a welcome toran of white and light blue flowers with maroon beads along the top, white lotuses along the bottom, a soft light-blue sky wash with faint flower rangolis and a slow shower of petals behind the panels, a light blue and maroon double frame around the Today card, flowers either side of the "Mandir Programme" label and a sky-blue glow behind the event name. The panels stay dark with light text (a light background would have made the text harder to read from across the hall); Lalji Maharaj's picture, all wording and text sizes are unchanged.
 
