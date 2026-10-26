@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-26 (later)
+- **From the admin team (WhatsApp) — Lalji Maharaj's Visit festive look** (Sat 31 Oct 2026 only): the day gets its own warm saffron-and-gold theme (`"theme": "lalji"`), a marigold toran along the top with faint rangolis behind, a gold double frame around the Today card, gold stars either side of the "Mandir Programme" label and a warm glow behind the event name. All text and sizes are unchanged.
+
 ## 2026-10-26
 - **From the admin team (WhatsApp) — Lalji Maharaj's Visit:**
   - Added: 31 Oct Lalji Maharaj's Visit

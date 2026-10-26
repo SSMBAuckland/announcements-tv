@@ -137,6 +137,16 @@ body.tv-canvas .screen {
   border: 1px solid rgba(255,255,255,.15);
   box-shadow: inset 0 1px 0 rgba(255,255,255,.18), 0 40px 90px rgba(0,0,0,.3);
 }
+/* Lalji Maharaj's Visit: a gold double frame around the Today card, gold stars either side of the
+   source label and a warm glow behind the name (text sizes and colours unchanged). */
+body[data-art="lalji"] .today {
+  border: 2px solid var(--accent);
+  box-shadow: inset 0 0 0 10px hsla(36, 90%, 60%, .10), inset 0 0 0 12px hsla(40, 95%, 72%, .45),
+    0 0 0 6px hsla(36, 90%, 58%, .22), 0 0 70px hsla(28, 95%, 55%, .28), 0 40px 90px rgba(0,0,0,.3);
+}
+body[data-art="lalji"] .today .ev-name { text-shadow: 0 0 30px hsla(38, 100%, 60%, .45), 0 3px 0 hsla(20, 80%, 18%, .55); }
+body[data-art="lalji"] .today .ev-source::before,
+body[data-art="lalji"] .today .ev-source::after { content: '✦'; margin: 0 .7em; color: var(--accent-hi); }
 .today-title {
   flex: none; display: flex; align-items: center; gap: 26px; white-space: nowrap;
   font-size: 50px; line-height: 1; font-weight: 700; color: var(--accent);
@@ -763,7 +773,7 @@ const EVENTS = [
   {"date": "25/10/2026", "event": "Podhaniya", "time": "8:15 – 8:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "25/10/2026", "event": "Prasad Rupi Bhojan", "time": "8:30 PM onwards", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "29/10/2026", "event": "Sankasht Choth", "progress": false, "quote": "In times of difficulty, turn to Bhagwan with faith; He is the remover of every sankat."},
-  {"date": "31/10/2026", "event": "Lalji Maharaj's Visit", "time": "Arrive by 5:00 PM", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "progress": false},
+  {"date": "31/10/2026", "event": "Lalji Maharaj's Visit", "time": "Arrive by 5:00 PM", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "theme": "lalji", "progress": false},
   {"date": "2/11/2026", "event": "Kalashtami", "progress": false, "quote": "Remembering Bhagwan with devotion brings courage, purity and peace to the heart."},
   {"date": "5/11/2026", "event": "Rama Ekadashi", "progress": true, "quote": "Let remembrance of Bhagwan Rama inspire steadfastness in dharma and devotion."},
   {"date": "5/11/2026", "event": "Vaghbaras", "progress": false},
@@ -1436,7 +1446,8 @@ const SPECIAL_PALETTES = {
   nutan:      {name: 'Nutan Varsh',         h: 352, s: 58, a: 44, b: 38},
   prabodhini: {name: 'Prabodhini Ekadashi', h: 140, s: 40, a: 48, b: 100},
   harinavmi:  {name: 'Shree Swaminarayan Jayanti', h: 28, s: 70, a: 46, b: 340},
-  janmashtami: {name: 'Janmashtami',        h: 228, s: 58, a: 46, b: 196}
+  janmashtami: {name: 'Janmashtami',        h: 228, s: 58, a: 46, b: 196},
+  lalji:      {name: 'Lalji Maharaj’s Visit', h: 20, s: 74, a: 44, b: 34, art: 'lalji'}
 };
 
 /* Big festivals: each gets its own colour theme on the day (and its greeting, if any, as the
@@ -1667,7 +1678,10 @@ const FESTIVAL_ART = {
   diwali:  () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') + diyaRow() +
                  svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
   annakut: () => marigoldToran(['#ffc93c', '#f59a1b'], '#3f8f3a') + annakutHill(),
-  hanuman: () => pennantToran(['#f26b1d', '#f7a325', '#d9481c']) + mountains()
+  hanuman: () => pennantToran(['#f26b1d', '#f7a325', '#d9481c']) + mountains(),
+  lalji:   () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') +
+                 svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)') +
+                   rangoli(240, 920, 300, 'rgba(255,214,140,.05)'))
 };
 let shownArt = null;
 function setFestivalArt(name) {
