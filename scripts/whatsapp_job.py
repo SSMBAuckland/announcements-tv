@@ -146,15 +146,6 @@ def result():
     if days or asked:
         out['preview_url'] = '%s?previewDate=%s' % (PAGE, days[0].isoformat() if days else asked[0])
 
-    if os.path.exists('/tmp/base.err'):
-        out['summary'] = 'The earlier version (%s) could not be applied, so nothing was changed.' % open('/tmp/base.err').read().strip()
-        return finish(out)
-    if kind == 'apply':
-        out['status'] = 'done' if changed else 'nochange'
-        out['summary'] = 'Put the version the admins approved on the TV.'
-        if out['status'] == 'done' and os.environ.get('CHECK') == 'failure':
-            out.update(status='failed', summary='The approved version did not pass the display check, so nothing was published.')
-        return finish(out)
     if kind == 'login':
         try:
             out.update(json.load(open('/tmp/login.json', encoding='utf-8')))
@@ -224,36 +215,32 @@ def put_incoming(path, data):
 
 
 def save_preview(out):
-    """A fancy design waits for the admins: its change (a patch) and screenshots of its days go to preview/<id>/ on the
-    incoming branch, and the bot shows them in the group (ok publishes it with kind=apply)."""
+    """After a fancy design: screenshots of its days go to preview/<id>/ on the incoming branch. The change is
+    published as usual; the bot then shows the screenshots in the group and asks whether it is right or needs changes.
+    A screenshot that can't be saved doesn't stop the change; the bot then asks without it."""
     pid = os.environ.get('PREVIEW', '')
     if not re.fullmatch(r'[\w.-]+', pid):
-        out.update(status='failed', summary='The design was ready, but its preview name was not valid.')
         return
-    subprocess.run(['git', 'add', '-A', '--', '.', ':!.github'], capture_output=True)
-    patch = subprocess.run(['git', 'diff', '--cached', '--binary'], capture_output=True).stdout
     asked = [d for d in os.environ.get('DATES', '').replace(' ', '').split(',') if re.fullmatch(r'\d{4}-\d{2}-\d{2}', d)]
     days = (asked or [d.isoformat() for d in sorted(changed_dates())] or [dt.datetime.now(NZ).date().isoformat()])[:3]
-    shots = '/tmp/preview-shots'
-    subprocess.run([sys.executable, 'scripts/check_display.py', *days, '--shots', shots], capture_output=True, text=True)
-    files = {'preview/%s/change.patch' % pid: patch}
+    shots_dir = '/tmp/preview-shots'
+    subprocess.run([sys.executable, 'scripts/check_display.py', *days, '--shots', shots_dir], capture_output=True, text=True)
+    raw = 'https://raw.githubusercontent.com/%s/incoming/' % os.environ.get('GITHUB_REPOSITORY', '')
+    shots = []
     for d in days:
-        png = os.path.join(shots, d + '.png')
+        png = os.path.join(shots_dir, d + '.png')
         if not os.path.exists(png):
             continue
+        path, data = 'preview/%s/%s.png' % (pid, d), open(png, 'rb').read()
         try:  # a JPEG is a fraction of the size, quicker to open on a phone
             from PIL import Image
             Image.open(png).convert('RGB').save(png[:-4] + '.jpg', 'JPEG', quality=82, optimize=True)
-            files['preview/%s/%s.jpg' % (pid, d)] = open(png[:-4] + '.jpg', 'rb').read()
+            path, data = path[:-4] + '.jpg', open(png[:-4] + '.jpg', 'rb').read()
         except Exception:
-            files['preview/%s/%s.png' % (pid, d)] = open(png, 'rb').read()
-    for path, data in files.items():
-        if not put_incoming(path, data):
-            out.update(status='failed', summary='The design was ready, but its preview could not be saved, so nothing was published.')
-            return
-    raw = 'https://raw.githubusercontent.com/%s/incoming/' % os.environ.get('GITHUB_REPOSITORY', '')
-    out['status'] = 'preview'
-    out['preview'] = {'id': pid, 'dates': days, 'shots': [raw + p for p in files if not p.endswith('.patch')]}
+            pass
+        if put_incoming(path, data):
+            shots.append(raw + path)
+    out['preview'] = {'id': pid, 'dates': days, 'shots': shots, 'live': True}
 
 
 def finish(out):
