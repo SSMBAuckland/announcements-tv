@@ -106,6 +106,13 @@ Events live in the `EVENTS` list near the top of the `<script>` section in `inde
 | `progress` | | Leave as `false` unless told otherwise. |
 | `hideShlok` | | `true` hides the Shikshapatri shlok on that day, to give a full programme more room. |
 | `hidden` | | `true` keeps the entry in the data but off the screen (the weekly calendar sync won't add it back). |
+| `theme` | | A festival look from `SPECIAL_PALETTES` (colours, and scenery if it has `art`), e.g. `diwali`. |
+| `image` | | A picture shown with the event on its day, e.g. `images/2026-10-31-lalji-maharajs-visit.jpg` (see **Pictures** below). |
+| `imagePos` | | Which part of the picture stays in view when it is trimmed to fit, e.g. `center 30%`. |
+| `imageStyle` | | `side` (beside the text) or `under` (picture above, text under it). Normally chosen from the picture's shape. |
+| `palette` | | The day's colours, e.g. from the event's poster: `{"h": 208, "s": 48, "a": 356, "b": 196}` = field hue, its saturation (24–70), accent hue (times) and label hue. The field always stays dark and the text light. |
+
+**Pictures:** put the file in `images/` (JPEG, at most 1600 px on its longest side; `python3 scripts/prepare_image.py SOURCE images/NAME.jpg --crop X,Y,W,H` crops and shrinks it). Upright pictures (murtis, posters, portraits) stand on the right of the Today card and fade into it towards the text; wide ones (over 1.4:1) fill the top of the card and fade to dark behind the text under them. The text keeps its sizes, and the shlok gives way that day.
 
 **Big festivals** (countdown, colour theme and greeting) are set in the `FESTIVALS` list. The `event` there must match the event name exactly.
 

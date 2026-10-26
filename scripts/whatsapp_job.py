@@ -2,6 +2,7 @@
 """Helper for .github/workflows/whatsapp-update.yml (changes the admin team asks for on WhatsApp, via n8n).
 
   python3 scripts/whatsapp_job.py prompt     Claude Code's instructions for the request in $REQUEST
+  python3 scripts/whatsapp_job.py images     brings the pictures in $IMAGES from the incoming branch into images/
   python3 scripts/whatsapp_job.py dates      days to check: the days the change touched, plus the coming week
   python3 scripts/whatsapp_job.py result     works out what happened and writes it to /tmp/result.json
   python3 scripts/whatsapp_job.py callback   sends /tmp/result.json to n8n (N8N_CALLBACK_URL, N8N_CALLBACK_KEY)
@@ -33,6 +34,17 @@ especially the minimum text sizes (the screen is read from across the hall).
 - For plain event additions, changes and removals you can use: python3 scripts/apply_update.py CHANGES.json \
 (the format is at the top of that file). It also writes the CHANGELOG.md entry.
 - Otherwise add a CHANGELOG.md entry yourself.
+- Pictures: an event can show a picture in the Today card with "image": "images/NAME.jpg" (README, "Pictures"). \
+Pictures named in the request are already in images/, cropped to the subject; look at each one first (Read it). \
+Choose "imagePos" so faces and murtis stay in view, never put text over a face, and keep every text size.
+- Colours from a poster: give the event a "palette" (README) so the day's colours match the poster the admins \
+shared. The field always stays dark and the text light.
+- A festive ("fancy") look is about the occasion itself, not only lights: Diwali has diyas and rangoli, Raksha \
+Bandhan a rakhi thread, Janmashtami a flute, peacock feather and makhan matki, Navratri garba and dandiya, Holi \
+coloured powder, Sharad Poonam the full moon, Hindola a decorated swing, Annakut the Govardhan offering, a visit by \
+Acharya Maharaj or Lalji Maharaj a welcome toran and flowers, national days the flag colours. Build it like the \
+existing ones (a SPECIAL_PALETTES entry with its own FESTIVAL_ART, named on the day's events with "theme"), keep it \
+faint behind the text, and match any picture or poster the admins sent.
 - Check every day you changed: python3 scripts/check_display.py YYYY-MM-DD ... (it must report no errors and a \
 1920x1080 fit). Fix anything it reports.
 - Do not commit or push. This workflow does that after its own check.
@@ -45,6 +57,8 @@ the bot's settings, call them "the WAHA config"."""
 
 LIMIT = re.compile(r'usage limit|hit your .{0,40}limit|limit reached|limit will reset|resets? (at )?\d|'
                    r'credit balance is too low|out of (extra )?usage|rate.?limit', re.I)
+AUTH = re.compile(r'oauth token (has )?(expired|been revoked)|invalid (bearer|oauth|api) ?(token|key)|authentication.?(error|failed)|'
+                  r'not logged in|please run /login|invalid x-api-key|\b401\b', re.I)
 
 
 def git(*args):
@@ -86,6 +100,36 @@ def reset_time(text, now):
     return when
 
 
+def images():
+    """Fetch the pictures in $IMAGES from the incoming branch, then crop and shrink them into images/."""
+    try:
+        items = json.loads(os.environ.get('IMAGES') or '[]')
+    except ValueError:
+        items = []
+    failed = []
+    for it in items if isinstance(items, list) else []:
+        src, dst, crop = (str(it.get(k) or '') for k in ('from', 'to', 'crop'))
+        if not re.fullmatch(r'incoming/[\w.-]+', src) or not re.fullmatch(r'images/[\w.-]+\.jpg', dst):
+            failed.append(dst or src or '?')
+            continue
+        data = subprocess.run(['git', 'show', 'origin/incoming:' + src], capture_output=True).stdout
+        if not data:
+            failed.append(dst)
+            continue
+        with open('/tmp/picture-in', 'wb') as f:
+            f.write(data)
+        args = [sys.executable, 'scripts/prepare_image.py', '/tmp/picture-in', dst]
+        if re.fullmatch(r'\d+(\.\d+)?(,\d+(\.\d+)?){3}', crop):
+            args += ['--crop', crop]
+        r = subprocess.run(args, capture_output=True, text=True)
+        print(r.stdout.strip() or r.stderr.strip()[-300:])
+        if r.returncode:
+            failed.append(dst)
+    if failed:
+        open('/tmp/images.err', 'w', encoding='utf-8').write(', '.join(failed))
+        print('Pictures not brought in: ' + ', '.join(failed))
+
+
 def result():
     now = dt.datetime.now(NZ)
     kind = os.environ.get('KIND', 'events')
@@ -100,6 +144,12 @@ def result():
     if days:
         out['preview_url'] = '%s?previewDate=%s' % (PAGE, days[0].isoformat())
 
+    if kind == 'login':
+        try:
+            out.update(json.load(open('/tmp/login.json', encoding='utf-8')))
+        except (OSError, ValueError):
+            out['summary'] = 'The login job stopped before it finished.'
+        return finish(out)
     if kind == 'events':
         try:
             out['changes'] = json.load(open('/tmp/summary.json', encoding='utf-8'))
@@ -121,6 +171,9 @@ def result():
         failed = c.get('is_error') or c.get('subtype') not in (None, 'success') or not c
         if text == 'NO_PRO_TOKEN':
             out.update(status='limit', reason='no_pro', reset_at=int((now + dt.timedelta(hours=7)).timestamp()), reset_text='')
+        elif failed and out['billing'] == 'pro' and AUTH.search(text + '\n' + err + '\n' + raw[:2000]):
+            # the Pro plan login has expired or was signed out: the bot asks the admins to log in again
+            out.update(status='limit', reason='auth', reset_at=int((now + dt.timedelta(hours=7)).timestamp()), reset_text='')
         elif failed and LIMIT.search(text + '\n' + err + '\n' + raw[:2000]):
             when = reset_time(text + '\n' + err, now) or now + dt.timedelta(hours=7)
             out['status'] = 'limit'
@@ -140,6 +193,9 @@ def result():
         else:
             out['status'] = 'done' if changed else 'nochange'
             out['summary'] = text[:700]
+    if os.path.exists('/tmp/images.err'):
+        out['summary'] = (out['summary'] + ' ' if out['summary'] else '') + \
+            'Some pictures could not be brought in (' + open('/tmp/images.err', encoding='utf-8').read().strip() + ').'
     if out['status'] == 'done' and os.environ.get('CHECK') == 'failure':
         out['status'] = 'failed'
         out['summary'] = 'The change did not pass the display check, so nothing was published. ' + \
@@ -196,6 +252,8 @@ if __name__ == '__main__':
         today = dt.datetime.now(NZ).date()
         days = changed_dates() | {today + dt.timedelta(n) for n in range(7)}
         print(' '.join(d.isoformat() for d in sorted(days)))
+    elif cmd == 'images':
+        images()
     elif cmd == 'result':
         result()
     elif cmd == 'callback':

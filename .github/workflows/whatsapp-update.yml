@@ -7,16 +7,20 @@ run-name: WhatsApp update ${{ inputs.ref }}
 #   kind=events  adds, updates or removes the given events with scripts/apply_update.py (no AI involved)
 #   kind=claude  Claude Code makes the requested change (design tweaks, festive themes, anything free-form),
 #                on the Claude Pro plan (billing=pro) or the team API key (billing=api, capped at $3 a run)
+#   images       pictures the admins sent (either kind): fetched from the incoming branch, cropped and shrunk first
+#   kind=login   connects the Claude Pro plan: runs `claude setup-token`, relays its sign-in link and the admin's code
+#                through the bot (scripts/claude_login.py), and saves the token as the CLAUDE_CODE_OAUTH_TOKEN secret
 # Every change is checked at 1920x1080 (scripts/check_display.py) before it is published; then the website is
 # rebuilt and the TVs are refreshed.
-# Secrets: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`), ANTHROPIC_API_KEY, N8N_CALLBACK_URL, N8N_CALLBACK_KEY.
+# Secrets: CLAUDE_CODE_OAUTH_TOKEN (from `claude setup-token`, or kind=login), ANTHROPIC_API_KEY, N8N_CALLBACK_URL,
+# N8N_CALLBACK_KEY, SSMB_BOT_GITHUB_TOKEN (the bot's GitHub key, which may set secrets; used by kind=login).
 on:
   workflow_dispatch:
     inputs:
       kind:
-        description: 'events or claude'
+        description: 'events, claude or login'
         type: choice
-        options: [events, claude]
+        options: [events, claude, login]
         default: events
       ref:
         description: 'Reference from n8n, sent back with the result'
@@ -40,14 +44,19 @@ on:
         type: choice
         options: [sonnet, opus]
         default: sonnet
+      images:
+        description: 'Pictures the admins sent, as uploaded to the incoming branch: [{"from": "incoming/…", "to": "images/….jpg", "crop": "X,Y,W,H"}]'
+        required: false
 
 permissions:
   contents: write
   pages: write
+  actions: write   # kind=login: reads (and then deletes) the run that carries the sign-in code
 
 # One change at a time, so two quick requests can't overwrite each other.
+# (A login only waits for an admin's code and changes nothing in the repository, so it has its own queue.)
 concurrency:
-  group: tv-update
+  group: ${{ inputs.kind == 'login' && 'claude-login' || 'tv-update' }}
   cancel-in-progress: false
 
 jobs:
@@ -75,7 +84,18 @@ jobs:
           python-version: '3.12'
 
       - name: Install the display checker
-        run: pip install --quiet playwright && python -m playwright install --with-deps chromium > /dev/null
+        if: inputs.kind != 'login'
+        run: pip install --quiet playwright pillow && python -m playwright install --with-deps chromium > /dev/null
+
+      # The bot uploads pictures as the admins sent them to the "incoming" branch; here they are cropped to the part
+      # worth showing and shrunk into images/ (scripts/prepare_image.py), before the events or Claude use them.
+      - name: Bring in the pictures
+        if: inputs.images != ''
+        env:
+          IMAGES: ${{ inputs.images }}
+        run: |
+          git fetch -q --depth 1 origin incoming || echo "No incoming branch."
+          python3 scripts/whatsapp_job.py images
 
       - name: Apply the event changes
         if: inputs.kind == 'events'
@@ -86,32 +106,53 @@ jobs:
           python3 -c "import json, os; c = json.loads(os.environ['CHANGES'] or '{}'); c.setdefault('title', os.environ['TITLE']); json.dump(c, open('/tmp/changes.json', 'w'))"
           python3 scripts/apply_update.py /tmp/changes.json /tmp/summary.json 2> /tmp/apply.err || cat /tmp/apply.err
 
+      - name: Connect the Claude Pro plan
+        if: inputs.kind == 'login'
+        timeout-minutes: 20
+        env:
+          GH_TOKEN: ${{ github.token }}
+          SECRETS_TOKEN: ${{ secrets.SSMB_BOT_GITHUB_TOKEN }}
+        run: |
+          npm install --global --silent @anthropic-ai/claude-code
+          python3 scripts/claude_login.py
+
       - name: Ask Claude Code
         if: inputs.kind == 'claude'
         env:
           REQUEST: ${{ inputs.request }}
           PRO_TOKEN: ${{ secrets.CLAUDE_CODE_OAUTH_TOKEN }}
+          PRO_LOGIN: ${{ secrets.CLAUDE_CREDENTIALS }}
           API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          SECRETS_TOKEN: ${{ secrets.SSMB_BOT_GITHUB_TOKEN }}
         run: |
-          if [ "$BILLING" = pro ] && [ -z "$PRO_TOKEN" ]; then
+          if [ "$BILLING" = pro ] && [ -z "$PRO_TOKEN" ] && [ -z "$PRO_LOGIN" ]; then
             echo '{"is_error": true, "subtype": "error_during_execution", "result": "NO_PRO_TOKEN"}' > /tmp/claude.json
-            echo "No CLAUDE_CODE_OAUTH_TOKEN secret: reporting that the Pro plan isn't connected."
+            echo "No CLAUDE_CODE_OAUTH_TOKEN or CLAUDE_CREDENTIALS secret: reporting that the Pro plan isn't connected."
             exit 0
           fi
           npm install --global --silent @anthropic-ai/claude-code
-          # Only one of the two may be set: an API key silently takes priority over the Pro plan token.
+          # Only one may be set: an API key silently takes priority over the Pro plan token.
           if [ "$BILLING" = api ]; then
             export ANTHROPIC_API_KEY="$API_KEY"; LIMITS="--max-budget-usd 3"
-          else
+          elif [ -n "$PRO_TOKEN" ]; then
             export CLAUDE_CODE_OAUTH_TOKEN="$PRO_TOKEN"; LIMITS=""
+          else
+            # A copied Claude login (CLAUDE_CREDENTIALS): Claude Code renews it when it has expired, and the renewed
+            # login is saved back below, so the next run has it. A setup-token login (kind=login) replaces it.
+            mkdir -p ~/.claude && (umask 077; printf '%s' "$PRO_LOGIN" > ~/.claude/.credentials.json; cp ~/.claude/.credentials.json /tmp/login.before)
+            LIMITS=""
           fi
-          unset PRO_TOKEN API_KEY
+          unset PRO_TOKEN PRO_LOGIN API_KEY
           set +e
           claude -p "$(python3 scripts/whatsapp_job.py prompt)" --output-format json --model "$MODEL" --max-turns 60 $LIMITS \
             --permission-mode acceptEdits \
-            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(python3 scripts/check_display.py:*),Bash(python3 scripts/apply_update.py:*),Bash(git diff:*),Bash(git status:*)" \
+            --allowedTools "Read,Edit,Write,Glob,Grep,Bash(python3 scripts/check_display.py:*),Bash(python3 scripts/apply_update.py:*),Bash(python3 scripts/prepare_image.py:*),Bash(git diff:*),Bash(git status:*)" \
             > /tmp/claude.json 2> /tmp/claude.err
           echo "Claude Code exited with $?"
+          if [ -f /tmp/login.before ] && ! cmp -s /tmp/login.before ~/.claude/.credentials.json; then
+            GH_TOKEN="$SECRETS_TOKEN" gh secret set CLAUDE_CREDENTIALS --repo "$GITHUB_REPOSITORY" < ~/.claude/.credentials.json               && echo "Saved the renewed Claude login." || echo "Could not save the renewed Claude login."
+          fi
+          rm -f /tmp/login.before ~/.claude/.credentials.json
           exit 0
 
       - name: Check the display
@@ -131,7 +172,7 @@ jobs:
 
       - name: Publish
         id: publish
-        if: steps.result.outputs.status == 'done'
+        if: steps.result.outputs.status == 'done' && inputs.kind != 'login'
         env:
           TITLE: ${{ inputs.title }}
           GH_TOKEN: ${{ github.token }}

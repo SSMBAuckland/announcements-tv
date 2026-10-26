@@ -2,6 +2,12 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-26 (pictures)
+- **Pictures with an event:** an event can now show a picture in the Today card (`image`, a file in `images/`). Upright pictures (murtis, posters, portraits) stand on the right and fade into the card towards the text; wide ones fill the top of the card and fade to dark behind the text under them. The text keeps its sizes; the shlok gives way on picture days, and a picture that can't be loaded is left out (the display check reports it).
+- **Colours from a poster:** an event's `palette` sets the day's colours (field, accent and label hues), so the screen can match the poster the admins shared. The field stays dark and the text light; a festival theme keeps its scenery.
+- **Lalji Maharaj's Visit** (Sat 31 Oct): Lalji Maharaj's picture from the poster the admins sent (cropped to him, without the poster's text and logos) beside the event, and the poster's blue and maroon as the day's colours.
+- Removed the purple placeholder photo layer (`background.svg`) added earlier today: it darkened every day, and pictures now go with their event instead.
+
 ## 2026-10-26 (photo background)
 - **From the admin team (WhatsApp) — photo background:** the display now has a photo layer behind everything, with a dark gradient over it so event names, dates and times stay high-contrast. The picture was not available to us, so a plain purple placeholder (`background.svg`) is in place; add the real picture next to `index.html` and point the `.screen::after` url at it. Text and sizes are unchanged; no events added.
 

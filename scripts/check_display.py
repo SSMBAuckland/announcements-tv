@@ -47,6 +47,11 @@ def main():
                 problems.append('%s: page error: %s' % (day, errors[0][:200]))
             if size[0] > 1920 or size[1] > 1080:
                 problems.append('%s: layout is %dx%d, bigger than 1920x1080' % (day, size[0], size[1]))
+            # a day with a picture must actually show it (a wrong file name would quietly leave it out)
+            photo = page.evaluate('() => { const img = document.getElementById("todayPhotoImg");'
+                                  ' return img && img.getAttribute("src") ? [img.getAttribute("src"), img.naturalWidth] : null; }')
+            if photo and not photo[1]:
+                problems.append('%s: picture %s could not be loaded' % (day, photo[0]))
             if shots:
                 page.screenshot(path=os.path.join(shots, day + '.png'))
             page.close()

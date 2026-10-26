@@ -11,6 +11,9 @@ CHANGES.json:
 - "add" puts the event on the screen. If the same day already has an event with the same name (ignoring
   spelling variants, see sync_calendar.norm), that event is updated instead, so re-sending is safe.
   Fields left out keep their current value (e.g. a festival message written earlier).
+- A picture for the event: "image": "images/NAME.jpg" (a file in images/, see scripts/prepare_image.py), optionally
+  "imagePos" (which part shows, e.g. "center 30%") and "imageStyle" ("side" or "under"). "image": "none" takes it off.
+- The day's colours from a poster: "palette": {"h": field hue, "s": saturation, "a": accent hue, "b": label hue}.
 - "remove" takes the event off the list (same day, same name).
 - Writes a CHANGELOG.md entry and a JSON summary: what was added, updated, removed or not found, and the dates.
 """
@@ -25,6 +28,8 @@ from sync_calendar import norm
 INDEX, CHANGELOG = 'index.html', 'CHANGELOG.md'
 TEXT_FIELDS = ('event', 'time', 'note', 'source', 'quote', 'intro')
 FLAGS = ('hideShlok', 'hidden')
+IMAGE = re.compile(r'images/[\w.-]+\.(jpe?g|png|webp)')
+IMAGE_POS = re.compile(r'(left|center|right|top|bottom|\d{1,3}%)( (left|center|right|top|bottom|\d{1,3}%))?')
 
 
 def today_nz():
@@ -59,6 +64,21 @@ def clean_event(raw):
     for f in FLAGS:
         if raw.get(f) is True:
             e[f] = True
+    image = str(raw.get('image') or '').strip()
+    if image == 'none':
+        e['image'] = None  # taken off below
+    elif image:
+        if not IMAGE.fullmatch(image):
+            raise ValueError('bad picture %r (use images/NAME.jpg)' % image)
+        e['image'] = image
+    pos = str(raw.get('imagePos') or '').strip()
+    if pos and IMAGE_POS.fullmatch(pos):
+        e['imagePos'] = pos
+    if raw.get('imageStyle') in ('side', 'under'):
+        e['imageStyle'] = raw['imageStyle']
+    p = raw.get('palette')
+    if isinstance(p, dict) and isinstance(p.get('h'), (int, float)):
+        e['palette'] = {k: int(round(p[k])) for k in ('h', 's', 'a', 'b') if isinstance(p.get(k), (int, float))}
     return e
 
 
@@ -94,9 +114,14 @@ def main():
         if old:
             before = dict(old)
             old.update(new)
+            if old.get('image', '') is None:
+                for f in ('image', 'imagePos', 'imageStyle'):
+                    old.pop(f, None)
             if old != before:
                 summary['updated'].append(label(new))
         else:
+            if new.get('image', '') is None:
+                new.pop('image')
             new.setdefault('progress', False)
             events.append(new)
             summary['added'].append(label(new))

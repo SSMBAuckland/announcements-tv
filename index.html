@@ -38,15 +38,6 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
     radial-gradient(ellipse 68% 68% at 14% 6%, var(--glow), transparent 70%);
   animation: ambientDrift 46s ease-in-out infinite alternate;
 }
-/* Photo background: replace background.svg (a plain purple placeholder) with the picture, e.g. background.jpg, and change the url below.
-   The dark gradient on top keeps all text high-contrast; raise the alpha values if a picture is too bright. */
-.screen::after {
-  content: ""; position: absolute; inset: 0; z-index: -2; pointer-events: none;
-  background:
-    linear-gradient(180deg, rgba(10,4,14,.78), rgba(10,4,14,.66) 45%, rgba(10,4,14,.82)),
-    url("background.svg") center / cover no-repeat;
-  opacity: .9;
-}
 @keyframes ambientDrift {
   0%   { transform: translate3d(-3%, -2%, 0) scale(1); }
   50%  { transform: translate3d(2%, 1.5%, 0) scale(1.05); }
@@ -235,6 +226,37 @@ body.tv-canvas .today.is-busy .shlok-band { height: 176px; }
 body.tv-canvas .today.is-busy .shlok-box { height: 114px; }
 body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; }
 
+/* ───────── A picture with the day's event ("image" on the event, a file in images/) ─────────
+   Upright and squarish pictures (murtis, posters, portraits) stand on the right, fading into the card towards the
+   text; wide ones (over 1.4:1) fill the top of the card and fade to dark behind the text under them. On a busy day a wide
+   picture stays as a faint backdrop. The text keeps its sizes; the shlok band gives way on picture days. */
+.today-photo { position: absolute; z-index: 0; pointer-events: none; overflow: hidden; }
+.today-photo[hidden] { display: none; }
+.today-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.today.has-photo .today-title, .today.has-photo .today-events { position: relative; z-index: 1; }
+.today.has-photo .ev-name, .today.has-photo .ev-time, .today.has-photo .ev-row { text-shadow: 0 2px 18px rgba(0,0,0,.55); }
+.today.photo-side { --photo-w: 46%; }
+.today.photo-side.is-busy { --photo-w: 40%; }
+.today.photo-side .today-photo {
+  top: 0; right: 0; bottom: 0; width: var(--photo-w);
+  -webkit-mask-image: linear-gradient(90deg, transparent 0, #000 32%), linear-gradient(0deg, transparent 0, #000 14%);
+  -webkit-mask-composite: source-in;
+  mask-image: linear-gradient(90deg, transparent 0, #000 32%), linear-gradient(0deg, transparent 0, #000 14%);
+  mask-composite: intersect;
+}
+.today.photo-side .today-title, .today.photo-side .today-events { margin-right: calc(var(--photo-w) - 8%); }
+.today.photo-under .today-photo {
+  top: 0; left: 0; right: 0; height: 60%;
+  -webkit-mask-image: linear-gradient(180deg, #000 0, #000 40%, transparent 100%);
+  mask-image: linear-gradient(180deg, #000 0, #000 40%, transparent 100%);
+}
+/* a soft shade at the top keeps the card title readable over the picture */
+.today.photo-under .today-photo::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.5), transparent 24%); }
+/* the text gets the lower part of the card (and is fitted there), under the picture */
+body.tv-canvas .today.photo-under:not(.is-busy) .today-events { margin-top: 290px; }
+.today.photo-under:not(.is-busy) .ev-list { margin: auto 0 0; }
+.today.photo-under.is-busy .today-photo { height: 100%; opacity: .2; -webkit-mask-image: none; mask-image: none; }
+
 /* Upcoming Event(s): the next day in full, later days in brief, plus a festival countdown */
 .coming {
   min-height: 0; display: flex; flex-direction: column; padding: 34px 40px 34px; border-radius: 40px;
@@ -357,6 +379,11 @@ body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; 
   .brand { max-width: none; }
   .main { display: flex; flex-direction: column; gap: 18px; }
   .today { padding: 26px 18px 0; border-radius: 30px; }
+  .today.has-photo .today-photo {
+    position: relative; inset: auto; width: auto; height: 62vw; margin: -26px -18px 16px; opacity: 1;
+    -webkit-mask-image: linear-gradient(180deg, #000 70%, transparent); mask-image: linear-gradient(180deg, #000 70%, transparent);
+  }
+  .today.has-photo .today-title, .today.has-photo .today-events { margin-right: 0; }
   .today-title { white-space: normal; font-size: clamp(24px, 6.4vw, 40px); }
   .today-events { overflow: visible; }
   .ev-split { grid-template-columns: 1fr; row-gap: 16px; padding-bottom: 12px; }
@@ -692,6 +719,7 @@ body.tv-canvas .pv-bar { bottom: 6px; }
 
   <main class="main">
     <section class="today" aria-labelledby="todayTitle">
+      <div id="todayPhoto" class="today-photo" hidden aria-hidden="true"><img id="todayPhotoImg" alt=""></div>
       <h2 id="todayTitle" class="today-title">Today at the Mandir</h2>
       <div id="todayEvents" class="today-events"></div>
       <div class="shlok-band">
@@ -782,7 +810,7 @@ const EVENTS = [
   {"date": "25/10/2026", "event": "Podhaniya", "time": "8:15 – 8:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "25/10/2026", "event": "Prasad Rupi Bhojan", "time": "8:30 PM onwards", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "29/10/2026", "event": "Sankasht Choth", "progress": false, "quote": "In times of difficulty, turn to Bhagwan with faith; He is the remover of every sankat."},
-  {"date": "31/10/2026", "event": "Lalji Maharaj's Visit", "time": "Arrive by 5:00 PM", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "theme": "lalji", "progress": false},
+  {"date": "31/10/2026", "event": "Lalji Maharaj's Visit", "time": "Arrive by 5:00 PM", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "theme": "lalji", "progress": false, "image": "images/2026-10-31-lalji-maharajs-visit.jpg", "palette": {"h": 208, "s": 48, "a": 356, "b": 196}},
   {"date": "2/11/2026", "event": "Kalashtami", "progress": false, "quote": "Remembering Bhagwan with devotion brings courage, purity and peace to the heart."},
   {"date": "5/11/2026", "event": "Rama Ekadashi", "progress": true, "quote": "Let remembrance of Bhagwan Rama inspire steadfastness in dharma and devotion."},
   {"date": "5/11/2026", "event": "Vaghbaras", "progress": false},
@@ -1510,14 +1538,25 @@ function hslToRgb(h, s, l) {
   return [Math.round(255 * f(0)), Math.round(255 * f(8)), Math.round(255 * f(4))];
 }
 
+// {h, s, a, b} from an event: field hue, its saturation, accent hue (times) and secondary hue (labels).
+// The field always stays dark and the text light, whatever the poster's own colours.
+function posterPalette(p) {
+  const hue = (v, d) => Number.isFinite(Number(v)) ? ((Math.round(Number(v)) % 360) + 360) % 360 : d;
+  const h = hue(p.h, 0);
+  return {h, s: Math.min(70, Math.max(24, Math.round(Number(p.s) || 50))), a: hue(p.a, 42), b: hue(p.b, h)};
+}
+
 const paletteCache = {};
 function paletteFor(key) {
   if (paletteCache[key]) return paletteCache[key];
   const dayEvents = EVENTS_BY_DAY[key] || [];
   const themed = dayEvents.find(e => SPECIAL_PALETTES[eventTheme(e)]);
+  // An event's own "palette" (e.g. taken from its poster) sets the day's colours; a theme keeps its scenery.
+  const own = dayEvents.map(e => e.palette).find(p => p && Number.isFinite(Number(p.h)));
   let spec, special = false;
-  if (themed) {
-    spec = SPECIAL_PALETTES[eventTheme(themed)]; special = true;
+  if (themed || own) {
+    spec = Object.assign({}, themed ? SPECIAL_PALETTES[eventTheme(themed)] : {name: 'Poster colours'}, own ? posterPalette(own) : {});
+    special = true;
   } else {
     const parts = key.split('-').map(Number);
     const ordinal = Math.floor(Date.UTC(parts[0], parts[1] - 1, parts[2]) / 86400000);
@@ -2140,6 +2179,29 @@ function updateShlok(now) {
   window.setTimeout(reveal, 480);
 }
 
+// The picture of the day's event, if it has one: beside the text when it is upright, above it when it is
+// wide (or as the event's imageStyle says: "side" or "under"). A picture that can't be loaded is left out.
+function showPhoto(e) {
+  const card = document.querySelector('.today'), box = $('todayPhoto'), img = $('todayPhotoImg');
+  const src = e ? String(e.image) : '';
+  const clear = () => { card.classList.remove('has-photo', 'photo-side', 'photo-under'); box.hidden = true; };
+  if (!src) { clear(); img.removeAttribute('src'); return; }
+  const place = () => {
+    const wide = img.naturalWidth > img.naturalHeight * 1.4;
+    const style = ['side', 'under'].includes(e.imageStyle) ? e.imageStyle : wide ? 'under' : 'side';
+    card.classList.add('has-photo');
+    card.classList.toggle('photo-side', style === 'side');
+    card.classList.toggle('photo-under', style === 'under');
+    box.hidden = false;
+    scheduleLayout();
+  };
+  img.style.objectPosition = e.imagePos || '';
+  img.onload = place;
+  img.onerror = () => { clear(); scheduleLayout(); };
+  if (img.getAttribute('src') !== src) img.src = src;
+  else if (img.complete && img.naturalWidth) place();
+}
+
 /* ───────── Render (called every second, and by the preview studio) ───────── */
 function render() {
   const now = aucklandNow();
@@ -2161,7 +2223,7 @@ function render() {
   const festival = nextFestival(today);
   const statuses = eventStatuses(todayEvents, aucklandMinutesNow(today));
   const sig = [today, inCanvas() ? 'tv' : 'phone', festival ? festival.key : '', statuses.join(',')]
-    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro].join('~')))
+    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro, e.image, e.imagePos, e.imageStyle].join('~')))
     .concat(upcoming.map(g => g.key + ':' + g.events.map(e => [e.event, e.time, e.note, e.source].join('~')).join('|')))
     .join('||');
   if (sig !== state.signature) {
@@ -2178,9 +2240,11 @@ function render() {
     $('todayEvents').innerHTML = todayMarkup(todayEvents, statuses);
     // Busy day: two columns, or three or more events still to come.
     // An event can ask for the shlok band to be hidden that day, to give a full programme the room.
-    document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok));
+    // A picture day gives the shlok band's room to the picture.
+    document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok || e.image));
     document.querySelector('.today').classList.toggle('is-busy',
       Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);
+    showPhoto(todayEvents.find(e => e.image));
     layoutPanels();
   }
   updateShlok(now);

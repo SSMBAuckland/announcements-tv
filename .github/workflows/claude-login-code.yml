@@ -1,0 +1,22 @@
+name: Claude login code
+# Carries the sign-in code an admin pasted in the admin team's WhatsApp group to the waiting "WhatsApp update" run
+# (kind=login, scripts/claude_login.py), which reads it from this run's name and then deletes this run. The code only
+# works once, for that one sign-in. Started by the n8n automation.
+run-name: Claude login code ${{ inputs.ref }} ${{ inputs.code }}
+on:
+  workflow_dispatch:
+    inputs:
+      ref:
+        description: 'The login run it is for'
+        required: true
+      code:
+        description: 'The code shown after signing in to Claude'
+        required: true
+
+permissions: {}
+
+jobs:
+  relay:
+    runs-on: ubuntu-latest
+    steps:
+      - run: echo "Passed on to the login run."
