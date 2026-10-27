@@ -7,7 +7,7 @@ run-name: WhatsApp update ${{ inputs.ref }}
 #   kind=events  adds, updates or removes the given events with scripts/apply_update.py (no AI involved)
 #   kind=claude  Claude Code makes the requested change (design tweaks, festive themes, anything free-form),
 #                on the Claude Pro plan (billing=pro) or the team API key (billing=api, capped at $3 a run)
-#   images       pictures the admins sent (either kind): fetched from the incoming branch, cropped and shrunk first
+#   images       pictures and videos the admins sent (either kind): fetched from the incoming branch, cropped and shrunk first
 #   preview      (kind=claude) after a fancy design, screenshots of its days go to the incoming branch (preview/<id>/);
 #                the bot shows them in the group and asks whether it is right or needs changes
 #   kind=login   connects the Claude Pro plan: runs `claude setup-token`, relays its sign-in link and the admin's code
@@ -47,7 +47,7 @@ on:
         options: [sonnet, opus]
         default: sonnet
       images:
-        description: 'Pictures the admins sent, as uploaded to the incoming branch: [{"from": "incoming/…", "to": "images/….jpg", "crop": "X,Y,W,H"}]'
+        description: 'Pictures and videos the admins sent, as uploaded to the incoming branch: [{"from": "incoming/…", "to": "images/….jpg" or "videos/….webm", "crop": "X,Y,W,H", "start": seconds}]'
         required: false
       preview:
         description: 'kind=claude: take screenshots of the days afterwards, under this name, for the admins to check'
@@ -105,6 +105,8 @@ jobs:
           IMAGES: ${{ inputs.images }}
         run: |
           git fetch -q --depth 1 origin incoming || echo "No incoming branch."
+          # videos are converted with ffmpeg (WebM for the TV, MP4 for phones)
+          if printf '%s' "$IMAGES" | grep -q '"videos/' && ! command -v ffmpeg > /dev/null; then sudo apt-get install -y -qq ffmpeg > /dev/null; fi
           python3 scripts/whatsapp_job.py images
 
       - name: Apply the event changes

@@ -52,6 +52,11 @@ def main():
                                   ' return img && img.getAttribute("src") ? [img.getAttribute("src"), img.naturalWidth] : null; }')
             if photo and not photo[1]:
                 problems.append('%s: picture %s could not be loaded' % (day, photo[0]))
+            # …and a day with a video must play it (readyState 2+ means a frame is showing)
+            clip = page.evaluate('() => { const v = document.getElementById("todayPhotoVid");'
+                                 ' return v && v.getAttribute("src") ? [v.getAttribute("src"), v.readyState, v.error ? v.error.code : 0] : null; }')
+            if clip and (clip[2] or clip[1] < 2):
+                problems.append('%s: video %s could not be played' % (day, clip[0]))
             if shots:
                 page.screenshot(path=os.path.join(shots, day + '.png'))
             page.close()

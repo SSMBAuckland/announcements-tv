@@ -13,6 +13,8 @@ CHANGES.json:
   Fields left out keep their current value (e.g. a festival message written earlier).
 - A picture for the event: "image": "images/NAME.jpg" (a file in images/, see scripts/prepare_image.py), optionally
   "imagePos" (which part shows, e.g. "center 30%") and "imageStyle" ("side" or "under"). "image": "none" takes it off.
+- A video (an animation that plays silently on a loop, in the picture's place): "video": "videos/NAME.webm" (made with
+  scripts/prepare_video.py, with the .mp4 beside it). "video": "none" takes it off; the picture, if any, stays.
 - The day's colours from a poster: "palette": {"h": field hue, "s": saturation, "a": accent hue, "b": label hue}.
 - "remove" takes the event off the list (same day, same name).
 - Writes a CHANGELOG.md entry and a JSON summary: what was added, updated, removed or not found, and the dates.
@@ -29,6 +31,7 @@ INDEX, CHANGELOG = 'index.html', 'CHANGELOG.md'
 TEXT_FIELDS = ('event', 'time', 'note', 'source', 'quote', 'intro')
 FLAGS = ('hideShlok', 'hidden')
 IMAGE = re.compile(r'images/[\w.-]+\.(jpe?g|png|webp)')
+VIDEO = re.compile(r'videos/[\w.-]+\.webm')
 IMAGE_POS = re.compile(r'(left|center|right|top|bottom|\d{1,3}%)( (left|center|right|top|bottom|\d{1,3}%))?')
 
 
@@ -71,6 +74,13 @@ def clean_event(raw):
         if not IMAGE.fullmatch(image):
             raise ValueError('bad picture %r (use images/NAME.jpg)' % image)
         e['image'] = image
+    video = str(raw.get('video') or '').strip()
+    if video == 'none':
+        e['video'] = None  # taken off below
+    elif video:
+        if not VIDEO.fullmatch(video):
+            raise ValueError('bad video %r (use videos/NAME.webm)' % video)
+        e['video'] = video
     pos = str(raw.get('imagePos') or '').strip()
     if pos and IMAGE_POS.fullmatch(pos):
         e['imagePos'] = pos
@@ -117,11 +127,14 @@ def main():
             if old.get('image', '') is None:
                 for f in ('image', 'imagePos', 'imageStyle'):
                     old.pop(f, None)
+            if old.get('video', '') is None:
+                old.pop('video')
             if old != before:
                 summary['updated'].append(label(new))
         else:
-            if new.get('image', '') is None:
-                new.pop('image')
+            for f in ('image', 'video'):
+                if new.get(f, '') is None:
+                    new.pop(f)
             new.setdefault('progress', False)
             events.append(new)
             summary['added'].append(label(new))

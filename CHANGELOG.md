@@ -2,6 +2,11 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-10-28 (videos)
+- **Videos with an event:** an event can now have a short animation (`video`, files in `videos/`) where a picture would go. It plays silently on a loop, fading into the card like a picture, with the event's picture shown until it starts and in its place if it can't play. The display check reports a video that won't play.
+- **Dhanteras** (Fri 6 Nov): the animated "Happy Dhanteras" greeting the admin team sent (the pot of coins and diyas, shimmering), cropped and shrunk to under half a megabyte, as the admins asked.
+- **Lalji Maharaj's Visit** (Sat 31 Oct): renamed "Welcome, Lalji Maharaj" as the admins asked, with his picture zoomed out to show his folded hands too; it now sits above the event text.
+
 ## 2026-10-28
 - **From the admin team (WhatsApp) — Kali Chaudash background picture:**
   - Updated: 7 Nov Kali Chaudash

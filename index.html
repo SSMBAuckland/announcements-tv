@@ -236,13 +236,14 @@ body.tv-canvas .today.is-busy .shlok-band { height: 176px; }
 body.tv-canvas .today.is-busy .shlok-box { height: 114px; }
 body.tv-canvas .today.is-busy .shlok-source { margin-top: 4px; font-size: 25px; }
 
-/* ───────── A picture with the day's event ("image" on the event, a file in images/) ─────────
+/* ───────── A picture or video with the day's event ("image" / "video" on the event, files in images/, videos/) ─────────
    Upright and squarish pictures (murtis, posters, portraits) stand on the right, fading into the card towards the
    text; wide ones (over 1.4:1) fill the top of the card and fade to dark behind the text under them. On a busy day a wide
    picture stays as a faint backdrop. The text keeps its sizes; the shlok band gives way on picture days. */
 .today-photo { position: absolute; z-index: 0; pointer-events: none; overflow: hidden; }
 .today-photo[hidden] { display: none; }
-.today-photo img { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.today-photo img, .today-photo video { display: block; width: 100%; height: 100%; object-fit: cover; object-position: center 30%; }
+.today-photo [hidden] { display: none; }
 .today.has-photo .today-title, .today.has-photo .today-events { position: relative; z-index: 1; }
 .today.has-photo .ev-name, .today.has-photo .ev-time, .today.has-photo .ev-row { text-shadow: 0 2px 18px rgba(0,0,0,.55); }
 .today.photo-side { --photo-w: 46%; }
@@ -730,7 +731,7 @@ body.tv-canvas .pv-bar { bottom: 6px; }
 
   <main class="main">
     <section class="today" aria-labelledby="todayTitle">
-      <div id="todayPhoto" class="today-photo" hidden aria-hidden="true"><img id="todayPhotoImg" alt=""></div>
+      <div id="todayPhoto" class="today-photo" hidden aria-hidden="true"><img id="todayPhotoImg" alt=""><video id="todayPhotoVid" muted autoplay loop playsinline preload="auto" hidden></video></div>
       <h2 id="todayTitle" class="today-title">Today at the Mandir</h2>
       <div id="todayEvents" class="today-events"></div>
       <div class="shlok-band">
@@ -821,11 +822,11 @@ const EVENTS = [
   {"date": "25/10/2026", "event": "Podhaniya", "time": "8:15 – 8:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "25/10/2026", "event": "Prasad Rupi Bhojan", "time": "8:30 PM onwards", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "29/10/2026", "event": "Sankasht Choth", "progress": false, "quote": "In times of difficulty, turn to Bhagwan with faith; He is the remover of every sankat."},
-  {"date": "31/10/2026", "event": "Lalji Maharaj's Visit", "time": "5:00 PM onwards", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "theme": "lalji", "progress": false, "image": "images/2026-10-31-lalji-maharajs-visit.jpg", "palette": {"h": 208, "s": 48, "a": 356, "b": 196}},
+  {"date": "31/10/2026", "event": "Welcome, Lalji Maharaj", "time": "5:00 PM onwards", "note": "Ladies: Pink dress code • Gents: Murti Pratishtha Mahotsav T-shirt • Lazim team arrive by 4:30 PM", "source": "Mandir Programme", "theme": "lalji", "progress": false, "image": "images/2026-10-31-welcome-lalji-maharaj.jpg", "palette": {"h": 208, "s": 48, "a": 356, "b": 196}},
   {"date": "2/11/2026", "event": "Kalashtami", "progress": false, "quote": "Remembering Bhagwan with devotion brings courage, purity and peace to the heart."},
   {"date": "5/11/2026", "event": "Rama Ekadashi", "progress": true, "quote": "Let remembrance of Bhagwan Rama inspire steadfastness in dharma and devotion."},
   {"date": "5/11/2026", "event": "Vaghbaras", "progress": false},
-  {"date": "6/11/2026", "event": "Dhanteras", "progress": false, "quote": "The greatest wealth is satsang, and the greatest treasure is devotion to Bhagwan.", "image": "images/2026-11-06-dhanteras.jpg", "palette": {"h": 0, "s": 65, "a": 45, "b": 15}},
+  {"date": "6/11/2026", "event": "Dhanteras", "progress": false, "quote": "The greatest wealth is satsang, and the greatest treasure is devotion to Bhagwan.", "image": "images/2026-11-06-dhanteras.jpg", "palette": {"h": 0, "s": 65, "a": 45, "b": 15}, "video": "videos/2026-11-06-dhanteras.webm"},
   {"date": "7/11/2026", "event": "Kali Chaudash", "hidden": true, "progress": false, "quote": "May darkness within the heart be dispelled by the light of bhakti and divine remembrance."},
   {"date": "7/11/2026", "event": "Hanuman Pujan", "progress": false, "quote": "May Hanumanji’s strength, humility and unwavering devotion inspire our seva."},
   {"date": "7/11/2026", "event": "Kali Chaudash", "time": "6:45 PM onwards", "note": "Hanumanji Jeevan Akhyan • Pujan, Aarti & Chalisa Paath", "source": "Mandir Programme", "hideShlok": true, "progress": false, "quote": "May darkness within the heart be dispelled by the light of bhakti and divine remembrance.", "image": "images/2026-11-07-kali-chaudash.jpg", "palette": {"h": 40, "s": 60, "a": 45, "b": 15}},
@@ -2226,27 +2227,47 @@ function updateShlok(now) {
   window.setTimeout(reveal, 480);
 }
 
-// The picture of the day's event, if it has one: beside the text when it is upright, above it when it is
-// wide (or as the event's imageStyle says: "side" or "under"). A picture that can't be loaded is left out.
+// The picture or video of the day's event, if it has one: beside the text when it is upright, above it when it is
+// wide (or as the event's imageStyle says: "side" or "under"). A video plays silently on a loop; the event's picture
+// shows until it starts, and in its place if it can't play. Anything that can't be loaded is left out.
 function showPhoto(e) {
-  const card = document.querySelector('.today'), box = $('todayPhoto'), img = $('todayPhotoImg');
-  const src = e ? String(e.image) : '';
+  const card = document.querySelector('.today'), box = $('todayPhoto'), img = $('todayPhotoImg'), vid = $('todayPhotoVid');
+  const src = e && e.image ? String(e.image) : '', clip = e && e.video ? String(e.video) : '';
   const clear = () => { card.classList.remove('has-photo', 'photo-side', 'photo-under'); box.hidden = true; };
-  if (!src) { clear(); img.removeAttribute('src'); return; }
-  const place = () => {
-    const wide = img.naturalWidth > img.naturalHeight * 1.4;
-    const style = ['side', 'under'].includes(e.imageStyle) ? e.imageStyle : wide ? 'under' : 'side';
+  const place = (w, h) => {
+    const style = ['side', 'under'].includes(e.imageStyle) ? e.imageStyle : w > h * 1.4 ? 'under' : 'side';
     card.classList.add('has-photo');
     card.classList.toggle('photo-side', style === 'side');
     card.classList.toggle('photo-under', style === 'under');
     box.hidden = false;
     scheduleLayout();
   };
-  img.style.objectPosition = e.imagePos || '';
-  img.onload = place;
-  img.onerror = () => { clear(); scheduleLayout(); };
-  if (img.getAttribute('src') !== src) img.src = src;
-  else if (img.complete && img.naturalWidth) place();
+  img.style.objectPosition = vid.style.objectPosition = (e && e.imagePos) || '';
+  const showImage = () => {
+    vid.hidden = true;
+    if (!src) { clear(); img.removeAttribute('src'); scheduleLayout(); return; }
+    img.hidden = false;
+    img.onload = () => place(img.naturalWidth, img.naturalHeight);
+    img.onerror = () => { clear(); scheduleLayout(); };
+    if (img.getAttribute('src') !== src) img.src = src;
+    else if (img.complete && img.naturalWidth) place(img.naturalWidth, img.naturalHeight);
+  };
+  if (!clip) {
+    if (vid.getAttribute('src')) { vid.pause(); vid.removeAttribute('src'); vid.load(); }
+    return showImage();
+  }
+  // the WebM video, or the MP4 made next to it on screens that can't play WebM
+  const url = /\.webm$/.test(clip) && !vid.canPlayType('video/webm') ? clip.replace(/\.webm$/, '.mp4') : clip;
+  const playing = () => {
+    img.hidden = true; vid.hidden = false;
+    place(vid.videoWidth, vid.videoHeight);
+    const p = vid.play();
+    if (p && p.catch) p.catch(() => {});
+  };
+  vid.onloadeddata = playing;
+  vid.onerror = showImage;
+  if (vid.getAttribute('src') !== url) { if (src) showImage(); vid.src = url; }
+  else if (vid.readyState >= 2) playing();
 }
 
 /* ───────── Render (called every second, and by the preview studio) ───────── */
@@ -2270,7 +2291,7 @@ function render() {
   const festival = nextFestival(today);
   const statuses = eventStatuses(todayEvents, aucklandMinutesNow(today));
   const sig = [today, inCanvas() ? 'tv' : 'phone', festival ? festival.key : '', statuses.join(',')]
-    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro, e.image, e.imagePos, e.imageStyle].join('~')))
+    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro, e.image, e.video, e.imagePos, e.imageStyle].join('~')))
     .concat(upcoming.map(g => g.key + ':' + g.events.map(e => [e.event, e.time, e.note, e.source].join('~')).join('|')))
     .join('||');
   if (sig !== state.signature) {
@@ -2288,10 +2309,10 @@ function render() {
     // Busy day: two columns, or three or more events still to come.
     // An event can ask for the shlok band to be hidden that day, to give a full programme the room.
     // A picture day gives the shlok band's room to the picture.
-    document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok || e.image));
+    document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok || e.image || e.video));
     document.querySelector('.today').classList.toggle('is-busy',
       Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);
-    showPhoto(todayEvents.find(e => e.image));
+    showPhoto(todayEvents.find(e => e.video) || todayEvents.find(e => e.image));
     layoutPanels();
   }
   updateShlok(now);

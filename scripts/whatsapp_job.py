@@ -37,7 +37,7 @@ especially the minimum text sizes (the screen is read from across the hall).
 - Otherwise add a CHANGELOG.md entry yourself.
 - Pictures: an event can show a picture in the Today card with "image": "images/NAME.jpg" (README, "Pictures"). \
 Pictures named in the request are already in images/, cropped to the subject; look at each one first (Read it). \
-Choose "imagePos" so faces and murtis stay in view, never put text over a face, and keep every text size.
+Choose "imagePos" so faces and murtis stay in view, never put text over a face, and keep every text size. A video (an animation) goes in "video": "videos/NAME.webm" the same way; videos named in the request are already converted.
 - Colours from a poster: give the event a "palette" (README) so the day's colours match the poster the admins \
 shared. The field always stays dark and the text light.
 - A festive ("fancy") look is about the occasion itself, not only lights: Diwali has diyas and rangoli, Raksha \
@@ -102,7 +102,8 @@ def reset_time(text, now):
 
 
 def images():
-    """Fetch the pictures in $IMAGES from the incoming branch, then crop and shrink them into images/."""
+    """Fetch the pictures and videos in $IMAGES from the incoming branch, then crop and shrink them into images/
+    (prepare_image.py) or videos/ (prepare_video.py: WebM plus an MP4 beside it; "start" skips an intro)."""
     try:
         items = json.loads(os.environ.get('IMAGES') or '[]')
     except ValueError:
@@ -110,7 +111,8 @@ def images():
     failed = []
     for it in items if isinstance(items, list) else []:
         src, dst, crop = (str(it.get(k) or '') for k in ('from', 'to', 'crop'))
-        if not re.fullmatch(r'incoming/[\w.-]+', src) or not re.fullmatch(r'images/[\w.-]+\.jpg', dst):
+        video = bool(re.fullmatch(r'videos/[\w.-]+\.webm', dst))
+        if not re.fullmatch(r'incoming/[\w.-]+', src) or not (video or re.fullmatch(r'images/[\w.-]+\.jpg', dst)):
             failed.append(dst or src or '?')
             continue
         data = subprocess.run(['git', 'show', 'origin/incoming:' + src], capture_output=True).stdout
@@ -119,9 +121,11 @@ def images():
             continue
         with open('/tmp/picture-in', 'wb') as f:
             f.write(data)
-        args = [sys.executable, 'scripts/prepare_image.py', '/tmp/picture-in', dst]
+        args = [sys.executable, 'scripts/prepare_video.py' if video else 'scripts/prepare_image.py', '/tmp/picture-in', dst]
         if re.fullmatch(r'\d+(\.\d+)?(,\d+(\.\d+)?){3}', crop):
             args += ['--crop', crop]
+        if video and re.fullmatch(r'\d+(\.\d+)?', str(it.get('start') or '')):
+            args += ['--start', str(it['start'])]
         r = subprocess.run(args, capture_output=True, text=True)
         print(r.stdout.strip() or r.stderr.strip()[-300:])
         if r.returncode:
