@@ -60,6 +60,8 @@ Look at each attached image. Work out what the admin means from their words and 
 
 Without images, leave `pictures` empty and the colours 0.
 
+`videos`: one entry per video the admin sent (you can't see them; you are told how many came). Set `show` when they want it on the TV (an animation, a moving background), with the `date` and `event` it goes with. A video plays silently on a loop where a picture would go. Otherwise leave the list empty.
+
 A festive look ("fancy", "make it festive", "decorate it") is a `claude` request with `fancy` true. If no picture was sent, the bot asks for one first. Festive means the occasion's own motifs: rangoli and diyas for Diwali, a rakhi thread for Raksha Bandhan, a flute and peacock feather for Janmashtami, a welcome toran and flowers for a visit. It doesn't mean only lights; say so in `claude_request`.
 
 ## Formats

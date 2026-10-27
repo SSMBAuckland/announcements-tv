@@ -55,6 +55,14 @@ Give one `pictures` entry per attached image, in the order they are attached:
 - `date` (D/M/YYYY) and `event`: the TV entry the picture goes with, spelled exactly as in your `tv_events` (or the current TV events).
 - `crop_x`, `crop_y`, `crop_w`, `crop_h`: the part worth showing, in percent of the image (left, top, width, height). Keep the main subject: a person's face and shoulders, a murti, a decoration. Leave out the poster's own text, dates, logos, QR codes and social media icons. The TV shows the picture beside the event text in a tall frame, so crop upright (about 3:4) around a person or murti. Crop wide (about 2:1) only for a wide scene, such as a decorated hall. 0, 0, 100, 100 keeps everything.
 
+`videos`: you can't see videos, but you are told how many came with the post. Give one entry per video, in order:
+- `show`: true when the admins ask for it on the TV ("add this background animation", "put this video on the TV");
+- `date` and `event`: the TV entry it goes with, as for pictures.
+
+An empty list when there are none. A video plays silently on a loop where a picture would go.
+
+`answers_bot`: true when the admin's picture or message answers something the bot just asked in the recent messages, for example the bot asked for the full poster to re-crop a picture, or for a picture to rename an event with. The bot then handles it as that answer, with everything that was asked before. Otherwise false.
+
 `poster_colours`: the main colours of the poster or picture, so the TV can match it on the day it is shown:
 - `field_hue`: its background or main colour, 0–360;
 - `saturation`: how colourful it is, 25–70;
