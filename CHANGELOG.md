@@ -3,6 +3,10 @@
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
 ## 2026-10-28
+- **From the admin team (WhatsApp) — Kali Chaudash background picture:**
+  - Updated: 7 Nov Kali Chaudash
+
+## 2026-10-28
 - **From the admin team (WhatsApp) — Dhanteras background picture:**
   - Updated: 6 Nov Dhanteras
 
