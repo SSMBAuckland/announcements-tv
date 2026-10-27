@@ -106,6 +106,7 @@ Events live in the `EVENTS` list near the top of the `<script>` section in `inde
 | `progress` | | Leave as `false` unless told otherwise. |
 | `hideShlok` | | `true` hides the Shikshapatri shlok on that day, to give a full programme more room. |
 | `hidden` | | `true` keeps the entry in the data but off the screen (the weekly calendar sync won't add it back). |
+| `backgroundVideo` | | A video file in `videos/` (WebM, with an MP4 of the same name beside it) that fills the whole screen that day; the garland along the top stays. |
 | `theme` | | A festival look from `SPECIAL_PALETTES` (colours, and scenery if it has `art`), e.g. `diwali`. |
 | `image` | | A picture shown with the event on its day, e.g. `images/2026-10-31-lalji-maharajs-visit.jpg` (see **Pictures** below). |
 | `video` | | An animation for the day, e.g. `videos/2026-11-06-dhanteras.webm`. It plays silently on a loop where a picture would go, with the event's `image` shown until it starts (and if it can't play). Make it with `python3 scripts/prepare_video.py SOURCE videos/NAME.webm --crop X,Y,W,H --start SECONDS`, which also writes the `.mp4` beside it for phones. |

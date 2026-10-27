@@ -44,6 +44,18 @@ body.tv-canvas { display: flex; align-items: center; justify-content: center; }
   100% { transform: translate3d(4%, -1%, 0) scale(1.02); }
 }
 .ambient { position: absolute; inset: 0; z-index: -1; overflow: hidden; pointer-events: none; }
+/* A full-screen background video for the day ("backgroundVideo" on an event). It replaces the day's coloured
+   field and the scenery along the bottom and behind the panels; the garland along the top stays. A dark tint
+   over it and more solid panels keep the text as readable from across the hall as on any other day. */
+.screen-video { position: absolute; inset: 0; z-index: -3; pointer-events: none; overflow: hidden; background: #000; }
+.screen-video[hidden] { display: none; }
+.screen-video video { display: block; width: 100%; height: 100%; object-fit: cover; }
+.screen-video::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(0,0,0,.55), rgba(0,0,0,.35) 45%, rgba(0,0,0,.5)); }
+body.has-bg-video .screen { background: #000; }
+body.has-bg-video .screen::before { display: none; }
+body.has-bg-video .festival-art .art-bottom, body.has-bg-video .festival-art .art-back { display: none; }
+body.has-bg-video .today { background: linear-gradient(180deg, rgba(20,8,6,.72), rgba(20,8,6,.62)); }
+body.has-bg-video .coming { background: rgba(14,6,4,.72); }
 /* Festival scenery (garland along the top, scene along the bottom), behind the panels */
 .festival-art { position: absolute; inset: 0; z-index: -1; pointer-events: none; overflow: hidden; }
 .festival-art svg { position: absolute; left: 0; width: 100%; display: block; }
@@ -694,6 +706,7 @@ body.tv-canvas .pv-bar { bottom: 6px; }
 </head>
 <body>
 <div class="screen">
+  <div id="screenVideo" class="screen-video" hidden aria-hidden="true"><video id="screenVideoVid" muted autoplay loop playsinline preload="auto"></video></div>
   <div id="festivalArt" class="festival-art" aria-hidden="true"></div>
   <div class="ambient" aria-hidden="true">
     <span style="--x:4%;  --s:10px; --t:26s; --d:-3s"></span>
@@ -832,7 +845,7 @@ const EVENTS = [
   {"date": "7/11/2026", "event": "Kali Chaudash", "time": "6:45 PM onwards", "note": "Hanumanji Jeevan Akhyan • Pujan, Aarti & Chalisa Paath", "source": "Mandir Programme", "hideShlok": true, "progress": false, "quote": "May darkness within the heart be dispelled by the light of bhakti and divine remembrance.", "image": "images/2026-11-07-kali-chaudash.jpg", "palette": {"h": 40, "s": 60, "a": 45, "b": 15}},
   {"date": "8/11/2026", "event": "Laxmi Pujan", "hidden": true, "progress": false, "quote": "May true prosperity be measured in satsang, contentment, seva and devotion."},
   {"date": "8/11/2026", "event": "Chopda Pujan", "progress": false, "quote": "May every account begin with gratitude to Bhagwan and every endeavour remain rooted in dharma."},
-  {"date": "8/11/2026", "event": "Diwali", "progress": true, "quote": "May the light of bhakti remove darkness from the heart and illuminate every home with peace."},
+  {"date": "8/11/2026", "event": "Diwali", "backgroundVideo": "videos/2026-11-08-diwali-fireworks.webm", "progress": true, "quote": "May the light of bhakti remove darkness from the heart and illuminate every home with peace."},
   {"date": "8/11/2026", "event": "Lakshmi Poojan", "time": "6:00 – 7:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "8/11/2026", "event": "Thaal and Chesta", "time": "7:00 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
   {"date": "8/11/2026", "event": "Aarti, Nitya Niyam and Katha", "time": "7:30 PM", "source": "Mandir Programme", "hideShlok": true, "progress": false},
@@ -1780,6 +1793,25 @@ const FESTIVAL_ART = {
   lalji:   () => welcomeSky() + welcomeToran()
 };
 let shownArt = null;
+// The day's full-screen background video, if any event has one (WebM, or the MP4 beside it where WebM can't play).
+function setBackgroundVideo(clip) {
+  const box = $('screenVideo'), vid = $('screenVideoVid');
+  clip = clip ? String(clip) : '';
+  const url = clip && /\.webm$/.test(clip) && !vid.canPlayType('video/webm') ? clip.replace(/\.webm$/, '.mp4') : clip;
+  const off = () => { box.hidden = true; document.body.classList.remove('has-bg-video'); };
+  if (!url) {
+    off();
+    if (vid.getAttribute('src')) { vid.pause(); vid.removeAttribute('src'); vid.load(); }
+    return;
+  }
+  vid.onloadeddata = () => {
+    box.hidden = false; document.body.classList.add('has-bg-video');
+    const p = vid.play(); if (p && p.catch) p.catch(() => {});
+  };
+  vid.onerror = off;   // a video that can't play leaves the day's normal background
+  if (vid.getAttribute('src') !== url) vid.src = url;
+}
+
 function setFestivalArt(name) {
   if (name === shownArt) return;
   shownArt = name;
@@ -2291,7 +2323,7 @@ function render() {
   const festival = nextFestival(today);
   const statuses = eventStatuses(todayEvents, aucklandMinutesNow(today));
   const sig = [today, inCanvas() ? 'tv' : 'phone', festival ? festival.key : '', statuses.join(',')]
-    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro, e.image, e.video, e.imagePos, e.imageStyle].join('~')))
+    .concat(todayEvents.map(e => [e.event, e.time, e.note, e.source, e.intro, e.image, e.video, e.imagePos, e.imageStyle, e.backgroundVideo].join('~')))
     .concat(upcoming.map(g => g.key + ':' + g.events.map(e => [e.event, e.time, e.note, e.source].join('~')).join('|')))
     .join('||');
   if (sig !== state.signature) {
@@ -2313,6 +2345,7 @@ function render() {
     document.querySelector('.today').classList.toggle('is-busy',
       Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);
     showPhoto(todayEvents.find(e => e.video) || todayEvents.find(e => e.image));
+    setBackgroundVideo((todayEvents.find(e => e.backgroundVideo) || {}).backgroundVideo);
     layoutPanels();
   }
   updateShlok(now);

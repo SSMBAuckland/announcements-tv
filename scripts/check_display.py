@@ -57,6 +57,11 @@ def main():
                                  ' return v && v.getAttribute("src") ? [v.getAttribute("src"), v.readyState, v.error ? v.error.code : 0] : null; }')
             if clip and (clip[2] or clip[1] < 2):
                 problems.append('%s: video %s could not be played' % (day, clip[0]))
+            # …and so must a day with a full-screen background video
+            bg = page.evaluate('() => { const v = document.getElementById("screenVideoVid");'
+                               ' return v && v.getAttribute("src") ? [v.getAttribute("src"), v.readyState, v.error ? v.error.code : 0] : null; }')
+            if bg and (bg[2] or bg[1] < 2):
+                problems.append('%s: background video %s could not be played' % (day, bg[0]))
             if shots:
                 page.screenshot(path=os.path.join(shots, day + '.png'))
             page.close()

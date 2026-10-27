@@ -2,12 +2,13 @@
 """Make a video ready for the TV: crop it to the part worth showing, drop the sound, shrink it, and save it twice,
 as WebM (what the TV plays) and as MP4 next to it (for phones that can't play WebM).
 
-Usage:  python3 scripts/prepare_video.py SOURCE TARGET.webm [--crop X,Y,W,H] [--start SECONDS] [--seconds N]
+Usage:  python3 scripts/prepare_video.py SOURCE TARGET.webm [--crop X,Y,W,H] [--start SECONDS] [--seconds N] [--max-side PX]
 
 - TARGET: where it goes in this repository, e.g. videos/2026-11-06-dhanteras.webm (the .mp4 is written beside it).
 - --crop: the part to keep, in percent of the picture: left, top, width, height (as in prepare_image.py).
 - --start: skip an intro, so the loop on the TV doesn't restart with it (e.g. 1 for a title that fades in).
 - --seconds: keep at most this long (default 20); the TV loops it.
+- --max-side: longest side in pixels (default 960; use 1280 for a full-screen background video).
 The longest side is at most 960 px (the video fills part of a 1920x1080 screen), with no sound, so files stay small
 and play smoothly on the TV players. Needs ffmpeg.
 """
@@ -36,6 +37,7 @@ def main():
     ap.add_argument('--crop', help='X,Y,W,H in percent')
     ap.add_argument('--start', type=float, default=0)
     ap.add_argument('--seconds', type=float, default=20)
+    ap.add_argument('--max-side', type=int, default=MAX_SIDE)
     a = ap.parse_args()
     if not a.target.endswith('.webm'):
         sys.exit('the target must be a .webm file')
@@ -48,7 +50,7 @@ def main():
         x, y = min(x, 100 - cw), min(y, 100 - ch)
         w, h = round(sw * cw / 100), round(sh * ch / 100)
         filters.append('crop=%d:%d:%d:%d' % (w, h, round(sw * x / 100), round(sh * y / 100)))
-    scale = min(1.0, MAX_SIDE / max(w, h))
+    scale = min(1.0, a.max_side / max(w, h))
     filters.append('scale=%d:%d' % (int(w * scale) // 2 * 2, int(h * scale) // 2 * 2))
     filters.append('fps=30')
     base = ['ffmpeg', '-v', 'error', '-y', '-ss', str(a.start), '-t', str(a.seconds), '-i', a.source, '-an', '-vf', ','.join(filters)]
