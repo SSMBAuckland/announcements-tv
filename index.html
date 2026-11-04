@@ -234,6 +234,19 @@ body[data-art="lalji"] .today .ev-source::after { content: '❀'; margin: 0 .7em
   display: flex; align-items: center; justify-content: center; text-align: center;
   background: rgba(0,0,0,.16); border-top: 1px solid rgba(255,255,255,.1);
 }
+/* A day with no events: the shlok fills the middle of the card, and the greeting sits in the band at the foot */
+.quiet-band { display: none; }
+.today.quiet-day .today-events { display: none; }
+.today.quiet-day .shlok-band { flex: 1 1 auto; height: auto; min-height: 0; margin: 0; padding: 24px 24px 18px; background: none; border-top: 0; }
+.today.quiet-day .shlok-box { height: auto; max-height: 100%; flex: 1 1 auto; }
+.today.quiet-day .shlok { display: flex; flex-direction: column; height: 100%; }
+.today.quiet-day .shlok-text { font-weight: 700; line-height: 1.2; }
+.today.quiet-day .shlok-source { margin-top: 18px; font-size: 32px; }
+.today.quiet-day .quiet-band {
+  display: flex; flex: none; height: 150px; margin: 0 -56px; padding: 0 64px; align-items: center; justify-content: center; text-align: center;
+  background: rgba(0,0,0,.16); border-top: 1px solid rgba(255,255,255,.1);
+  font-size: 46px; line-height: 1.15; font-weight: 700; font-style: italic; color: var(--accent);
+}
 .shlok { width: 100%; transition: opacity .45s ease, transform .55s cubic-bezier(.22,.8,.22,1); }
 .shlok.is-leaving { opacity: 0; transform: translateY(-10px); }
 .shlok.is-entering { animation: shlokIn .8s cubic-bezier(.18,.82,.2,1) both; }
@@ -753,6 +766,7 @@ body.tv-canvas .pv-bar { bottom: 6px; }
           <div id="todayShlokSource" class="shlok-source"></div>
         </div>
       </div>
+      <div class="quiet-band">Enjoy a blessed day of satsang and seva.</div>
     </section>
 
     <section class="coming" aria-labelledby="comingTitle">
@@ -2221,9 +2235,10 @@ function layoutShlokText() {
     text.style.fontSize = Math.round(len > 220 ? base * .82 : len > 140 ? base * .92 : base) + 'px';
     return;
   }
-  // On busy days the shlok band is compact, so the events can be bigger.
+  // On busy days the shlok band is compact, so the events can be bigger; on a day with no events it fills the card.
   const busy = document.querySelector('.today').classList.contains('is-busy');
-  for (let size = busy ? 36 : 46; size >= (busy ? 28 : 32); size -= 2) {
+  const quiet = document.querySelector('.today').classList.contains('quiet-day');
+  for (let size = quiet ? 72 : busy ? 36 : 46; size >= (quiet ? 40 : busy ? 28 : 32); size -= 2) {
     text.style.fontSize = size + 'px';
     if (text.offsetHeight <= box.clientHeight) break;
   }
@@ -2341,6 +2356,8 @@ function render() {
     // Busy day: two columns, or three or more events still to come.
     // An event can ask for the shlok band to be hidden that day, to give a full programme the room.
     // A picture day gives the shlok band's room to the picture.
+    // No events today: the shlok takes the middle of the card and the greeting moves to the band at the foot.
+    document.querySelector('.today').classList.toggle('quiet-day', !todayEvents.length);
     document.querySelector('.today').classList.toggle('no-shlok', todayEvents.some(e => e.hideShlok || e.image || e.video));
     document.querySelector('.today').classList.toggle('is-busy',
       Boolean($('todayEvents').querySelector('.ev-split')) || state.activeCount >= 3);

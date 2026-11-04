@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-04
+- **Days with no events:** the Shikshapatri shlok now fills the middle of the Today card in large type (up to 72px), and "Enjoy a blessed day of satsang and seva." moves to the band at the foot of the card where the shlok used to be (swapped as the admins asked, from a photo of the TV). Days with events are unchanged.
+
 ## 2026-10-28 (Diwali background video)
 - **Background videos:** an event can now set a full-screen background video for its day (`backgroundVideo`, files in `videos/`). It loops silently behind everything, replaces the day's coloured background and the scenery along the bottom and behind the panels, and keeps the garland along the top. A dark tint over it and more solid panels keep the text as readable as on any other day. If the video can't play, the day's normal look stays. The display check reports a background video that won't play.
 - **Diwali** (Sun 8 Nov): the golden fireworks video the admins sent is the background, with the marigold garland on top; the red Diwali background, the row of diyas along the bottom and the faint rangoli are removed for the day. Shrunk from 17 MB to about 2.6 MB (1280×720, 24 fps, no sound) so the TV players load and loop it smoothly.
