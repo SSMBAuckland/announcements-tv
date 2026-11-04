@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-04 (later)
+- **Days with no events:** the shlok is now shown whole instead of in parts, in large type (40–72px). 193 of the 195 shloks fit whole; only the two very long combined ones (Shloks 3–6 and 49–54) are still shown in parts, so their text stays readable from across the hall. Days with events keep the shlok band at the foot, in parts as before.
+
 ## 2026-11-04
 - **Days with no events:** the Shikshapatri shlok now fills the middle of the Today card in large type (up to 72px), and "Enjoy a blessed day of satsang and seva." moves to the band at the foot of the card where the shlok used to be (swapped as the admins asked, from a photo of the TV). Days with events are unchanged.
 

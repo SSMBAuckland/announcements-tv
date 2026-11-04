@@ -2238,19 +2238,34 @@ function layoutShlokText() {
   // On busy days the shlok band is compact, so the events can be bigger; on a day with no events it fills the card.
   const busy = document.querySelector('.today').classList.contains('is-busy');
   const quiet = document.querySelector('.today').classList.contains('quiet-day');
-  for (let size = quiet ? 72 : busy ? 36 : 46; size >= (quiet ? 40 : busy ? 28 : 32); size -= 2) {
+  for (let size = quiet ? 72 : busy ? 36 : 46; size >= (quiet ? 28 : busy ? 28 : 32); size -= 2) {
     text.style.fontSize = size + 'px';
     if (text.offsetHeight <= box.clientHeight) break;
   }
 }
 
+// On a day with no events the shlok has the whole card, so it is shown whole when it fits there at a legible
+// size (40px or more); only the very longest are still shown in parts.
+const wholeFitCache = {};
+function fitsWhole(text) {
+  if (!inCanvas()) return true;
+  if (text in wholeFitCache) return wholeFitCache[text];
+  const el = $('todayShlokText'), keep = el.textContent, keepSize = el.style.fontSize;
+  el.textContent = '“' + text + '”';
+  layoutShlokText();
+  const fits = el.offsetHeight <= $('shlokBox').clientHeight && parseFloat(el.style.fontSize) >= 40;
+  el.textContent = keep; el.style.fontSize = keepSize;
+  return wholeFitCache[text] = fits;
+}
+
 function updateShlok(now) {
   const current = currentShlok(now);
-  const pages = shlokPages(current.shlok.text);
+  const quiet = document.querySelector('.today').classList.contains('quiet-day');
+  const pages = quiet && fitsWhole(current.shlok.text) ? [current.shlok.text] : shlokPages(current.shlok.text);
   const slotMs = ((now.getTime() % SHLOK_ROTATION_MS) + SHLOK_ROTATION_MS) % SHLOK_ROTATION_MS;
   const pageMs = Math.min(SHLOK_PAGE_MAX_MS, SHLOK_ROTATION_MS / pages.length);
   const page = Math.floor(slotMs / pageMs) % pages.length;
-  const key = current.slot + ':' + page;
+  const key = current.slot + ':' + page + (quiet ? ':q' : '');
   if (key === activeShlokKey) return;
 
   const first = activeShlokKey === '';
