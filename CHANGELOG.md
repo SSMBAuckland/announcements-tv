@@ -2,6 +2,10 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-06
+- **From the admin team (WhatsApp) — Diwali & Annakut Utsav:**
+  - Updated: 7 Nov Kali Chaudash; 8 Nov Lakshmi Poojan; 8 Nov Deepotsav Aarti
+
 ## 2026-11-04 (later)
 - **Days with no events:** the shlok is now shown whole instead of in parts, in large type (40–72px). 193 of the 195 shloks fit whole; only the two very long combined ones (Shloks 3–6 and 49–54) are still shown in parts, so their text stays readable from across the hall. Days with events keep the shlok band at the foot, in parts as before.
 
