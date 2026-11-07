@@ -2,6 +2,9 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-07
+- **Kali Chaudash** (Sat 7 Nov): the "Also today — Hanuman Pujan" column is removed (the calendar entry is marked `"hidden": true`), so it no longer covers the Hanumanji picture. The programme, picture and festival message are unchanged.
+
 ## 2026-11-06
 - **From the admin team (WhatsApp) — Diwali & Annakut Utsav:**
   - Updated: 7 Nov Kali Chaudash; 8 Nov Lakshmi Poojan; 8 Nov Deepotsav Aarti
