@@ -1,0 +1,97 @@
+name: Daily health check
+
+# Every morning at 6:30 am New Zealand time (5:30 am during NZ standard time), and any time from the Actions tab:
+# 1. removes pictures and videos of events more than 30 days past (scripts/cleanup_media.py), then
+# 2. checks the live TV display (scripts/health_check.py): the website is up and up to date, today and the
+#    next two days load without errors with their pictures and videos, and the last screen refresh worked.
+# Problems open (or update) a GitHub issue titled "TV display health check failed" and fail the run, which
+# emails the repository's admins; the issue closes itself on the next good check.
+on:
+  schedule:
+    - cron: '30 17 * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+  issues: write
+  actions: read
+
+jobs:
+  cleanup:
+    runs-on: ubuntu-latest
+    outputs:
+      changed: ${{ steps.commit.outputs.changed }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Remove pictures and videos of events more than 30 days past
+        run: python3 scripts/cleanup_media.py --days 30
+      - name: Commit and push
+        id: commit
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"; exit 0
+          fi
+          git config user.name "media-cleanup[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add -A index.html CHANGELOG.md images videos
+          git commit -m "Media clean-up: remove pictures and videos of events more than 30 days past"
+          git push
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Rebuild the website
+        if: steps.commit.outputs.changed == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh api -X POST "repos/${{ github.repository }}/pages/builds" || echo "Pages build request failed; it will build on the next push."
+
+  refresh-screens:
+    needs: cleanup
+    if: needs.cleanup.outputs.changed == 'true'
+    uses: ./.github/workflows/refresh-yodeck.yml
+    secrets:
+      YODECK_API_KEY: ${{ secrets.YODECK_API_KEY }}
+
+  health:
+    needs: [cleanup, refresh-screens]
+    if: always()
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Install the browser
+        run: pip install --quiet playwright && python -m playwright install --with-deps chromium > /dev/null
+      - name: Wait for the website to update after a clean-up
+        if: needs.cleanup.outputs.changed == 'true'
+        run: sleep 120
+      - name: Check the live display
+        id: check
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python3 scripts/health_check.py
+        continue-on-error: true
+      - name: Open, update or close the health-check issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          OUTCOME: ${{ steps.check.outcome }}
+        run: |
+          TITLE="TV display health check failed"
+          ISSUE=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number')
+          BODY="$(cat health-report.md)
+
+          Run: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}"
+          if [ "$OUTCOME" = "failure" ]; then
+            if [ -n "$ISSUE" ]; then gh issue comment "$ISSUE" --body "$BODY"
+            else gh issue create --title "$TITLE" --body "$BODY"; fi
+            exit 1
+          elif [ -n "$ISSUE" ]; then
+            gh issue close "$ISSUE" --comment "Fixed: today's check found no problems.
+
+          $BODY"
+          fi

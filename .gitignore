@@ -13,3 +13,4 @@ whatsapp-samples/
 .playwright-mcp/
 # Python cache from running the scripts
 __pycache__/
+health-report.md

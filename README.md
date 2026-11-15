@@ -58,6 +58,22 @@ Previews only affect your browser; the TVs always show today.
 
 ---
 
+## 🩺 Daily health check and media clean-up
+
+Every morning at **6:30 am** (NZ time) a GitHub Action (`.github/workflows/daily-health-check.yml`):
+
+1. **Cleans up old media:** removes pictures and videos of events more than 30 days past (`scripts/cleanup_media.py`).
+   The events stay; only their picture/video setting is taken off. Files are still in the git history if ever needed.
+2. **Checks the live display** (`scripts/health_check.py`): the website loads and shows the latest version, today and
+   the next two days display without errors (pictures and videos load and play), and the last TV screen refresh worked.
+   It also warns when the event list is about to run out.
+
+If something is wrong it opens a GitHub issue titled **"TV display health check failed"** with what it found, and the
+run fails, which emails the repository admins. The issue closes itself on the next good check.
+**Run it now:** Actions tab → *Daily health check* → **Run workflow**.
+
+---
+
 ## 📅 Automatic calendar sync
 
 Every **Monday at 6 am** (NZ time) a GitHub Action (`.github/workflows/calendar-sync.yml`) reads the

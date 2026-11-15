@@ -1,11 +1,11 @@
 #!/usr/bin/env python3
 """Check the TV display in headless Chromium at 1920x1080 for the given days.
 
-Usage:  python3 scripts/check_display.py [YYYY-MM-DD ...] [--shots DIR]
+Usage:  python3 scripts/check_display.py [YYYY-MM-DD ...] [--shots DIR] [--url URL]
 
 With no dates, checks today and the next 6 days. For each day it loads index.html?previewDate=…
 and fails if the page throws an error or the layout is bigger than the 1920x1080 canvas.
---shots saves a screenshot per day. Needs: pip install playwright && python -m playwright install chromium
+--shots saves a screenshot per day. --url checks that address (e.g. the live site) instead of the local index.html. Needs: pip install playwright && python -m playwright install chromium
 """
 import datetime as dt
 import os
@@ -28,10 +28,17 @@ def main():
         shots = args[i + 1]
         del args[i:i + 2]
         os.makedirs(shots, exist_ok=True)
+    live = None
+    if '--url' in args:
+        i = args.index('--url')
+        live = args[i + 1]
+        del args[i:i + 2]
     days = args or [(dt.datetime.now(NZ).date() + dt.timedelta(n)).isoformat() for n in range(7)]
     url = 'file://' + os.path.abspath('index.html').replace('\\', '/')
     if not url.startswith('file:///'):
         url = url.replace('file://', 'file:///')
+    if live:
+        url = live.split('?')[0]
     problems = []
     with sync_playwright() as p:
         browser = p.chromium.launch()

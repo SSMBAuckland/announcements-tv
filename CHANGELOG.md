@@ -2,6 +2,10 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-16
+- **Daily health check** (6:30 am NZ, `.github/workflows/daily-health-check.yml`): checks the live website is up and showing the latest version, that today and the next two days display without errors with their pictures and videos, and that the last TV screen refresh worked; warns when the event list is about to run out. Problems open a GitHub issue ("TV display health check failed") and email the admins; it closes itself on the next good check. `scripts/check_display.py` can now check the live site (`--url`).
+- **Old media clean-up** (same run, `scripts/cleanup_media.py`): pictures and videos of events more than 30 days past are removed, keeping the site small and quick for the TVs. The events stay; files remain in the git history.
+
 ## 2026-11-07
 - **Kali Chaudash** (Sat 7 Nov): the "Also today — Hanuman Pujan" column is removed (the calendar entry is marked `"hidden": true`), so it no longer covers the Hanumanji picture. The programme, picture and festival message are unchanged.
 
