@@ -169,6 +169,15 @@ body[data-art="lalji"] .today {
 body[data-art="lalji"] .today .ev-name { text-shadow: 0 0 30px hsla(200, 90%, 82%, .35), 0 3px 0 hsla(352, 70%, 20%, .65); }
 body[data-art="lalji"] .today .ev-source::before,
 body[data-art="lalji"] .today .ev-source::after { content: '❀'; margin: 0 .7em; color: var(--accent); }
+/* Tulsi Vivah Utsav: a marigold and kumkum-red wedding frame round the Today card and a warm marigold glow
+   behind the names. The card stays dark and the text light (sizes and colours unchanged). */
+body[data-art="tulsivivah"] .today {
+  border: 2px solid hsl(40, 92%, 62%);
+  box-shadow: inset 0 0 0 10px hsla(40, 90%, 60%, .06), inset 0 0 0 12px hsla(352, 70%, 42%, .9),
+    inset 0 0 0 14px hsla(40, 92%, 66%, .45), 0 0 0 6px hsla(40, 90%, 60%, .14),
+    0 0 70px hsla(36, 95%, 58%, .2), 0 40px 90px rgba(0,0,0,.3);
+}
+body[data-art="tulsivivah"] .today .ev-name { text-shadow: 0 0 30px hsla(40, 95%, 62%, .3), 0 3px 0 hsla(352, 70%, 18%, .6); }
 .today-title {
   flex: none; display: flex; align-items: center; gap: 26px; white-space: nowrap;
   font-size: 50px; line-height: 1; font-weight: 700; color: var(--accent);
@@ -880,7 +889,7 @@ const EVENTS = [
   {"date": "17/11/2026", "event": "Durgashtami", "progress": false, "quote": "May devotion give us the strength to overcome every inner weakness."},
   {"date": "18/11/2026", "event": "Shree Hari Jayanti", "progress": false, "quote": "Today we celebrate the divine appearance of Shree Hari, whose life revealed the path of dharma and bhakti."},
   {"date": "21/11/2026", "event": "Prabodhini Ekadashi", "progress": true, "quote": "Awaken the soul from worldly sleep and turn it towards the eternal presence of Bhagwan."},
-  {"date": "21/11/2026", "event": "Tulsi Wedding Begins", "progress": false, "quote": "Let the sacred Tulsi Vivah remind us that devotion flourishes through purity, love and faith."},
+  {"date": "21/11/2026", "event": "Tulsi Wedding Begins", "theme": "tulsivivah", "progress": false, "quote": "Let the sacred Tulsi Vivah remind us that devotion flourishes through purity, love and faith."},
   {"date": "21/11/2026", "event": "Chaturmaas Ends", "progress": false, "quote": "May the niyam and bhakti cultivated during Chaturmaas continue throughout the year."},
   {"date": "21/11/2026", "event": "Shree Nilkanth Varni - Gadi Abhishek", "progress": false, "quote": "Nilkanth Varni’s journey inspires us to seek Bhagwan with courage, renunciation and unwavering faith."},
   {"date": "24/11/2026", "event": "Tulsi Wedding Ends", "progress": false, "quote": "May the blessings of Tulsi Vivah bring purity, devotion and harmony into every home."},
@@ -1523,8 +1532,15 @@ const SPECIAL_PALETTES = {
   prabodhini: {name: 'Prabodhini Ekadashi', h: 140, s: 40, a: 48, b: 100},
   harinavmi:  {name: 'Shree Swaminarayan Jayanti', h: 28, s: 70, a: 46, b: 340},
   janmashtami: {name: 'Janmashtami',        h: 228, s: 58, a: 46, b: 196},
-  lalji:      {name: 'Lalji Maharaj’s Visit', h: 208, s: 48, a: 356, b: 196, art: 'lalji'}
+  lalji:      {name: 'Lalji Maharaj’s Visit', h: 208, s: 48, a: 356, b: 196, art: 'lalji'},
+  // Tulsi green field, marigold times and kumkum-pink labels, for the wedding of Lalji Maharaj and Tulsibai
+  tulsivivah: {name: 'Tulsi Vivah Utsav',   h: 132, s: 46, a: 40, b: 350, art: 'tulsivivah'}
 };
+/* Festivals that last several days, including days with no events of their own: every day from "from"
+   to "to" (YYYY-MM-DD) gets the theme. */
+const FESTIVE_DAYS = [
+  {from: '2026-11-21', to: '2026-11-23', theme: 'tulsivivah'}   // Tulsi Vivah Utsav
+];
 
 /* Big festivals: each gets its own colour theme on the day (and its greeting, if any, as the
    Today title), and a countdown in the Upcoming panel for the COUNTDOWN_DAYS before it.
@@ -1589,12 +1605,16 @@ const paletteCache = {};
 function paletteFor(key) {
   if (paletteCache[key]) return paletteCache[key];
   const dayEvents = EVENTS_BY_DAY[key] || [];
-  const themed = dayEvents.find(e => SPECIAL_PALETTES[eventTheme(e)]);
+  // A multi-day festival comes first, then a theme named on an event, then a big festival's own theme.
+  const festive = FESTIVE_DAYS.find(d => SPECIAL_PALETTES[d.theme] && key >= d.from && key <= d.to);
+  const named = dayEvents.find(e => SPECIAL_PALETTES[e.theme]);
+  const themedEvent = dayEvents.find(e => SPECIAL_PALETTES[eventTheme(e)]);
+  const themed = festive ? festive.theme : named ? named.theme : themedEvent ? eventTheme(themedEvent) : '';
   // An event's own "palette" (e.g. taken from its poster) sets the day's colours; a theme keeps its scenery.
   const own = dayEvents.map(e => e.palette).find(p => p && Number.isFinite(Number(p.h)));
   let spec, special = false;
   if (themed || own) {
-    spec = Object.assign({}, themed ? SPECIAL_PALETTES[eventTheme(themed)] : {name: 'Poster colours'}, own ? posterPalette(own) : {});
+    spec = Object.assign({}, themed ? SPECIAL_PALETTES[themed] : {name: 'Poster colours'}, own ? posterPalette(own) : {});
     special = true;
   } else {
     const parts = key.split('-').map(Number);
@@ -1798,7 +1818,76 @@ function welcomeSky() {
   });
   return svgEl(1920, 1080, 'art-back', out);
 }
+// Tulsi Vivah Utsav, the wedding of Lalji Maharaj and Tulsibai. Everything here sits in the margins and the gaps
+// between the panels, or very faintly behind them, so it never crosses the text at full strength.
+// A wedding mandap: a maroon beam with a fringe of marigold drops just under the header, with a small kalash on
+// each of its banana-stem pillars, which are wrapped in marigold strings and stand on a chori (stacked wedding pots).
+function weddingMandap() {
+  const posts = [32, 1311, 1888], beamY = 192, potTop = 944;
+  let out = '<rect x="0" y="' + beamY + '" width="1920" height="16" fill="#7d1a28" fill-opacity=".72"/>' +
+            '<path d="M0 ' + (beamY + 1) + ' H1920 M0 ' + (beamY + 15) + ' H1920" stroke="#f2b632" stroke-opacity=".55" stroke-width="2"/>';
+  for (let x = 14, i = 0; x < 1920; x += 28, i++) {
+    // mirror dots on the beam and a small marigold bead hanging below it
+    out += '<circle cx="' + x + '" cy="' + (beamY + 8) + '" r="2.4" fill="#ffe7a8" fill-opacity=".7"/>' +
+           '<circle cx="' + x + '" cy="' + (beamY + 21) + '" r="4.2" fill="' + (i % 3 === 2 ? '#d9364a' : i % 2 ? '#ffc93c' : '#f59a1b') + '" fill-opacity=".8"/>';
+  }
+  posts.forEach(px => {
+    // banana stem pillar
+    out += '<rect x="' + (px - 8) + '" y="' + (beamY + 16) + '" width="16" height="' + (potTop - beamY - 16) + '" rx="4" fill="#4c8a3a" fill-opacity=".5"/>' +
+           '<path d="M' + (px - 3) + ' ' + (beamY + 16) + ' V' + potTop + '" stroke="#a6d98a" stroke-opacity=".35" stroke-width="2"/>';
+    // marigold string wound round it
+    for (let y = beamY + 30, k = 0; y < potTop - 6; y += 13, k++) {
+      out += '<circle cx="' + (px + (k % 2 ? 6 : -6)) + '" cy="' + y + '" r="5.5" fill="' + (k % 4 === 3 ? '#d9364a' : k % 2 ? '#ffc93c' : '#f59a1b') + '" fill-opacity=".72"/>';
+    }
+    // kalash with mango leaves and a coconut on top of the pillar
+    out += '<g fill-opacity=".85"><path d="M' + (px - 11) + ' ' + beamY + ' Q' + (px - 14) + ' ' + (beamY - 16) + ' ' + px + ' ' + (beamY - 17) + ' Q' + (px + 14) + ' ' + (beamY - 16) + ' ' + (px + 11) + ' ' + beamY + 'Z" fill="#d99a2b"/>' +
+           '<path d="M' + (px - 9) + ' ' + (beamY - 17) + ' L' + (px - 14) + ' ' + (beamY - 24) + ' M' + (px + 9) + ' ' + (beamY - 17) + ' L' + (px + 14) + ' ' + (beamY - 24) + '" stroke="#4c9a3a" stroke-width="4" stroke-linecap="round"/>' +
+           '<ellipse cx="' + px + '" cy="' + (beamY - 22) + '" rx="6" ry="7" fill="#a8743a"/></g>';
+    // chori: five decorated pots, largest at the bottom
+    for (let k = 0, y = 1080; k < 5; k++) {
+      const w = 34 - k * 3, h = 26 - k * 1.5;
+      y -= h;
+      out += '<g fill-opacity=".8"><ellipse cx="' + px + '" cy="' + (y + h / 2).toFixed(1) + '" rx="' + (w / 2).toFixed(1) + '" ry="' + (h / 2).toFixed(1) + '" fill="' + (k % 2 ? '#c8452f' : '#e0a032') + '"/>' +
+             '<path d="M' + (px - w * .42).toFixed(1) + ' ' + (y + h / 2).toFixed(1) + ' H' + (px + w * .42).toFixed(1) + '" stroke="#fff1c4" stroke-opacity=".7" stroke-width="2" stroke-dasharray="2 4"/></g>';
+    }
+  });
+  return svgEl(1920, 1080, 'art-back', out);
+}
+// A large, faint Tulsi Kyaro (the decorated planter, with the Tulsi plant and its manjari) behind the foot of the
+// Upcoming panel, and a slow shower of marigold, rose and jasmine petals.
+function tulsiKyaro() {
+  const cx = 1600, base = 1080;
+  let out = '<g fill="rgba(255,214,140,.075)">' +
+    '<rect x="' + (cx - 150) + '" y="' + (base - 50) + '" width="300" height="50" rx="6"/>' +
+    '<rect x="' + (cx - 115) + '" y="' + (base - 220) + '" width="230" height="170"/>' +
+    '<rect x="' + (cx - 140) + '" y="' + (base - 246) + '" width="280" height="26" rx="6"/>' +
+    '<path d="M' + (cx - 160) + ' ' + (base - 246) + ' Q' + cx + ' ' + (base - 300) + ' ' + (cx + 160) + ' ' + (base - 246) + 'Z"/></g>' +
+    // the niche for the diya, and the swastik on the front
+    '<path d="M' + (cx - 40) + ' ' + (base - 60) + ' V' + (base - 140) + ' Q' + cx + ' ' + (base - 190) + ' ' + (cx + 40) + ' ' + (base - 140) + ' V' + (base - 60) + 'Z" fill="rgba(0,0,0,.12)" stroke="rgba(255,214,140,.12)" stroke-width="3"/>' +
+    '<circle cx="' + cx + '" cy="' + (base - 100) + '" r="9" fill="rgba(255,200,90,.14)"/>' +
+    '<g stroke="rgba(150,235,140,.1)" stroke-width="5" fill="none" stroke-linecap="round">' +
+    '<path d="M' + cx + ' ' + (base - 270) + ' C' + (cx - 6) + ' ' + (base - 380) + ' ' + (cx + 8) + ' ' + (base - 460) + ' ' + cx + ' ' + (base - 560) + '"/>' +
+    '<path d="M' + cx + ' ' + (base - 330) + ' C' + (cx - 50) + ' ' + (base - 380) + ' ' + (cx - 90) + ' ' + (base - 430) + ' ' + (cx - 110) + ' ' + (base - 500) + '"/>' +
+    '<path d="M' + cx + ' ' + (base - 350) + ' C' + (cx + 50) + ' ' + (base - 400) + ' ' + (cx + 90) + ' ' + (base - 450) + ' ' + (cx + 108) + ' ' + (base - 520) + '"/></g>';
+  // pairs of Tulsi leaves along each stem, and the purple manjari (flower spikes) at the tips
+  const stems = [[cx, base - 270, cx, base - 560], [cx, base - 330, cx - 110, base - 500], [cx, base - 350, cx + 108, base - 520]];
+  stems.forEach(([x0, y0, x1, y1]) => {
+    for (let t = .15; t < .95; t += .14) {
+      const x = x0 + (x1 - x0) * t, y = y0 + (y1 - y0) * t;
+      out += '<ellipse cx="' + (x - 16).toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="16" ry="8" fill="rgba(150,235,140,.095)" transform="rotate(-25 ' + (x - 16).toFixed(1) + ' ' + y.toFixed(1) + ')"/>' +
+             '<ellipse cx="' + (x + 16).toFixed(1) + '" cy="' + y.toFixed(1) + '" rx="16" ry="8" fill="rgba(150,235,140,.095)" transform="rotate(25 ' + (x + 16).toFixed(1) + ' ' + y.toFixed(1) + ')"/>';
+    }
+    for (let k = 0; k < 4; k++) out += '<circle cx="' + x1 + '" cy="' + (y1 - k * 11) + '" r="' + (6 - k) + '" fill="rgba(200,150,230,.16)"/>';
+  });
+  const cols = ['#f59a1b', '#ffc93c', '#d9364a', '#fff6e0', '#f59a1b'];
+  [60, 230, 410, 580, 720, 900, 1080, 1240, 1320, 1470, 1620, 1770, 1890].forEach((x, i) => {
+    const t = 22 + (i * 7) % 12;
+    out += '<ellipse class="petal" style="--t:' + t + 's;--d:-' + ((i * 5.3) % t).toFixed(1) + 's" cx="' + x + '" cy="0" rx="7" ry="10" fill="' + cols[i % cols.length] + '" fill-opacity=".38"/>';
+  });
+  return svgEl(1920, 1080, 'art-back', out);
+}
 const FESTIVAL_ART = {
+  tulsivivah: () => tulsiKyaro() + weddingMandap() + marigoldToran(['#f59a1b', '#ffc93c', '#f59a1b', '#d9364a'], '#3f8f3a'),
   sharad:  () => sharadMoon() + jasmineToran() + raasDandiyas(),
   diwali:  () => marigoldToran(['#f59a1b', '#ffc93c', '#f2672c'], '#3f8f3a') + diyaRow() +
                  svgEl(1920, 1080, 'art-back', rangoli(1640, 820, 420, 'rgba(255,214,140,.07)')),
