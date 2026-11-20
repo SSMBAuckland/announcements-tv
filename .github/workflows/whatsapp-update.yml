@@ -42,7 +42,7 @@ on:
         options: [pro, api]
         default: pro
       model:
-        description: 'kind=claude: sonnet, or opus for festive themes'
+        description: 'kind=claude: opus marks a festive theme; every job runs on Claude Opus 5.5, high effort'
         type: choice
         options: [sonnet, opus]
         default: sonnet
@@ -76,7 +76,8 @@ jobs:
       KIND: ${{ inputs.kind }}
       REF: ${{ inputs.ref }}
       BILLING: ${{ inputs.billing }}
-      MODEL: ${{ inputs.model }}
+      MODEL: claude-opus-5-5
+      EFFORT: high
       PREVIEW: ${{ inputs.preview }}
       DATES: ${{ inputs.dates }}
     outputs:
@@ -156,7 +157,7 @@ jobs:
           fi
           unset PRO_TOKEN PRO_LOGIN API_KEY
           set +e
-          claude -p "$(python3 scripts/whatsapp_job.py prompt)" --output-format json --model "$MODEL" --max-turns 60 $LIMITS \
+          claude -p "$(python3 scripts/whatsapp_job.py prompt)" --output-format json --model "$MODEL" --effort "$EFFORT" --max-turns 60 $LIMITS \
             --permission-mode acceptEdits \
             --allowedTools "Read,Edit,Write,Glob,Grep,Bash(python3 scripts/check_display.py:*),Bash(python3 scripts/apply_update.py:*),Bash(python3 scripts/prepare_image.py:*),Bash(git diff:*),Bash(git status:*)" \
             > /tmp/claude.json 2> /tmp/claude.err
