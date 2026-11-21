@@ -2,6 +2,10 @@
 
 All notable changes to the SSMB Announcements TV display (`index.html`) are recorded here, newest first.
 
+## 2026-11-21
+- **From the admin team (WhatsApp) — Tulsi Vivah Utsav:**
+  - Added: 21 Nov Mandap Ropan; 21 Nov Thaal, Chesta & Aarti; 21 Nov Pithi and Seriko; 21 Nov Podhaniya & Prasad Bhojan; 22 Nov Fuliku; 22 Nov Aarti and Katha; 22 Nov Raas Utsav; 22 Nov Chesta & Podhaniya; 23 Nov Aarti; 23 Nov Lagna; 23 Nov Prasad Bhojan
+
 ## 2026-11-16 (Tulsi Vivah Utsav)
 - **Tulsi Vivah Utsav** (Sat 21 – Mon 23 Nov), as the admin team asked on WhatsApp: a new `tulsivivah` theme in Tulsi green with marigold times and kumkum-pink labels. Its scenery shows a wedding mandap for Lalji Maharaj and Tulsibai: a maroon beam under the header with a fringe of marigold drops, a small kalash on top of each of its three banana-stem pillars, marigold strings wrapped round the pillars, and a chori (five stacked wedding pots) at the foot of each one. There is also a marigold and mango-leaf welcome toran along the top, a large faint Tulsi Kyaro with the Tulsi plant behind the foot of the Upcoming panel, a slow shower of marigold, rose and jasmine petals, and a marigold and red wedding frame round the Today card. All of it sits in the margins or very faintly behind the panels; text sizes and events are unchanged. The poster from 21 Nov wasn't in the repository, so the colours come from the occasion's motifs.
 - New `FESTIVE_DAYS` list in `index.html`: gives a festival theme to a run of days, including days with no events (22 and 23 Nov). A `theme` named on an event (here "Tulsi Wedding Begins") now wins over a big festival's own theme on the same day (Prabodhini Ekadashi on 21 Nov).
